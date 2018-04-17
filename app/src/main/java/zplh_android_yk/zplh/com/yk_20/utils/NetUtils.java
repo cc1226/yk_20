@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
+import okhttp3.Response;
 import zplh_android_yk.zplh.com.yk_20.constant.URLS;
 
 /**
@@ -65,6 +66,17 @@ public class NetUtils {
             url1.params(params).build().execute(callback);
     }
 
+
+    public static Response get(String url,Map<String,String> params) throws IOException {
+        Logger.t("网络请求").d(url,params);
+        GetBuilder url1 = OkHttpUtils.get().url(URLS.updata_task_status());
+        Response response;
+        if (params==null)
+          response =  url1.build().execute();
+        else
+           response = url1.params(params).build().execute();
+        return response;
+    }
 
 
 

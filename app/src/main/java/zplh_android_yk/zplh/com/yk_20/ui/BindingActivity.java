@@ -1,10 +1,10 @@
 package zplh_android_yk.zplh.com.yk_20.ui;
 
+
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -16,22 +16,28 @@ import com.zhy.http.okhttp.callback.StringCallback;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import okhttp3.Call;
+import okhttp3.Response;
 import zplh_android_yk.zplh.com.yk_20.BuildConfig;
 import zplh_android_yk.zplh.com.yk_20.MainActivity;
 import zplh_android_yk.zplh.com.yk_20.R;
 import zplh_android_yk.zplh.com.yk_20.bean.CheckImei;
 import zplh_android_yk.zplh.com.yk_20.bean.ImeiData;
 import zplh_android_yk.zplh.com.yk_20.constant.URLS;
-import zplh_android_yk.zplh.com.yk_20.utils.AdbUtils;
 import zplh_android_yk.zplh.com.yk_20.utils.GsonUtils;
 import zplh_android_yk.zplh.com.yk_20.utils.NetUtils;
 import zplh_android_yk.zplh.com.yk_20.utils.SPUtils;
@@ -72,48 +78,48 @@ public class BindingActivity extends BaseUI {
     @Override
     protected void initData() {
 
-            if (SPUtils.getBoolean(this, "addshortcut", true)) {
-                addShortcut(this.getString(R.string.app_name));//添加桌面图标
-                SPUtils.putBoolean(this, "addshortcut", false);
-            }
-            version_tv.setText("version:" + BuildConfig.VERSION_NAME);
-            SPUtils.putBoolean(this, "task", false);
+        if (SPUtils.getBoolean(this, "addshortcut", true)) {
+            addShortcut(this.getString(R.string.app_name));//添加桌面图标
+            SPUtils.putBoolean(this, "addshortcut", false);
+        }
+        version_tv.setText("version:" + BuildConfig.VERSION_NAME);
+        SPUtils.putBoolean(this, "task", false);
 
-            imei = SPUtils.getString(this, "imeiimei", "");
+        imei = SPUtils.getString(this, "imeiimei", "");
 
-            if (TextUtils.isEmpty(imei)) {
-                imei = SystemUtils.getIMEI(this);
-                Logger.t("imei").d(imei);
-            }
+        if (TextUtils.isEmpty(imei)) {
+            imei = SystemUtils.getIMEI(this);
+            Logger.t("imei").d(imei);
+        }
 
-            isBound();
-            if (imei != null && imei.length() > 0) {
-                imei_tv.setText(TextUtils.concat("imei",imei));
-                imei_tv.setVisibility(View.VISIBLE);
-            }
+        isBound();
+        if (imei != null && imei.length() > 0) {
+            imei_tv.setText(TextUtils.concat("imei", imei));
+            imei_tv.setVisibility(View.VISIBLE);
+        }
 
     }
 
 
-//    private boolean isOpen = true;
+    //    private boolean isOpen = true;
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        if (isOpen) {
-//            ShellUtils.myExecCommand("am start -a android.intent.action.MAIN -n com.zplh.zplh_android_yk/com.zplh.zplh_android_yk.ui.activity.BindingActivity");
-//            Process.killProcess(Process.myPid());
-//        }
+        //        if (isOpen) {
+        //            ShellUtils.myExecCommand("am start -a android.intent.action.MAIN -n com.zplh.zplh_android_yk/com.zplh.zplh_android_yk.ui.activity.BindingActivity");
+        //            Process.killProcess(Process.myPid());
+        //        }
     }
 
 
     /**
      * 检查版本是否需要更新
      */
+    @SuppressLint("CheckResult")
     private void updata() {
         pd = ProgressDialog.show(this, "提示", "检测版本中...", true, false);
-
-        NetUtils.get_excute(URLS.updata(), null, new StringCallback() {
+        StringCallback callback = new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 pd.dismiss();
@@ -123,43 +129,46 @@ public class BindingActivity extends BaseUI {
             @Override
             public void onResponse(String response, int id) {
                 CheckImei checkImei = GsonUtils.fromJson(response, CheckImei.class);
-                if (checkImei.getRet().equals("200")){
-                double version = Double.valueOf(BuildConfig.VERSION_NAME);
-                double ver = Double.valueOf(checkImei.getData());
-                if (ver > version) {
-                    binding_tv.setVisibility(View.GONE);
-                    pd.setMessage("等待更新中...");
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            int a = 5000;
-                            while (true) {
-                                if (version_update_go) {
-                                    //                                    handler.sendEmptyMessage(0x123);//发送消息
-                                    version_update_go();
-                                } else {
-                                    pd.dismiss();
-                                    version_update_go = true;
-                                    handler.sendEmptyMessage(0x124);//发送消息
-                                    break;
-                                }
-                                try {
-                                    Thread.sleep(a);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                a = 20000;
+                if (checkImei.getRet().equals("200")) {
+                    double version = Double.valueOf(BuildConfig.VERSION_NAME);
+                    double ver = Double.valueOf(checkImei.getData());
+                    if (ver > version) {
+
+
+                        binding_tv.setVisibility(View.GONE);
+                        pd.setMessage("等待更新中...");
+                        //每20秒判断一次是否允许更新 因为没次只允许10台手机更新
+
+                        final Disposable subscribe = Observable.interval(0, 10000, TimeUnit.MILLISECONDS).map(new Function<Long, File>() {
+                            @Override
+                            public File apply(Long aLong) throws Exception {
+                                    File file = null;
+                                if (version_update_go()){
+                                         file =downLoadApk("http://103.94.20.102:8087/download/wxzs.apk");
+
+                                    }
+
+                                return file;
                             }
-                        }
-                    }).start();
-                }
+                        }).subscribe(new Consumer<File>() {
+                            @Override
+                            public void accept(File file) throws Exception {
+                                if (file!=null){
+
+                                }
+                            }
+                        });
+
+                    }
 
                 } else {
                     pd.dismiss();
                     isBound();
                 }
             }
-        });
+        };
+        NetUtils.get_excute(URLS.updata(), null, callback);
+
 
 
     }
@@ -183,14 +192,14 @@ public class BindingActivity extends BaseUI {
             public void onError(Call call, Exception e, int id) {
                 pd.dismiss();
                 binding_tv.setClickable(true);
-                ShowToast.show("绑定失败",BindingActivity.this);
+                ShowToast.show("绑定失败", BindingActivity.this);
             }
 
             @Override
             public void onResponse(String response, int tagId) {
                 ImeiData imeiData = GsonUtils.fromJson(response, ImeiData.class);
-                if (imeiData.getRet().equals("200")){
-                    ShowToast.show("绑定成功",BindingActivity.this);
+                if (imeiData.getRet().equals("200")) {
+                    ShowToast.show("绑定成功", BindingActivity.this);
                     SPUtils.putString(BindingActivity.this, "uid", id);
                     SPUtils.putBoolean(BindingActivity.this, "imei", true);
                     SPUtils.putString(BindingActivity.this, "imeiimei", imei);
@@ -200,29 +209,29 @@ public class BindingActivity extends BaseUI {
             }
         });
 
-//        LogUtils.d(URLS.binding() + "?id=" + id + "&code=" + code + "&imei=" + imei);
-//        HttpManager.getInstance().sendRequest(params, new HttpObjectCallback<ImeiData>() {
-//
-//            @Override
-//            public void onSuccess(ImeiData bean) {
-//                pd.dismiss();
-//                showToast("绑定成功");
-//                SPUtils.putString(mContext, "uid", id);
-//                SPUtils.putBoolean(mContext, "imei", true);
-//                SPUtils.putString(mContext, "imeiimei", imei);
-//                Intent intent = new Intent(BindingActivity.this, MainActivity.class);
-//                startActivity(intent);
-//                isOpen = false;
-//                finish();
-//            }
-//
-//            @Override
-//            public void onFailure(int errorCode, String errorString) {
-//                pd.dismiss();
-//                binding_tv.setClickable(true);
-//                showToast("绑定失败" + errorString);
-//            }
-//        });
+        //        LogUtils.d(URLS.binding() + "?id=" + id + "&code=" + code + "&imei=" + imei);
+        //        HttpManager.getInstance().sendRequest(params, new HttpObjectCallback<ImeiData>() {
+        //
+        //            @Override
+        //            public void onSuccess(ImeiData bean) {
+        //                pd.dismiss();
+        //                showToast("绑定成功");
+        //                SPUtils.putString(mContext, "uid", id);
+        //                SPUtils.putBoolean(mContext, "imei", true);
+        //                SPUtils.putString(mContext, "imeiimei", imei);
+        //                Intent intent = new Intent(BindingActivity.this, MainActivity.class);
+        //                startActivity(intent);
+        //                isOpen = false;
+        //                finish();
+        //            }
+        //
+        //            @Override
+        //            public void onFailure(int errorCode, String errorString) {
+        //                pd.dismiss();
+        //                binding_tv.setClickable(true);
+        //                showToast("绑定失败" + errorString);
+        //            }
+        //        });
     }
 
     /**
@@ -230,7 +239,7 @@ public class BindingActivity extends BaseUI {
      */
     public void isBound() {
         pd = ProgressDialog.show(this, "提示", "数据初始化中...", true, false);
-      Map params = new HashMap();
+        Map params = new HashMap();
         params.put("imei", imei);//status
         params.put("status", "1");//status
 
@@ -239,16 +248,16 @@ public class BindingActivity extends BaseUI {
             public void onError(Call call, Exception e, int id) {
                 pd.dismiss();
                 SPUtils.putBoolean(BindingActivity.this, "imei", false);
-                    ShowToast.show("网络异常，请稍后再试...",BindingActivity.this);
-                    binding_tv.setVisibility(View.GONE);
-                    //                    exit();
-                }
+                ShowToast.show("网络异常，请稍后再试...", BindingActivity.this);
+                binding_tv.setVisibility(View.GONE);
+                //                    exit();
+            }
 
             @Override
             public void onResponse(String response, int id) {
-                        pd.dismiss();
+                pd.dismiss();
                 CheckImei checkImei = GsonUtils.fromJson(response, CheckImei.class);
-                if (checkImei.getMsg().equals("200")){
+                if (checkImei.getMsg().equals("200")) {
                     SPUtils.putBoolean(BindingActivity.this, "imei", true);
                     SPUtils.putString(BindingActivity.this, "uid", checkImei.getData());
                     Intent intent = new Intent(BindingActivity.this, MainActivity.class);
@@ -263,31 +272,15 @@ public class BindingActivity extends BaseUI {
     /*
      * 从服务器中下载APK
      */
-    protected void downLoadApk(final String apkUrl) {
-        final ProgressDialog pd; // 进度条对话框
-        pd = new ProgressDialog(this);
-        pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        pd.setMessage("新版本下载中");
-        pd.show();
-        pd.setCanceledOnTouchOutside(false);
-        pd.setCancelable(false);
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    File file = getFileFromServer(apkUrl, pd);
-                    version_update_back();//下载完成反馈
-                    sleep(1000);
-                    String path = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/wxykupdata.apk";
-                    AdbUtils.install(path);
-                    pd.dismiss(); // 结束掉进度条对话框
-                } catch (Exception e) {
-                    pd.dismiss();
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-    }
+    protected File downLoadApk( String apkUrl) throws Exception {
+        File file = getFileFromServer(apkUrl, pd);
+
+        version_update_back();//下载完成反馈
+        return file;
+
+}
+
+
 
     /**
      * [下载APP]
@@ -359,14 +352,34 @@ public class BindingActivity extends BaseUI {
     }
 
 
-    boolean version_update_go = true;
     //-----------------------------下载更新开始----------------------------------
 
     /**
      * 判断是否可以更新
      */
     public boolean version_update_go() {
-        NetUtils.get_excute(URLS.version_update_go(), null, new StringCallback() {
+
+        try {
+            Response response = NetUtils.get(URLS.version_update_go(), null);
+            if (response.code() == 200) {
+                if (response.body().string().contains("200")) {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 下载结束
+     */
+    public void version_update_back() {
+        NetUtils.get_excute(URLS.version_update_back(), null, new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
 
@@ -374,70 +387,13 @@ public class BindingActivity extends BaseUI {
 
             @Override
             public void onResponse(String response, int id) {
-                CheckImei checkImei = GsonUtils.fromJson(response, CheckImei.class);
-                if (checkImei.getRet().equals("200")){
-                 version_update_go = true;
-                }
+
             }
         });
-
-//        RequestParams params = new RequestParams(URLS.version_update_go());
-//        LogUtils.d(URLS.version_update_go());
-//        HttpManager.getInstance().sendRequest(params, new HttpObjectCallback<Object>() {
-//
-//            @Override
-//            public void onSuccess(Object bean) {
-//                version_update_go = false;
-//            }
-//
-//            @Override
-//            public void onFailure(int errorCode, String errorString) {
-//            }
-//        });
-        return true;
-    }
-
-    /**
-     * 下载结束
-     */
-    public void version_update_back() {
-//        RequestParams params = new RequestParams(URLS.version_update_back());
-//        //        params.addQueryStringParameter("id", id);//手机4位数
-//        LogUtils.d(URLS.version_update_back());
-//        HttpManager.getInstance().sendRequest(params, new HttpObjectCallback<Object>() {
-//
-//            @Override
-//            public void onSuccess(Object bean) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(int errorCode, String errorString) {
-//            }
-//        });
     }
 
 
-    private Handler handler = new Handler() {
 
-        // 该方法运行在主线程中
-        // 接收到handler发送的消息，对UI进行操作
-        @Override
-        public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
-
-            switch (msg.what) {
-                case 0x123:
-                    pd.setMessage("等待更新中");
-                    break;
-                case 0x124:
-                    downLoadApk("http://103.94.20.102:8087/download/wxzs.apk");
-                    break;
-            }
-
-
-        }
-    };
 
 
 

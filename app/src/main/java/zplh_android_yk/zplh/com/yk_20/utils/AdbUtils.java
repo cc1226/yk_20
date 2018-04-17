@@ -1,6 +1,8 @@
 package zplh_android_yk.zplh.com.yk_20.utils;
 
 
+import android.content.Context;
+
 import com.google.gson.Gson;
 import com.orhanobut.logger.Logger;
 
@@ -8,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import zplh_android_yk.zplh.com.yk_20.XmlToJson.XmlToJson;
+import zplh_android_yk.zplh.com.yk_20.bean.NodeXmlBean;
 
 /**
  *   adb 执行工具
@@ -136,5 +141,21 @@ public class AdbUtils {
     //安装apk
     public static void install(String path) {
         ShellUtils.execCommand("pm install -r " + path,true);
+    }
+
+    public static void adbDimensClick(Context context, int aa, int bb, int cc, int dd) {
+        int a = context.getResources().getDimensionPixelSize(aa);
+        int b = context.getResources().getDimensionPixelSize(bb);
+        int c = context.getResources().getDimensionPixelSize(cc);
+        int d = context.getResources().getDimensionPixelSize(dd);
+
+        if (commnandList != null) {
+            commnandList.clear();
+        } else {
+            commnandList = new ArrayList<>();
+        }
+
+        commnandList.add("input tap " + (a + c) / 2 + " " + (b + d) / 2);
+        ShellUtils.CommandResult result = ShellUtils.execCommand(commnandList, true);
     }
 }

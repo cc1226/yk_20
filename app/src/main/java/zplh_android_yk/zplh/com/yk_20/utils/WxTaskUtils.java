@@ -2,14 +2,12 @@ package zplh_android_yk.zplh.com.yk_20.utils;
 
 import android.text.TextUtils;
 
-import com.zplh.zplh_android_yk.R;
-import com.zplh.zplh_android_yk.adb.WxUtils;
-import com.zplh.zplh_android_yk.base.BaseApplication;
-import com.zplh.zplh_android_yk.bean.NodeXmlBean;
-import com.zplh.zplh_android_yk.utils.SPUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import zplh_android_yk.zplh.com.yk_20.R;
+import zplh_android_yk.zplh.com.yk_20.base.MyApplication;
+import zplh_android_yk.zplh.com.yk_20.bean.NodeXmlBean;
 
 /* 封装了一些普遍的微信adb操作
  * Created by yong hao zeng on 2018/4/14/014.
@@ -118,7 +116,7 @@ public class WxTaskUtils {
                 if (nodeBean.getResourceid() != null && (nodeBean.getResourceid().equals("com.tencent.mm:id/cdh")) && nodeBean.getText() != null && nodeBean.getText().contains("微信号")) {
                     String str = nodeBean.getText();
                     String wxAccount = str.replaceAll("微信号：", "");
-                    SPUtils.putString(BaseApplication.getContext(), "wxAccount", wxAccount);
+                    SPUtils.putString(MyApplication.getContext(), "wxAccount", wxAccount);
                     break;
                 }
             }
@@ -131,7 +129,6 @@ public class WxTaskUtils {
      */
     public static void backHome() throws Exception {
         List<Integer> listXY = new ArrayList<>();
-        WxUtils wxUtils = new WxUtils();
         String xmlData = AdbUtils.dumpXml2String();
         if (xmlData.contains("wx助手") || (xmlData.contains("主屏幕") && xmlData.contains("应用"))) {
             openWx();
@@ -146,13 +143,13 @@ public class WxTaskUtils {
                 if (nodeBean.getText() != null && nodeBean.getText().contains("取消")) {
                     listXY =AdbUtils.getXY(nodeBean.getBounds());//取消
                     AdbUtils.click4xy(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));//取消
-                    wxUtils.adbDimensClick(BaseApplication.getContext(), R.dimen.x200, R.dimen.y230, R.dimen.x264, R.dimen.y251);//确定
+                    AdbUtils.adbDimensClick(MyApplication.getContext(), R.dimen.x200, R.dimen.y230, R.dimen.x264, R.dimen.y251);//确定
                     break;
                 }
             }
 
         } else if (xmlData.contains("你要关闭购物页面?")) {
-            wxUtils.adbDimensClick(BaseApplication.getContext(), R.dimen.x200, R.dimen.y230, R.dimen.x264, R.dimen.y250);
+            AdbUtils.adbDimensClick(MyApplication.getContext(), R.dimen.x200, R.dimen.y230, R.dimen.x264, R.dimen.y250);
         } else if (xmlData.contains("忘记密码") || (xmlData.contains("登录") && xmlData.contains("注册") && xmlData.contains("语言")) || (xmlData.contains("你的手机号码") && xmlData.contains("密码"))) {//判断是否登录
 
             throw new Exception("未登录");
