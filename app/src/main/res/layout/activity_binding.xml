@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    android:gravity="center">
+
+
+
+
+    <EditText
+        android:id="@+id/binding_et"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_65_dip"
+        android:background="@color/white"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_@.*#"
+        android:hint="请输入激活码"
+        android:maxLength="50"
+        android:singleLine="true"
+        android:textColorHint="@color/register_text_hint_gray"
+        android:textCursorDrawable="@null"
+        android:textSize="@dimen/dimen_20_dip" />
+
+    <TextView
+        android:id="@+id/imei_tv"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_65_dip"
+        android:layout_above="@+id/binding_et"
+        android:background="@drawable/bg_menu"
+        android:gravity="center"
+        android:padding="10dp"
+        android:visibility="gone"
+        android:layout_marginBottom="1dp"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/dimen_20_dip" />
+
+    <TextView
+        android:id="@+id/version_tv"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_65_dip"
+        android:layout_above="@+id/imei_tv"
+        android:background="@drawable/bg_menu"
+        android:gravity="center"
+        android:padding="10dp"
+        android:layout_marginBottom="1dp"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/dimen_20_dip" />
+
+    <TextView
+        android:id="@+id/binding_tv"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_65_dip"
+        android:layout_below="@+id/binding_et"
+        android:background="@drawable/bg_menu"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="绑定"
+        android:layout_marginTop="1dp"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/dimen_20_dip" />
+
+</RelativeLayout>

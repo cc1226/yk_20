@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">wx助手</string>
+
+    <!-- loading网络状态提示 -->
+    <string name="common_loading_message">正在加载中...</string>
+    <string name="common_empty_msg">抱歉,暂未获取到数据!\n请点击屏幕重试~</string>
+    <string name="common_error_msg">抱歉,系统出错了!\n请点击屏幕重试~</string>
+    <string name="common_no_network_msg">暂未连接上网络!\n请连接后点击屏幕重试~</string>
+    <string name="cpb_default_rotation_speed">1</string>
+    <string name="cpb_default_sweep_speed">1</string>
+
+    <!-- MainActivity -->
+    <string name="home">消息</string>
+    <string name="sort">记录</string>
+    <string name="shop_cart">操作</string>
+    <string name="me">编辑</string>
+
+    <!--支付宝拉群发送信息-->
+    <string name="alipay_message">欢迎新朋友[鼓掌]让小的陪您一起省钱逛淘宝吧[亲亲]本群是淘宝天猫精选+独家优惠券播报群，小的有专业选品师+大额优惠券[害羞]亲们抢券省钱淘好货[红包]每天新券实时播报，如有打扰，敬请谅解[天使]</string>
+    <string name="accessibility_description">aawxzs</string>
+
+</resources>

@@ -1,0 +1,39 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+
+    <!-- Loading页的size -->
+    <dimen name="common_load_more_progress_size">30dp</dimen>
+    <dimen name="common_load_more_padding">20dp</dimen>
+    <dimen name="common_loading_progress_size">35dp</dimen>
+    <dimen name="common_loading_text_margin">10dp</dimen>
+    <dimen name="common_loading_text_lines_spacing">5dp</dimen>
+
+<!--    &lt;!&ndash; 用于导航栏标题,操作按钮文字等 &ndash;&gt;
+    <dimen name="xxxh_text_size">@dimen/dimen_24_dip</dimen>
+    &lt;!&ndash; 用于搜索也模块名称,医生推荐养生方功效,搜索关键字展示信息等 &ndash;&gt;
+    <dimen name="xxh_text_size">@dimen/dimen_23_dip</dimen>
+    &lt;!&ndash; 用于健康资讯标题,收货地址信息,省市内信息等 &ndash;&gt;
+    <dimen name="xh_text_size">@dimen/dimen_21_dip</dimen>
+    &lt;!&ndash; 用于正文内容 &ndash;&gt;
+    <dimen name="h_text_size">@dimen/dimen_20_dip</dimen>
+    &lt;!&ndash; 用于放号地址,医生介绍,评论回复等 &ndash;&gt;
+    <dimen name="m_text_size">@dimen/dimen_19_dip</dimen>
+    &lt;!&ndash; L用于医生辅助信息,热门搜索文字等 &ndash;&gt;
+    <dimen name="s_text_size">@dimen/dimen_17_dip</dimen>
+    &lt;!&ndash; 用于全部,养生方已售等 &ndash;&gt;
+    <dimen name="xs_text_size">@dimen/dimen_16_dip</dimen>
+    &lt;!&ndash; 用于底部导航栏 &ndash;&gt;
+    <dimen name="xxs_text_size">@dimen/dimen_15_dip</dimen>
+    &lt;!&ndash; 用于诊费,名医上门等 &ndash;&gt;
+    <dimen name="xxxs_text_size">@dimen/dimen_13_dip</dimen>-->
+    <dimen name="rdo1">0dp</dimen>
+    <dimen name="rdo2">100dp</dimen>
+    <dimen name="rdo3">200dp</dimen>
+    <dimen name="rdo4">300dp</dimen>
+    <dimen name="rdo5">400dp</dimen>
+    <dimen name="rdo6">500dp</dimen>
+
+</resources>

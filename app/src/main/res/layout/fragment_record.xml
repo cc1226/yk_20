@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
+  <!--<TextView-->
+      <!--android:textSize="18sp"-->
+      <!--android:layout_marginTop="5sp"-->
+      <!--android:gravity="center"-->
+      <!--android:text="任务列表状态栏目"-->
+      <!--android:layout_width="match_parent"-->
+      <!--android:layout_height="wrap_content"-->
+      <!--/>-->
+
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+    <Button
+      android:layout_marginLeft="20sp"
+      android:layout_marginRight="10sp"
+
+      android:textSize="13sp"
+      android:textColor="@color/white"
+      android:background="@drawable/clean_button"
+      android:id="@+id/button_clean"
+      android:layout_marginTop="10sp"
+      android:layout_width="0dp"
+      android:layout_weight="1"
+        android:singleLine="true"
+      android:layout_height="44sp"
+      android:text="一键清除任务状态"/>
+
+    <Button
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="20sp"
+        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:background="@drawable/clean_button"
+        android:id="@+id/button_refresh"
+        android:layout_marginTop="10sp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:layout_height="44sp"
+        android:text="刷新任务状态"/>
+
+  </LinearLayout>
+
+
+  <ListView
+      android:layout_marginBottom="20sp"
+      android:id="@+id/listview_recored"
+      android:layout_marginTop="10sp"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+  </ListView>
+
+</LinearLayout>

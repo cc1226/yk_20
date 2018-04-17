@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:id="@+id/again_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="重新执行当前循环"/>
+    <Button
+        android:id="@+id/next_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="进入下一个循环"/>
+    <Button
+        android:id="@+id/cancel_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="取消"/>
+</LinearLayout>
