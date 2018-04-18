@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 /**
  * adb 执行工具
  * Created by yong hao zeng on 2018/4/10 0010.
@@ -21,8 +22,19 @@ import java.util.regex.Pattern;
 public class AdbUtils {
     private static List<String> commnandList;
 
+    private static AdbUtils adbUtils;
+
+    private AdbUtils() {
+    }
+    public static AdbUtils getAdbUtils() {
+        if (adbUtils == null) {
+            adbUtils = new AdbUtils();
+        }
+        return adbUtils;
+    }
+
     //单击某按钮 根据坐标
-    public static boolean click4xy(int a, int b, int c, int d) {
+    public  boolean click4xy(int a, int b, int c, int d) {
         if (commnandList != null) {
             commnandList.clear();
         } else {
@@ -34,11 +46,10 @@ public class AdbUtils {
         return result.result == 0;
     }
 
-    public static String dumpXml2String() {
+    public  String dumpXml2String() {
 
-       ShellUtils.CommandResult commandResult =ShellUtils.execCommand("uiautomator dump /sdcard/wx_ui.xml", true);
-        if (commandResult.result != 0)
-            return "";
+        ShellUtils.CommandResult commandResult = ShellUtils.execCommand("uiautomator dump /sdcard/wx_ui.xml", true);
+        if (commandResult.result != 0) return "";
         return FileUtils.readTxtFile();
     }
 
@@ -49,7 +60,7 @@ public class AdbUtils {
      * @param s
      * @return
      */
-    public static List<Integer> getXY(String s) {
+    public  List<Integer> getXY(String s) {
 
         ArrayList<Integer> listXY = new ArrayList<>();
 
@@ -72,7 +83,7 @@ public class AdbUtils {
      * @param xml
      * @return
      */
-    public static String xml2JSON(String xml) {
+    public  String xml2JSON(String xml) {
         try {
             XmlToJson xmlToJson = new XmlToJson.Builder(xml).build();
 
@@ -84,13 +95,13 @@ public class AdbUtils {
         }
     }
 
-    public static NodeXmlBean getNodeXmlBean(String str) {
+    public NodeXmlBean getNodeXmlBean(String str) {
         Gson gson = new Gson();
         return gson.fromJson(xml2JSON(str), NodeXmlBean.class);
     }
 
     //返回node节点数据
-    public static List<String> getNodeList(String node) {
+    public  List<String> getNodeList(String node) {
         List<String> ls = new ArrayList<String>();
         ls.clear();
         Pattern pattern = Pattern.compile("<node.*?text=\"(.*?)\".*?resource-id=\"(.*?)\" class=\"(.*?)\" package=\"(.*?)\".*?content-desc=\"(.*?)\".*?checked=\"(.*?)\".*?enabled=\"(.*?)\".*?selected=\"(.*?)\".*?bounds=\"\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]\"");
@@ -101,23 +112,23 @@ public class AdbUtils {
         return ls;
     }
 
-    public static void putText(String str) {
+    public  void putText(String str) {
         ShellUtils.CommandResult commandResult = ShellUtils.execCommand("input text " + str, true);
 
 
     }
 
     //返回键
-    public static void back() {
-       ShellUtils.execCommand("input keyevent 4", true);
+    public  void back() {
+        ShellUtils.execCommand("input keyevent 4", true);
     }
 
     public static boolean boardisShow() {
-       ShellUtils.CommandResult commandResult = ShellUtils.execCommand("\"dumpsys input_method |grep mInputShown=true\"", true);
+        ShellUtils.CommandResult commandResult = ShellUtils.execCommand("\"dumpsys input_method |grep mInputShown=true\"", true);
         return commandResult.result == 0;
     }
 
-    public static void clickLong(int a, int b, int c, int d) {
+    public  void clickLong(int a, int b, int c, int d) {
         if (commnandList != null) {
             commnandList.clear();
         } else {
@@ -129,8 +140,11 @@ public class AdbUtils {
         Logger.t("adb click").d("长按");
 
     }
+    /*
+    * 坐标点
+    * */
 
-    public static void click(int i, int i1) {
+    public  void click(int i, int i1) {
         if (commnandList != null) {
             commnandList.clear();
         } else {
@@ -141,11 +155,11 @@ public class AdbUtils {
     }
 
     //安装apk
-    public static void install(String path) {
-       ShellUtils.execCommand("pm install -r " + path, true);
+    public  void install(String path) {
+        ShellUtils.execCommand("pm install -r " + path, true);
     }
 
-    public static void adbDimensClick(Context context, int aa, int bb, int cc, int dd) {
+    public  void adbDimensClick(Context context, int aa, int bb, int cc, int dd) {
         int a = context.getResources().getDimensionPixelSize(aa);
         int b = context.getResources().getDimensionPixelSize(bb);
         int c = context.getResources().getDimensionPixelSize(cc);

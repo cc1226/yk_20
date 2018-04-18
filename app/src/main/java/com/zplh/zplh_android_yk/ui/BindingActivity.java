@@ -70,7 +70,7 @@ public class BindingActivity extends BaseUI {
     }
 
     @Override
-    int getLayoutID() {
+    protected int getLayoutID() {
         return R.layout.activity_binding;
     }
 

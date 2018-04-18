@@ -3,7 +3,8 @@ package com.zplh.zplh_android_yk.callback;
 import android.content.Context;
 
 import com.zplh.zplh_android_yk.bean.TaskErrorBean;
-import com.zplh.zplh_android_yk.imp.BaseTask;
+import com.zplh.zplh_android_yk.imp.ITask;
+import com.zplh.zplh_android_yk.task.BaseTask;
 
 
 /**
@@ -18,7 +19,7 @@ public interface TaskCallback {
 
     void onTaskProgress(BaseTask iTask, String progress) throws Exception;//任务进度
 
-    void onTaskError(BaseTask iTask, TaskErrorBean taskErrorBean) throws Exception;//任务错误
+    void onTaskError(ITask iTask, TaskErrorBean taskErrorBean) ;//任务错误
 
     Context getContext();
 }

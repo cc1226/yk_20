@@ -1,9 +1,10 @@
-package com.zplh.zplh_android_yk.imp;
+package com.zplh.zplh_android_yk.task;
 
 import android.support.annotation.NonNull;
 
-import com.zplh.zplh_android_yk.bean.BaseTaskBean;
+import com.zplh.zplh_android_yk.bean.TaskMessageBean;
 import com.zplh.zplh_android_yk.constant.Priority;
+import com.zplh.zplh_android_yk.imp.ITask;
 
 
 /**
@@ -11,18 +12,18 @@ import com.zplh.zplh_android_yk.constant.Priority;
  * Created by yong hao zeng on 2018/4/12.
  */
 
-public abstract class BaseTask<T extends BaseTaskBean> implements ITask {
+public abstract class BaseTask<T extends TaskMessageBean.ContentBean.DataBean> implements ITask {
 
-    Priority priority = Priority.DEFAULT;//优先级
-    int sequence;//加入的顺序
-    T taskBean;
+    private Priority priority = Priority.DEFAULT;//优先级
+    private int sequence;//加入的顺序
+    private T taskBean;
 
-
+    @Override
     public T getTaskBean() {
         return taskBean;
     }
 
-    public BaseTask(Priority priority, int sequence, T taskBean) {
+    BaseTask(Priority priority, int sequence, T taskBean) {
         this.priority = priority;
         this.sequence = sequence;
         this.taskBean = taskBean;

@@ -36,6 +36,8 @@ public class TaskErrorBean {
     }
 
     public String getErrorMsg() {
+        if (errorType == EXCEPTION_ERROR)
+            return exception.getMessage();
         return errorMsg;
     }
 

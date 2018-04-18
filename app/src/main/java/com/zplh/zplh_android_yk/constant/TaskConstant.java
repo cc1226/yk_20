@@ -4,6 +4,23 @@ package com.zplh.zplh_android_yk.constant;
  * Created by yong hao zeng on 2018/4/16/016.
  */
 public class TaskConstant {
+    //0,1,15,16 17 18 19 20 21 22 23 24 25 26
+    public static final int TASK_WX_FRIENDS_DS = 1; //朋友圈点赞
+    public static final int TASK_WX_SUM_FRIENDS = 15;//统计好友数量
+    public static final int TASK_WX_SAVE_SIGNATURE = 16;//修改个性签名
+    public static final int TASK_WX_SEND_GZH = 17;//发送公众号名片
+    public static final int TASK_WX_FRIENDS_GAME = 18;//朋友圈启动游戏
+    public static final int TASK_WX_FRIENDS_SHOP = 19;//朋友圈进入京东购物
+    public static final int TASK_WX_FRIENDS_VEDIO = 20;//朋友圈小视频发布
+    public static final int TASK_WX_MASS_VEDIO = 21;//好友发视频
+    public static final int TASK_WX_CROWD_VEDIO = 22;//微信群发视频
+    public static final int TASK_WX_ADD_XT = 23;//嗅探加好友
+    public static final int TASK_WX_ADD_CROWD = 24;//拉群任务
+    public static final int TASK_WX_COUNT = 25;//统计好友和群成员
+    public static final int TASK_WX_CONTACTS_ADD_BIG = 26;//通讯录加高权重号
+    public static final int TASK_WX_ONE_MSG = 10;//好友逐个发图片
+    public static final int TASK_WX_CROWD_MSG = 11;//微信群发消息
+
     public static final int TASK_WX_GO_XIAO_CHENG_XU = 59;//进入小程序
     public static final int TASK_WX_QUN_TU_WEN = 30;//微信群发图文
     public static final int TASK_WX_SHOU_FU_KUAN = 61;//收付款

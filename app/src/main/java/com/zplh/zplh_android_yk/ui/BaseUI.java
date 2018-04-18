@@ -29,8 +29,7 @@ public abstract class BaseUI extends AppCompatActivity {
     protected abstract void initView();
 
 
-    abstract @LayoutRes
-    int getLayoutID();
+    protected abstract @LayoutRes int getLayoutID();
 
 
     @Override

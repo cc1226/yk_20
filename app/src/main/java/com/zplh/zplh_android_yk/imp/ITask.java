@@ -1,6 +1,7 @@
 package com.zplh.zplh_android_yk.imp;
 
 
+import com.zplh.zplh_android_yk.bean.TaskMessageBean;
 import com.zplh.zplh_android_yk.callback.TaskCallback;
 import com.zplh.zplh_android_yk.constant.Priority;
 
@@ -17,7 +18,7 @@ public interface ITask extends Comparable<ITask> {
      * @throws Exception
      */
     void run(TaskCallback callback) throws Exception;
-
+    TaskMessageBean.ContentBean.DataBean getTaskBean();
     void setPriority(Priority priority);
 
     Priority getPriority();

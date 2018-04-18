@@ -5,6 +5,9 @@ import android.content.Context;
 
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
+import com.zplh.zplh_android_yk.event.MyEventBusIndex;
+
+import org.greenrobot.eventbus.EventBus;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -27,7 +30,8 @@ public class MyApplication extends Application {
         JPushInterface.init(this);
 
         Logger.addLogAdapter(new AndroidLogAdapter());
-
+        //初始化eventbus 索引类
+        EventBus.builder().addIndex(new MyEventBusIndex());
 
     }
 

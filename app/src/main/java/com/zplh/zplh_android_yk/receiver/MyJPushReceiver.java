@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -18,9 +16,9 @@ import com.zhy.http.okhttp.callback.StringCallback;
 import com.zplh.zplh_android_yk.MainActivity;
 import com.zplh.zplh_android_yk.bean.CheckImei;
 import com.zplh.zplh_android_yk.bean.TaskMessageBean;
-import com.zplh.zplh_android_yk.constant.MyConstains;
 import com.zplh.zplh_android_yk.constant.TaskConstant;
 import com.zplh.zplh_android_yk.constant.URLS;
+import com.zplh.zplh_android_yk.event.TaskEvent;
 import com.zplh.zplh_android_yk.module.TaskManager;
 import com.zplh.zplh_android_yk.utils.AdbUtils;
 import com.zplh.zplh_android_yk.utils.GsonUtils;
@@ -29,10 +27,11 @@ import com.zplh.zplh_android_yk.utils.SPUtils;
 import com.zplh.zplh_android_yk.utils.SystemUtils;
 import com.zplh.zplh_android_yk.utils.TimeUtil;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import cn.jpush.android.api.JPushInterface;
 import io.reactivex.Observable;
@@ -40,6 +39,7 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Call;
 
@@ -59,8 +59,6 @@ public class MyJPushReceiver extends BroadcastReceiver {
     Gson gson = new Gson();
 
     Context context;
-    private Timer mytime = new Timer(true);
-    private TimerTask timerTasks;
 
     @Override
     public void onReceive(final Context context, Intent intent) {
@@ -87,20 +85,17 @@ public class MyJPushReceiver extends BroadcastReceiver {
                     Observable.create(new ObservableOnSubscribe<File>() {
                         @Override
                         public void subscribe(ObservableEmitter<File> emitter) throws Exception {
-                            try {
                                 Logger.d("开始更新任务");//wxzs1.apk 正式       wxzs.apk测试
-                                String uid = SPUtils.getString(context, UID_SP, "0001");
-                                int sleepTime = Integer.valueOf(uid);
-                                if (sleepTime > 0) {
-                                    Logger.d("等待" + sleepTime + "秒下载");
-                                    Thread.sleep(sleepTime * 1000);
-                                }
+//                                String uid = SPUtils.getString(context, UID_SP, "0001");
+//                                int sleepTime = Integer.valueOf(uid);
+//                                if (sleepTime > 0) {
+//                                    Logger.d("等待" + sleepTime + "秒下载");
+//                                    Thread.sleep(sleepTime * 1000);
                                 File filr = NetUtils.getApk("http://103.94.20.102:8087/download/wxzs.apk");
+                                if (filr!=null&&filr.exists())
                                 emitter.onNext(filr);
+                                else emitter.onError(new Exception("下载apk失败"));
 
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
                         }
                     }).subscribeOn(Schedulers.io())
                             .observeOn(Schedulers.io())
@@ -120,7 +115,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
 
                                 @Override
                                 public void onError(Throwable e) {
-
+                                  Logger.t("升级失败").d(e.getMessage());
                                 }
 
                                 @Override
@@ -136,6 +131,10 @@ public class MyJPushReceiver extends BroadcastReceiver {
 
             if (SPUtils.getBoolean(context, IMEI_SP, false)) {//绑定过设备才执行任务
                 //判断uid是否一样 是一样的才执行任务
+
+
+
+
 
 
                 if (!TextUtils.isEmpty(extra) && extra.contains(SPUtils.getString(context, UID_SP, "0000"))) {
@@ -204,33 +203,42 @@ public class MyJPushReceiver extends BroadcastReceiver {
         }
     }
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    TaskMessageBean.ContentBean.DataBean dataBean = (TaskMessageBean.ContentBean.DataBean) msg.obj;
-                    setBorad(dataBean);
-                    break;
-            }
-        }
-    };
+//    private Handler handler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//            switch (msg.what) {
+//                case 1:
+//                    TaskMessageBean.ContentBean.DataBean dataBean = (TaskMessageBean.ContentBean.DataBean) msg.obj;
+//                    setTaskEvent(dataBean);
+//                    break;
+//            }
+//        }
+//    };
 
-    private void setBorad(final TaskMessageBean.ContentBean.DataBean data) {
-        Timer timer = new Timer();
-        TimerTask timerTask = new TimerTask() {
+    private void setTaskEvent(final TaskMessageBean.ContentBean.DataBean data) {
+
+        Disposable subscribe = Observable.timer(20000, TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
             @Override
-            public void run() {
-                Intent intent2 = new Intent();
-                intent2.setAction(MyConstains.Broadcast_Task);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("messageBean", data);
-                intent2.putExtras(bundle);
-                context.sendBroadcast(intent2);
+            public void accept(Long aLong) throws Exception {
+                EventBus.getDefault().post(new TaskEvent(data));
             }
-        };
-        timer.schedule(timerTask, 20000);
+        });
+
+
+//        Timer timer = new Timer();
+//        TimerTask timerTask = new TimerTask() {
+//            @Override
+//            public void run() {
+//                Intent intent2 = new Intent();
+//                intent2.setAction(MyConstains.Broadcast_Task);
+//                Bundle bundle = new Bundle();
+//                bundle.putSerializable("messageBean", data);
+//                intent2.putExtras(bundle);
+//                context.sendBroadcast(intent2);
+//            }
+//        };
+//        timer.schedule(timerTask, 20000);
 
     }
 
@@ -252,11 +260,14 @@ public class MyJPushReceiver extends BroadcastReceiver {
         //            }
 
 
-        TaskManager.getInstance().addTask(task);//添加到任务列表 缓存到内存中
 
 
         //            stateRenwuBean = new StateRenwuBean(task.getTask_id(), Integer.parseInt(task.getLog_id()), "任务待执行", timeUtil.getDtae());
         //            dao.addPerson(stateRenwuBean);
+
+        //每个任务进行缓存和持久化
+        TaskManager.getInstance().addTask(task);
+
 
 
         upData_task_status(task.getLog_id());//反馈到服务器
@@ -272,19 +283,18 @@ public class MyJPushReceiver extends BroadcastReceiver {
                 task.getTask_id() == TaskConstant.TASK_WX_FIND_DEV) {//微信统计任务不需要加随机时间
 
             if (TextUtils.isEmpty(todoTimes)) {//对于没有设置
-                setBorad(task);
+                setTaskEvent(task);
             } else {//定时执行
                 long time = TimeUtil.getLongTime(Long.parseLong(todoTimes));
-                Timer timer = new Timer();
-                TimerTask timerTask = new TimerTask() {
+
+                Disposable subscribe = Observable.timer(time * 1000, TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
                     @Override
-                    public void run() {
-                        setBorad(task);
+                    public void accept(Long aLong) throws Exception {
+                            setTaskEvent(task);
                     }
-                };
-                timer.schedule(timerTask, (time) * 1000);
+                });
+
             }
-            return;
         }
 
 
@@ -396,7 +406,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
         //                TimerTask timerTask = new TimerTask() {
         //                    @Override
         //                    public void run() {
-        //                        setBorad(task);
+        //                        setTaskEvent(task);
         //
         //                    }
         //                };
@@ -419,7 +429,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
         //                TimerTask timerTask = new TimerTask() {
         //                    @Override
         //                    public void run() {
-        //                        setBorad(task);
+        //                        setTaskEvent(task);
         //                    }
         //                };
         //                if (TextUtils.isEmpty(SPUtils.getString(context, "random_time_s", "")) && TextUtils.isEmpty(SPUtils.getString(context, "random_time_e", ""))) {

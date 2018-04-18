@@ -87,6 +87,18 @@
         </receiver>
 
 
+        <activity
+            android:name="cn.jpush.android.ui.PushActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="false"
+            android:theme="@android:style/Theme.NoTitleBar">
+            <intent-filter>
+                <action android:name="cn.jpush.android.ui.PushActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.zplh.zplh_android_yk" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="JPUSH_CHANNEL"
@@ -96,7 +108,10 @@
 
         <!--Required. AppKey copied from Portal 测试-->
         <!--<meta-data android:name="JPUSH_APPKEY" android:value="31476dee667ff7777214203e" />-->
-
+        <service
+            android:name="cn.jpush.android.service.DownloadService"
+            android:enabled="true"
+            android:exported="false"/>
         <service
             android:name="cn.jpush.android.service.PushService"
             android:enabled="true"
