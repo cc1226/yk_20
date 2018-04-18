@@ -1,6 +1,7 @@
 package com.zplh.zplh_android_yk.task;
 
 
+import com.zplh.zplh_android_yk.bean.TaskErrorBean;
 import com.zplh.zplh_android_yk.bean.TaskMessageBean;
 import com.zplh.zplh_android_yk.callback.TaskCallback;
 import com.zplh.zplh_android_yk.constant.Priority;
@@ -14,7 +15,25 @@ public class NewFriendTask extends BaseTask {
     }
 
     @Override
-    public void run(TaskCallback callback) {
+    public void run(TaskCallback callback)throws Exception  {
+
+            callback.onTaskStart(this);
+            int number= 0;
+            while (true) {
+                number++;
+                Thread.sleep(1000);
+                if (number > 10){
+                    callback.onTaskError(this, new TaskErrorBean(TaskErrorBean.OTHER_ERROR).setErrorMsg("wwwww"));
+                    break;
+            }else {
+                    callback.onTaskProgress(this,"做了什么");
+
+                }
+            }
+
+            while (true){
+                callback.onTaskProgress(this,"程序依旧在运行");
+            }
 
     }
 

@@ -32,6 +32,7 @@ public class TaskQueue implements TaskCallback {
     // 开始执行任务。
     public void start(TaskCallback callback) {
         // 开始按照序列执行任务。
+            stop();
     }
 
 

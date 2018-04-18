@@ -22,8 +22,8 @@ public class MainActivity extends BaseUI implements TaskPCallback {
     ImageView ivStatubar;
     @BindView(R.id.iv_back)
     ImageView ivBack;
-    @BindView(R.id.tv_title)
-    TextView tvTitle;
+//    @BindView(R.id.tv_title)
+//    TextView tvTitle;
     @BindView(R.id.iv_actionphone)
     ImageView ivActionphone;
     @BindView(R.id.iv_action)

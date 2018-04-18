@@ -10,8 +10,8 @@ public class TaskErrorBean {
     public static final int OTHER_ERROR = 2;//其他错误;
 
     public int errorType;
-    public Exception exception;
-    public String errorMsg;
+    public Exception exception = new Exception("未知错误");
+    public String errorMsg = "";
 
     public TaskErrorBean(int errorType) {
         this.errorType = errorType;

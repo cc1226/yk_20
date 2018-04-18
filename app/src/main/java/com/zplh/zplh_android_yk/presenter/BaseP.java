@@ -3,6 +3,7 @@ package com.zplh.zplh_android_yk.presenter;
 import com.zplh.zplh_android_yk.callback.TaskPCallback;
 import com.zplh.zplh_android_yk.event.TaskEvent;
 import com.zplh.zplh_android_yk.module.TaskManager;
+import com.zplh.zplh_android_yk.taskmanager.TaskQueue;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -13,17 +14,20 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 public abstract class BaseP  {
 
+    protected TaskManager taskManager;
+    protected TaskQueue taskQueue;
+    {
+
+        taskManager = TaskManager.getInstance();
+        taskQueue = new TaskQueue();
+    }
+
+
     public BaseP() {
         EventBus.getDefault().register(this);
 
     }
 
-    private TaskManager taskManager;
-
-    {
-
-        taskManager = TaskManager.getInstance();
-    }
     private TaskPCallback taskPCallback;
 
 
