@@ -39,6 +39,6 @@ public class NewFriendTask extends BaseTask {
 
     @Override
     public void stop() {
-        super.stop();
+
     }
 }

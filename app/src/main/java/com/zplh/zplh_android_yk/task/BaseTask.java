@@ -34,12 +34,6 @@ public abstract class BaseTask<T extends TaskMessageBean.ContentBean.DataBean> i
         this.taskBean = taskBean;
     }
 
-    @Override
-    public void stop() {
-        //标记线程停止
-            Thread.currentThread().interrupt();
-    }
-
     public BaseTask<T> setTaskBean(T taskBean) {
         this.taskBean = taskBean;
         return this;
