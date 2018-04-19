@@ -78,7 +78,7 @@ public class BindingActivity extends BaseUI {
     @Override
     protected void initData() {
 
-       if (SPUtils.getBoolean(this, "addshortcut", true)) {
+        if (SPUtils.getBoolean(this, "addshortcut", true)) {
             addShortcut(this.getString(R.string.app_name));//添加桌面图标
             SPUtils.putBoolean(this, "addshortcut", false);
         }
@@ -161,7 +161,7 @@ public class BindingActivity extends BaseUI {
                                         }
                                         String path = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/wxykupdata.apk";
                                         Logger.d("下载完成开始安装");
-                                        AdbUtils.install(path);
+                                        AdbUtils.getAdbUtils().install(path);
                                     }
 
                                     @Override
@@ -175,8 +175,6 @@ public class BindingActivity extends BaseUI {
                                     }
                                 })
                         );
-
-
                     } else {
                         pd.dismiss();
                         isBound();
@@ -184,7 +182,7 @@ public class BindingActivity extends BaseUI {
                 }
             }
         };
-        NetUtils.get_excute(URLS.updata(),null,callback);
+        NetUtils.get_excute(URLS.updata(), null, callback);
 
     }
 

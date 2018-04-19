@@ -109,7 +109,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
                                 public void onNext(File file) {
                                     String path = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/wxykupdata.apk";
                                     Logger.d("下载完成开始安装");
-                                    AdbUtils.install(path);
+                                    AdbUtils.getAdbUtils().install(path);
 
                                 }
 

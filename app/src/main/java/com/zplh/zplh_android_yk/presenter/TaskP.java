@@ -3,6 +3,7 @@ package com.zplh.zplh_android_yk.presenter;
 import com.zplh.zplh_android_yk.callback.TaskPCallback;
 import com.zplh.zplh_android_yk.constant.Priority;
 import com.zplh.zplh_android_yk.event.TaskEvent;
+import com.zplh.zplh_android_yk.task.InfoNumTask;
 import com.zplh.zplh_android_yk.task.NewFriendTask;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TaskP extends BaseP {
     public TaskP(TaskPCallback taskPCallback) {
         super(taskPCallback);
+
     }
     private AtomicInteger mAtomicInteger = new AtomicInteger();
 
@@ -22,11 +24,15 @@ public class TaskP extends BaseP {
 
         switch (event.getTask().getTask_id()){
             case 1:
+
                 NewFriendTask newFriendTask = new NewFriendTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
                 taskQueue.add(newFriendTask);
+                break;
+            case 25:
+                InfoNumTask infoNumTask = new InfoNumTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
+                taskQueue.add(infoNumTask);
 
                 break;
-
             }
     }
 }

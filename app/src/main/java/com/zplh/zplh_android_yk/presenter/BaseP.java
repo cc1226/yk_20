@@ -28,7 +28,7 @@ public abstract class BaseP  {
 
     }
 
-    private TaskPCallback taskPCallback;
+    protected TaskPCallback taskPCallback;
 
 
     @Subscribe(threadMode =  ThreadMode.MAIN)

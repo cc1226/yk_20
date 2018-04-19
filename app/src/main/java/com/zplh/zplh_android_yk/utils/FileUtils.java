@@ -51,4 +51,13 @@ public class FileUtils {
         }
         return builder.toString();
     }
+
+
+    public static boolean createDirs(String dirPath) {
+        File file = new File(dirPath);
+        if (!file.exists() || !file.isDirectory()) {
+            return file.mkdirs();
+        }
+        return true;
+    }
 }
