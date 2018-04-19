@@ -9,11 +9,10 @@ import com.zplh.zplh_android_yk.imp.ITask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -31,6 +30,9 @@ public class TaskQueue  {
     private TaskCallback callback;
     private ITask currentItTask;
     private ExecutorService executor;
+    private AtomicBoolean isRunning = new AtomicBoolean();//是否正在执行任务
+    private boolean isStart;//是否可以任务
+    private Observable<ITask> iTaskObservable;
 
     // 本项目默认一个线程
     public TaskQueue(TaskCallback callback) {
@@ -43,58 +45,60 @@ public class TaskQueue  {
     // 开始执行任务。
     public void start() {
         // 开始按照序列执行任务。
-            stop();
+        stopCurrentTask();
+        isStart = true;
 
 
-        Observable<ITask> iTaskObservable = Observable.create(new ObservableOnSubscribe<ITask>() {
-            @Override
-            public void subscribe(ObservableEmitter<ITask> emitter) throws Exception {
-                Logger.t("Rx").d("开始等待任务执行");
-                ITask take = mTaskQueue.take();
-                emitter.onNext(take);
-            }
+
+        iTaskObservable = Observable.create(emitter -> {
+            ITask take = mTaskQueue.take();
+            while (!isRunning.get())
+            emitter.onNext(take);
         });
+        iTaskObservable
+                .subscribeOn(Schedulers.from(executor))
+                .subscribe(new Observer<ITask>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                            }
+                            @Override
+                            public void onNext(ITask iTask) {
+                                currentItTask = iTask;
+                                Logger.t("执行一个任务").d(iTask.getTaskBean().getTask_id());
+                                try {
+                                    iTask.run(callback);
+                                } catch (Exception e) {
+                                    try {
+                                        callback.onTaskError(currentItTask, new TaskErrorBean(TaskErrorBean.EXCEPTION_ERROR).setException(e));
+                                    } catch (Exception e1) {
+                                        e1.printStackTrace();
+                                        onComplete();
+                                    }
+                                }
+                            }
+                            @Override
+                            public void onError(Throwable e) {
+                                Logger.d("Rx错误" + e.getLocalizedMessage());
+                            }
 
-        iTaskObservable.subscribeOn(Schedulers.from(executor))
-            .subscribe(new Observer<ITask>() {
-            @Override
-            public void onSubscribe(Disposable d) {
+                            @Override
+                            public void onComplete() {
+                                isRunning.compareAndSet(true,false);
 
-            }
-            @Override
-            public void onNext(ITask iTask) {
-                currentItTask = iTask;
-                Logger.t("执行一个任务").d(iTask.getTaskBean().getTask_id());
-                try {
-                iTask.run(callback);
-            } catch (Exception e) {
-                    try {
-                        callback.onTaskError(currentItTask,new TaskErrorBean(TaskErrorBean.EXCEPTION_ERROR).setException(e));
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                }
-         }
-
-            @Override
-            public void onError(Throwable e) {
-
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-
+                            }
+                        });
     }
 
 
-    // 停止任务
-    public void stop() {
+
+
+
+
+    // 停止当前任务
+    public void stopCurrentTask() {
         if (currentItTask!=null)
             currentItTask.stop();
+        isStart = false;
     }
 
 

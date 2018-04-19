@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends BaseUI implements TaskPCallback {
@@ -63,15 +62,12 @@ public class MainActivity extends BaseUI implements TaskPCallback {
         //初始化taskP
         taskP = new TaskP(this);
         taskP.startTask();
-        Observable.timer(15, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) throws Exception {
-                        TaskMessageBean.ContentBean.DataBean dataBean = new TaskMessageBean.ContentBean.DataBean();
-                        dataBean.setTask_id(1);
-                        com.orhanobut.logger.Logger.t("event").d("发送了event");
-                        EventBusCreater.post(new TaskEvent(dataBean));
-                    }
+        Observable.interval(5, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    TaskMessageBean.ContentBean.DataBean dataBean = new TaskMessageBean.ContentBean.DataBean();
+                    dataBean.setTask_id(1);
+                    com.orhanobut.logger.Logger.t("event").d("发送了event");
+                    EventBusCreater.post(new TaskEvent(dataBean));
                 });
     }
 
