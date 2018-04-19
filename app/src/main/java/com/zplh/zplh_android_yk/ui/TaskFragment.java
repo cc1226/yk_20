@@ -27,7 +27,7 @@ public class TaskFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View inflate = inflater.inflate(R.layout.fragment_message, null);
+        View inflate = inflater.inflate(R.layout.fragment_operation, null);
 
         return inflate;
     }

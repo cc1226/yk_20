@@ -1,5 +1,6 @@
 package com.zplh.zplh_android_yk.presenter;
 
+import com.zplh.zplh_android_yk.callback.TaskCallback;
 import com.zplh.zplh_android_yk.callback.TaskPCallback;
 import com.zplh.zplh_android_yk.event.TaskEvent;
 import com.zplh.zplh_android_yk.module.TaskManager;
@@ -12,14 +13,14 @@ import org.greenrobot.eventbus.ThreadMode;
 /**
  * Created by yong hao zeng on 2018/4/18/018.
  */
-public abstract class BaseP  {
+public abstract class BaseP implements TaskCallback {
 
     protected TaskManager taskManager;
     protected TaskQueue taskQueue;
     {
 
         taskManager = TaskManager.getInstance();
-        taskQueue = new TaskQueue();
+        taskQueue = new TaskQueue(this);
     }
 
 
