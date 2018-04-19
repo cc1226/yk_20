@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.orhanobut.logger.Logger;
 import com.zhy.http.okhttp.callback.StringCallback;
 import com.zplh.zplh_android_yk.BuildConfig;
-import com.zplh.zplh_android_yk.MainActivity;
 import com.zplh.zplh_android_yk.R;
 import com.zplh.zplh_android_yk.bean.CheckImei;
 import com.zplh.zplh_android_yk.bean.ImeiData;

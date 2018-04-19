@@ -23,30 +23,41 @@ public class TaskP extends BaseP {
         super(taskPCallback);
 
     }
+
+
+
     private AtomicInteger mAtomicInteger = new AtomicInteger();
+
+
+    @Override
+    public void startTask() {
+        if (taskQueue!=null){
+            taskQueue.start();
+        }
+    }
 
     //生成不同的任务
     @Override
     public void taskEvent(TaskEvent event) {
-
+        Logger.t("event").d("收到eventbus："+event.getTask().getTask_id());
+        ITask task = null;
         switch (event.getTask().getTask_id()){
             case 1:
 
-                NewFriendTask newFriendTask = new NewFriendTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
-                taskQueue.add(newFriendTask);
+                task = new NewFriendTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
                 break;
             case 25:
-                InfoNumTask infoNumTask = new InfoNumTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
-                taskQueue.add(infoNumTask);
-
+                task = new InfoNumTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
                 break;
 
             }
+            if (task!=null)
+        taskQueue.add(task);
     }
 
     @Override
     public void onTaskStart(BaseTask iTask) {
-
+        Logger.t(iTask.getTaskBean().getTask_id()+"").d("任务开始");
     }
 
     /**
@@ -87,8 +98,9 @@ public class TaskP extends BaseP {
      * @param taskErrorBean
      */
     @Override
-    public void onTaskError(ITask iTask, TaskErrorBean taskErrorBean)  {
+    public void onTaskError(ITask iTask, TaskErrorBean taskErrorBean) throws Exception {
         Logger.t(iTask.getTaskBean().getTask_id()+"").e(taskErrorBean.getErrorMsg());
+        throw  new Exception(taskErrorBean.getException());
     }
 
     @Override

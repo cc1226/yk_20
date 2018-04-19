@@ -27,11 +27,11 @@ public class MyApplication extends Application {
         application = this;
 
         JPushInterface.setDebugMode(true);
-        JPushInterface.init(this);
+//        JPushInterface.init(this);
 
         Logger.addLogAdapter(new AndroidLogAdapter());
         //初始化eventbus 索引类
-        EventBus.builder().addIndex(new MyEventBusIndex());
+        EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
 
     }
 

@@ -5,8 +5,8 @@ import com.zplh.zplh_android_yk.callback.TaskPCallback;
 import com.zplh.zplh_android_yk.event.TaskEvent;
 import com.zplh.zplh_android_yk.module.TaskManager;
 import com.zplh.zplh_android_yk.taskmanager.TaskQueue;
+import com.zplh.zplh_android_yk.utils.EventBusCreater;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -15,8 +15,8 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 public abstract class BaseP implements TaskCallback {
 
-    protected TaskManager taskManager;
-    protected TaskQueue taskQueue;
+    private TaskManager taskManager;
+    TaskQueue taskQueue;
     {
 
         taskManager = TaskManager.getInstance();
@@ -24,18 +24,19 @@ public abstract class BaseP implements TaskCallback {
     }
 
 
-    public BaseP() {
-        EventBus.getDefault().register(this);
+    public abstract void startTask();
 
-    }
 
-    protected TaskPCallback taskPCallback;
+
+
+    private TaskPCallback taskPCallback;
 
 
     @Subscribe(threadMode =  ThreadMode.MAIN)
-    public abstract void taskEvent(TaskEvent event);
+    public abstract   void taskEvent(TaskEvent event);
 
     BaseP(TaskPCallback taskPCallback) {
         this.taskPCallback = taskPCallback;
+        EventBusCreater.register(this);
     }
 }

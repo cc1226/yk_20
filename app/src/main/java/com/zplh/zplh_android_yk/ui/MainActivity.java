@@ -1,5 +1,6 @@
-package com.zplh.zplh_android_yk;
+package com.zplh.zplh_android_yk.ui;
 
+import android.annotation.SuppressLint;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.FrameLayout;
@@ -7,13 +8,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.zplh.zplh_android_yk.R;
 import com.zplh.zplh_android_yk.bean.TaskMessageBean;
 import com.zplh.zplh_android_yk.callback.TaskPCallback;
+import com.zplh.zplh_android_yk.event.TaskEvent;
 import com.zplh.zplh_android_yk.presenter.TaskP;
-import com.zplh.zplh_android_yk.ui.BaseUI;
-import com.zplh.zplh_android_yk.ui.TaskFragment;
+import com.zplh.zplh_android_yk.utils.EventBusCreater;
+
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends BaseUI implements TaskPCallback {
 
@@ -49,10 +57,22 @@ public class MainActivity extends BaseUI implements TaskPCallback {
     private TaskP taskP;
     private TaskFragment taskFragment;
 
+    @SuppressLint("CheckResult")
     @Override
     protected void initData() {
         //初始化taskP
         taskP = new TaskP(this);
+        taskP.startTask();
+        Observable.timer(15, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        TaskMessageBean.ContentBean.DataBean dataBean = new TaskMessageBean.ContentBean.DataBean();
+                        dataBean.setTask_id(1);
+                        com.orhanobut.logger.Logger.t("event").d("发送了event");
+                        EventBusCreater.post(new TaskEvent(dataBean));
+                    }
+                });
     }
 
     @Override

@@ -19,7 +19,7 @@ public interface TaskCallback {
 
     void onTaskProgress(BaseTask iTask, String progress) throws Exception;//任务进度
 
-    void onTaskError(ITask iTask, TaskErrorBean taskErrorBean) ;//任务错误
+    void onTaskError(ITask iTask, TaskErrorBean taskErrorBean) throws Exception;//任务错误
 
     Context getContext();
 }
