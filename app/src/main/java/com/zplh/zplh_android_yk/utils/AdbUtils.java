@@ -47,7 +47,6 @@ public class AdbUtils {
     }
 
     public  String dumpXml2String() {
-
         ShellUtils.CommandResult commandResult = ShellUtils.execCommand("uiautomator dump /sdcard/wx_ui.xml", true);
         if (commandResult.result != 0) return "";
         return FileUtils.readTxtFile();

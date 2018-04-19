@@ -6,7 +6,9 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.Gson;
+import com.zplh.zplh_android_yk.R;
+import com.zplh.zplh_android_yk.base.MyApplication;
+import com.zplh.zplh_android_yk.bean.NodeXmlBean;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,16 +16,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import zplh_android_yk.zplh.com.yk_20.R;
-import zplh_android_yk.zplh.com.yk_20.XmlToJson.XmlToJson;
-import zplh_android_yk.zplh.com.yk_20.base.MyApplication;
-import zplh_android_yk.zplh.com.yk_20.bean.NodeXmlBean;
 
 /* 封装了一些普遍的微信adb操作
  * Created by yong hao zeng on 2018/4/14/014.
