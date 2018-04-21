@@ -2,6 +2,7 @@ package com.zplh.zplh_android_yk.utils;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.zplh.zplh_android_yk.R;
 import com.zplh.zplh_android_yk.base.MyApplication;
@@ -10,7 +11,6 @@ import com.zplh.zplh_android_yk.constant.TaskConstant;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 
 
 /**
@@ -42,6 +42,7 @@ public class WxIsInstallUtils {
     public void IsInstall(int task) throws Exception {
 
         if (WxTaskUtils.getWxTaskUtils().isInstallApp(MyApplication.getContext(), "com.tencent.mm")) {
+
             WxTaskUtils.getWxTaskUtils().openWx();
             TimeUnit.SECONDS.sleep(3);
             xmlData = AdbUtils.getAdbUtils().dumpXml2String();
@@ -66,6 +67,7 @@ public class WxIsInstallUtils {
             }
             if (xmlData.contains("忘记密码") || (xmlData.contains("登录") && xmlData.contains("注册")
                     && xmlData.contains("语言")) || (xmlData.contains("你的手机号码") && xmlData.contains("密码"))) {
+                Toast.makeText(MyApplication.getContext(), "请先登录微信", Toast.LENGTH_LONG).show();
                 status = 4;
                 throw new Exception("未登陆微信");
             } else if (xmlData.contains("通讯录") && xmlData.contains("发现") && xmlData.contains("我") && !(xmlData.contains("聊天信息"))) {
@@ -87,22 +89,31 @@ public class WxIsInstallUtils {
                 if (task == TaskConstant.TASK_WX_ONE_MSG || task == TaskConstant.TASK_WX_CROWD_MSG) {
                     AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x160, R.dimen.y368, R.dimen.x240, R.dimen.y400);
                 }
+                if (xmlData.contains("清除登录痕迹")) {
+                    Log.e("WG", "IsInstall: +++进来点击了");
+                    AdbUtils.getAdbUtils().click(150, 500);
+                }
             }
-
         }
     }
 
     //检查账号是否被封号
-    public Boolean getIsAccountIsOk() throws InterruptedException {
+    public void getIsAccountIsOk() throws Exception {
         Thread.sleep(2000);
-//        xmlData = wxUtils.getXmlData();
         xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-
         if (xmlData.contains("紧急冻结") && xmlData.contains("找回密码") && xmlData.contains("微信安全中心")) {
-
+            AdbUtils.getAdbUtils().back();
+            String currentLocation = SPUtils.getString(MyApplication.getContext(), "WxAccountLocation", "0");
+            if (currentLocation.equals("1")) {
+                AdbUtils.getAdbUtils().click4xy(288, 457, 384, 553);
+            } else {
+                AdbUtils.getAdbUtils().click4xy(96, 457, 192, 553);
+            }
             Thread.sleep(10000);
-            return false;
+//            WxTaskUtils.getWxTaskUtils().switchWxAccount();
+//            return false;
         }
-        return true;
+//        return true;
     }
+
 }

@@ -78,22 +78,6 @@ public class AdbUtils {
         return FileUtils.readTxtFile();
     }
 
-//    public String getXmlData() {
-//        adbDump();
-//        return FileUtils.readTxtFile();
-//    }
-//
-//    public void adbDump() {
-//        if (commnandList != null) {
-//            commnandList.clear();
-//        } else {
-//            commnandList = new ArrayList<>();
-//        }
-//        commnandList.add("uiautomator dump /sdcard/uidump.xml");
-//        ShellUtils.CommandResult result = ShellUtils.execCommand(commnandList, true);
-//        Log.e("WG", "adbDump: 获取了：：" + result);
-//    }
-
     /**
      * 从字符串中提取数字
      *

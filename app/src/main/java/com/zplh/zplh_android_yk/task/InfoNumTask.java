@@ -32,7 +32,7 @@ public class InfoNumTask extends BaseTask {
     @Override
     public void run(TaskCallback callback) throws Exception {
 
-        if (WxIsInstallUtils.GetIsInstallWx().IsInstall(getTaskBean().getTask_id())) {
+        WxIsInstallUtils.GetIsInstallWx().IsInstall(getTaskBean().getTask_id());
             callback.onTaskStart(this);
             Log.e("WG", "run: 这一步走了么");
             WxTaskUtils.getWxTaskUtils().getUsingWxAccount();
@@ -54,10 +54,7 @@ public class InfoNumTask extends BaseTask {
             }
             callback.onTaskSuccess(this);
             WxTaskUtils.getWxTaskUtils().backHome();
-        } else {
-            callback.onTaskError(this, new TaskErrorBean(TaskErrorBean.OTHER_ERROR).setErrorMsg("统计失败"));
         }
-    }
 
     @Override
     public void stop() {

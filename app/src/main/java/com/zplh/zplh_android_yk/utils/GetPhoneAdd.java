@@ -104,7 +104,7 @@ public class GetPhoneAdd {
                         WxTaskUtils.getWxTaskUtils().addContact(phoneBean.getData().get(i).getName(), phoneBean.getData().get(i).getPhone(), MyApplication.getContext());
                         Log.e("WG", "电话号码为" + phoneBean.getData().get(i).getPhone());
                     }
-                    addCommunication(wx_Sex);
+                    addCommunication();
                 } else {
                     Log.e("WG", " 获取号码失败");
                 }
@@ -116,7 +116,7 @@ public class GetPhoneAdd {
         }
     }
 
-    public void addCommunication(String sex) throws Exception {
+    public void addCommunication() throws Exception {
         /**
          * 添加手机联系人通讯录
          */
@@ -129,7 +129,7 @@ public class GetPhoneAdd {
         AdbUtils.getAdbUtils().wxActivityJump("com.tencent.mm/com.tencent.mm.ui.bindmobile.MobileFriendUI");
         Log.e("WG", "等待中 ");
 //        ShowToast.show("等待25秒刷新联系人界面", (Activity) context);
-        Thread.sleep(25000);
+        Thread.sleep(15000);
         xmlData = AdbUtils.getAdbUtils().dumpXml2String();
 
         if (!xmlData.contains("查看手机通讯录") || !xmlData.contains("添加") || !xmlData.contains("微信")) {
@@ -237,7 +237,7 @@ public class GetPhoneAdd {
                                     }
                                 }
                                 AdbUtils.getAdbUtils().click(431, 72);
-                                Thread.sleep(5000);
+                                Thread.sleep(3000);
                                 Boolean Flag = true;
                                 while (Flag) {
                                     String xmlData2 = AdbUtils.getAdbUtils().dumpXml2String();
@@ -264,7 +264,7 @@ public class GetPhoneAdd {
                                 } else {
                                     if (meici_num == Integer.parseInt(one_add_num)) {
                                         SPUtils.put(MyApplication.getContext(), "meici_num", meici_num);
-                                        Thread.sleep(5000);
+                                        Thread.sleep(3000);
                                         Log.e("WG", "任务完成");
                                         WxTaskUtils.getWxTaskUtils().backHome();
                                         Log.e("WG", "第二个位置");

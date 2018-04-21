@@ -93,11 +93,8 @@ public class WxTaskUtils {
                 if (nodeBean.getResourceid() != null && (nodeBean.getResourceid().equals("com.tencent.mm:id/j_")) && nodeBean.getContentdesc() != null && nodeBean.getContentdesc() != "" && !nodeBean.getContentdesc().startsWith("微信") && !nodeBean.getContentdesc().equals("文件传输助手") && !nodeBean.getContentdesc().startsWith("ZZZ") && !nodeBean.getContentdesc().startsWith("zzz") && !meName.equals(nodeBean.getContentdesc()) && !yunYingMark.contains(nodeBean.getContentdesc())) {
                     //筛选出好友
                     listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());//获取好友坐标
-//                    wxUtils.adbClick(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));//点击好友修改备注
 
-//                    LogUtils.d("点击进入");
                     Log.e("WG", "点击进入 ");
-//                    xmlData = wxUtils.getXmlData();//重新获取页面数据
                     xmlData = AdbUtils.getAdbUtils().dumpXml2String();
                     if (!xmlData.contains("标签")) {
 //                        wxUtils.adb("input keyevent 4");
@@ -263,7 +260,6 @@ public class WxTaskUtils {
             }
         }
 
-
 ////        wxUtils.adbClick(0, 36, 90, 108);//点击左上角的返回
 //        AdbUtils.getAdbUtils().click4xy(0, 36, 90, 108);
 
@@ -272,23 +268,11 @@ public class WxTaskUtils {
             //说明已经登录了两个账号
             if (listXY.get(0) == 110) {
                 AdbUtils.getAdbUtils().click4xy(288, 457, 384, 553);
-                xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-                Log.e("WG", "switchWxAccount: 111" + xmlData);
-                if (xmlData.contains("紧急冻结")) {
-                    Log.e("WG", "switchWxAccount: 111111");
-                    AdbUtils.getAdbUtils().adb("input keyevent 4");//返回
-                }
-                AdbUtils.getAdbUtils().click4xy(96, 457, 192, 553);
+                SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "2");
             } else if (listXY.get(0) == 302) {
                 //正在使用的账号 在右边(老号)， 点击左边的账号切换
                 AdbUtils.getAdbUtils().click4xy(96, 457, 192, 553);
-                xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-                Log.e("WG", "switchWxAccount: 2222" + xmlData);
-                if (xmlData.contains("紧急冻结")) {
-                    Log.e("WG", "switchWxAccount:2222222 ");
-                    AdbUtils.getAdbUtils().adb("input keyevent 4");//返回
-                }
-                AdbUtils.getAdbUtils().click4xy(288, 457, 384, 553);
+                SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "1");
             }
             Thread.sleep(15000);
             return;

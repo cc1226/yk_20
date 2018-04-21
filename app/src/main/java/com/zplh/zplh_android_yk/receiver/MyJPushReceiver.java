@@ -63,8 +63,6 @@ public class MyJPushReceiver extends BroadcastReceiver {
 
         this.context = context;
         Bundle bundle = intent.getExtras();
-
-
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
         } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
 
@@ -207,7 +205,8 @@ public class MyJPushReceiver extends BroadcastReceiver {
         TaskManager.getInstance().addTask(task);
         upData_task_status(task.getLog_id());//反馈到服务器
         //网络请求 判断该lod_id任务是否取消 取消则不在往下进行
-        if (task.getTask_id() == TaskConstant.Task_WX_ADD_FRIEND||task.getTask_id() == TaskConstant.TASK_WX_SHOU_FU_KUAN || task.getTask_id() == TASK_WX_GO_XIAO_CHENG_XU ||
+        if (task.getTask_id() == TaskConstant.TASK_WX_SHOU_FU_KUAN || task.getTask_id() == TASK_WX_GO_XIAO_CHENG_XU ||
+                task.getTask_id()==TaskConstant.Task_WX_ADD_FRIEND||
                 task.getTask_id() == TaskConstant.TASK_WX_TONG_JI_ALL || task.getTask_id() == TaskConstant.TASK_WX_COLLECT_FR ||
                 task.getTask_id() == TaskConstant.TASK_WX_READ_FRIEND_CIRCLE || task.getTask_id() == TaskConstant.TASK_WX_LOOK_FR_CIRCLE ||
                 task.getTask_id() == TaskConstant.TASK_WX_SETTING || task.getTask_id() == TaskConstant.TASK_WX_PHONE_SET ||

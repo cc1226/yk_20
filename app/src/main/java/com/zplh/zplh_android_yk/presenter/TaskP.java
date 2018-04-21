@@ -42,8 +42,7 @@ public class TaskP extends BaseP {
         Logger.t("event").d("收到eventbus："+event.getTask().getTask_id());
         ITask task = null;
         switch (event.getTask().getTask_id()){
-            case 1:
-
+            case 5:
                 task = new NewFriendTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
                 break;
             case 25:
