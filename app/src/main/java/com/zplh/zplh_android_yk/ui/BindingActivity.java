@@ -1,7 +1,6 @@
 package com.zplh.zplh_android_yk.ui;
 
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Environment;
@@ -17,7 +16,6 @@ import com.zplh.zplh_android_yk.R;
 import com.zplh.zplh_android_yk.bean.CheckImei;
 import com.zplh.zplh_android_yk.bean.ImeiData;
 import com.zplh.zplh_android_yk.constant.URLS;
-import com.zplh.zplh_android_yk.utils.AdbUtils;
 import com.zplh.zplh_android_yk.utils.GsonUtils;
 import com.zplh.zplh_android_yk.utils.NetUtils;
 import com.zplh.zplh_android_yk.utils.SPUtils;
@@ -33,17 +31,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.reactivex.Observable;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Function;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.Call;
 import okhttp3.Response;
+
+import static com.zplh.zplh_android_yk.constant.SpConstant.UID_SP;
 
 /**
  * Created by lichun on 2017/6/18.
@@ -112,78 +106,6 @@ public class BindingActivity extends BaseUI {
     }
 
 
-    /**
-     * 检查版本是否需要更新
-     */
-    @SuppressLint("CheckResult")
-    private void updata() {
-        pd = ProgressDialog.show(this, "提示", "检测版本中...", true, false);
-        StringCallback callback = new StringCallback() {
-            @Override
-            public void onError(Call call, Exception e, int id) {
-                pd.dismiss();
-                isBound();
-            }
-
-            @Override
-            public void onResponse(String response, int id) {
-                CheckImei checkImei = GsonUtils.fromJson(response, CheckImei.class);
-                if (checkImei.getRet().equals("200")) {
-                    double version = Double.valueOf(BuildConfig.VERSION_NAME);
-                    double ver = Double.valueOf(checkImei.getData());
-                    if (ver > version) {
-                        bindingTv.setVisibility(View.GONE);
-                        pd.setMessage("等待更新中...");
-                        //每20秒判断一次是否允许更新 因为没次只允许10台手机更新
-                        final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
-                        mCompositeDisposable.add(Observable.interval(0, 10000, TimeUnit.MILLISECONDS)
-                                .map(new Function<Long, File>() {
-                                    @Override
-                                    public File apply(Long aLong) throws Exception {
-                                        File file = null;
-                                        if (version_update_go()) {
-                                            file = downLoadApk("http://103.94.20.102:8087/download/wxzs.apk");
-                                            mCompositeDisposable.clear();
-                                        }
-                                        return file;
-                                    }
-                                }).subscribeOn(Schedulers.io())
-                                .observeOn(Schedulers.io())
-                                .subscribeWith(new DisposableObserver<File>() {
-                                    @Override
-                                    public void onNext(File file) {
-                                        version_update_back();
-                                        try {
-                                            Thread.sleep(10000);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                        String path = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/wxykupdata.apk";
-                                        Logger.d("下载完成开始安装");
-                                        AdbUtils.getAdbUtils().install(path);
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable e) {
-
-                                    }
-
-                                    @Override
-                                    public void onComplete() {
-
-                                    }
-                                })
-                        );
-                    } else {
-                        pd.dismiss();
-                        isBound();
-                    }
-                }
-            }
-        };
-        NetUtils.get_excute(URLS.updata(), null, callback);
-
-    }
 
     /**
      * 绑定设备
@@ -212,7 +134,7 @@ public class BindingActivity extends BaseUI {
                 ImeiData imeiData = GsonUtils.fromJson(response, ImeiData.class);
                 if (imeiData.getRet().equals("200")) {
                     ShowToast.show("绑定成功", BindingActivity.this);
-                    SPUtils.putString(BindingActivity.this, "uid", id);
+                    SPUtils.putString(BindingActivity.this, UID_SP, id);
                     SPUtils.putBoolean(BindingActivity.this, "imei", true);
                     SPUtils.putString(BindingActivity.this, "imeiimei", imei);
                     Intent intent = new Intent(BindingActivity.this, MainActivity.class);
@@ -252,7 +174,7 @@ public class BindingActivity extends BaseUI {
                 CheckImei checkImei = GsonUtils.fromJson(response, CheckImei.class);
                 if (checkImei.getRet().equals("200")) {
                     SPUtils.putBoolean(BindingActivity.this, "imei", true);
-                    SPUtils.putString(BindingActivity.this, "uid", checkImei.getData());
+                    SPUtils.putString(BindingActivity.this, UID_SP, checkImei.getData());
                     Intent intent = new Intent(BindingActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();

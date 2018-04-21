@@ -50,7 +50,6 @@
             <!--android:layout_height="match_parent"-->
             <!--android:background="@color/background_color"/>-->
             <TextView
-                android:id="@+id/hTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="1dp"
@@ -106,7 +105,6 @@
             android:background="@color/white">
 
             <TextView
-                android:id="@+id/gTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -140,7 +138,6 @@
                 android:background="@color/background_color" />
 
             <TextView
-                android:id="@+id/fTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="1dp"
@@ -183,7 +180,6 @@
                 android:visibility="invisible" />
 
             <TextView
-                android:id="@+id/iTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="1dp"
@@ -225,7 +221,6 @@
             android:background="@color/white">
 
             <TextView
-                android:id="@+id/jTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -242,7 +237,6 @@
                 android:background="@color/background_color" />
 
             <TextView
-                android:id="@+id/kTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -259,7 +253,6 @@
                 android:background="@color/background_color" />
 
             <TextView
-                android:id="@+id/oTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="1dp"
@@ -280,7 +273,6 @@
             android:background="@color/white">
 
             <TextView
-                android:id="@+id/mTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -297,7 +289,6 @@
                 android:background="@color/background_color" />
 
             <TextView
-                android:id="@+id/nTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -315,7 +306,6 @@
 
 
             <TextView
-                android:id="@+id/lTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="1dp"
@@ -337,7 +327,6 @@
             android:background="@color/white">
 
             <TextView
-                android:id="@+id/mMessageStatistics"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -355,7 +344,6 @@
                  />
 
             <TextView
-                android:id="@+id/mWxNewFriendsToQun"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="1dp"
@@ -401,7 +389,6 @@
             android:background="@color/white">
 
             <TextView
-                android:id="@+id/zfbATextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -418,7 +405,6 @@
                 android:background="@color/background_color" />
 
             <TextView
-                android:id="@+id/zfbBTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -435,7 +421,6 @@
                 android:background="@color/background_color" />
 
             <TextView
-                android:id="@+id/zfbCTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="1dp"
@@ -455,7 +440,6 @@
             android:background="@color/white">
 
             <TextView
-                android:id="@+id/again_task_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

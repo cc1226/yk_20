@@ -12,7 +12,6 @@
         android:orientation="vertical" >
 
         <include
-            android:id="@+id/layout_tabbar"
             layout="@layout/tabbar_main" />
 
         <FrameLayout

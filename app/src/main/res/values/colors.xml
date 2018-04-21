@@ -8,178 +8,48 @@
     <color name="sr_color_primary_dark">#999999</color>
     <color name="sr_window_background">#FFFEFEFE</color>
 
-    <color name="default_image_background">#FFDEDEDE</color>
-    <color name="province_line_border">#D0D0D0</color>
-    <color name="alpha_05_white">#0DFFFFFF</color>
-    <color name="alpha_10_white">#1AFFFFFF</color>
-    <color name="alpha_15_white">#26FFFFFF</color>
-    <color name="alpha_20_white">#33FFFFFF</color>
-    <color name="alpha_25_white">#40FFFFFF</color>
-    <color name="alpha_30_white">#4DFFFFFF</color>
-    <color name="alpha_35_white">#59FFFFFF</color>
-    <color name="alpha_40_white">#66FFFFFF</color>
-    <color name="alpha_45_white">#73FFFFFF</color>
-    <color name="alpha_50_white">#80FFFFFF</color>
-    <color name="alpha_55_white">#8CFFFFFF</color>
-    <color name="alpha_60_white">#99FFFFFF</color>
-    <color name="alpha_65_white">#A6FFFFFF</color>
-    <color name="alpha_70_white">#B3FFFFFF</color>
-    <color name="alpha_75_white">#BFFFFFFF</color>
-    <color name="alpha_80_white">#CCFFFFFF</color>
-    <color name="alpha_85_white">#D9FFFFFF</color>
-    <color name="alpha_90_white">#E6FFFFFF</color>
-    <color name="alpha_95_white">#F2FFFFFF</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="alpha_05_black">#0D000000</color>
-    <color name="alpha_10_black">#1A000000</color>
-    <color name="alpha_15_black">#26000000</color>
-    <color name="alpha_20_black">#33000000</color>
-    <color name="alpha_25_black">#40000000</color>
-    <color name="alpha_30_black">#4D000000</color>
-    <color name="alpha_35_black">#59000000</color>
-    <color name="alpha_40_black">#66000000</color>
-    <color name="alpha_45_black">#73000000</color>
-    <color name="alpha_50_black">#80000000</color>
     <color name="alpha_55_black">#8C000000</color>
-    <color name="alpha_60_black">#99000000</color>
-    <color name="alpha_65_black">#A6000000</color>
-    <color name="alpha_70_black">#B3000000</color>
-    <color name="alpha_75_black">#BF000000</color>
-    <color name="alpha_80_black">#CC000000</color>
-    <color name="alpha_85_black">#D9000000</color>
-    <color name="alpha_90_black">#E6000000</color>
-    <color name="alpha_95_black">#F2000000</color>
-    <color name="black">#FF000000</color>
-
-    <color name="transparent">#00000000</color>
-
-    <integer-array name="gplus_colors">
-        <item>@color/gplus_color_1</item>
-        <item>@color/gplus_color_2</item>
-        <item>@color/gplus_color_3</item>
-        <item>@color/gplus_color_4</item>
-    </integer-array>
-
-    <color name="base_bg">#ffeeeeee</color>
-    <color name="base_msg_color">#ff999999</color>
-    <color name="gplus_color_1">#3e802f</color>
-    <color name="gplus_color_2">#f4b400</color>
-    <color name="gplus_color_3">#427fed</color>
-    <color name="gplus_color_4">#b23424</color>
 
     <color name="background_color">#eeeeee</color>
 
     <!-- 用于导航栏文字,重要的说明性文字,Tab标题(选中)/按钮等 -->
-    <color name="text_red_color">#f28d79</color>
     <!-- 用于主要文字信息,内页标题信息,地址,类目名称等 -->
-    <color name="text_black_color">#333333</color>
     <!-- 用于弹窗文案,段落等 -->
-    <color name="text_light_color">#666666</color>
     <!-- 用于医生简介,提示,按钮不可点击状态等 -->
     <color name="text_color">#999999</color>
     <!-- 用于资料填写提示等-->
-    <color name="text_hint_color">#cccccc</color>
     <!-- 用于金额信息 -->
-    <color name="text_menoy_color">#ed4341</color>
     <!-- 用于名医上门,体质测试等 -->
-    <color name="textcoloryellow">#f2b279</color>
-    <color name="gray">#ABABAB</color>
-    <color name="blue">#4284d9</color>
-    <color name="blue_press">#804284d9</color>
-    <color name="common_top_bar_blue">#4ebcd3</color>
-    <color name="popup_bg">#f2f2f2</color>
-    <color name="light_black">#a8a8a8</color>
-    <color name="dark_white">#dddddd</color>
     <color name="textcolor">#333333</color>
-    <color name="mrredcolor">#ff64a2</color>
-    <color name="mrwhitecolor">#fbdce9</color>
-    <color name="sort_red">#ed3780</color>
-    <color name="sort_gay">#7f7f7f</color>
     <color name="table_gay">#323434</color>
-    <color name="table_red">#ce3972</color>
-    <color name="red_mark">#f76b98</color>
-    <color name="order">#fbdce9</color>
-    <color name="black_eval">#393939</color>
-    <color name="gray_store">#f0f0f2</color>
-    <color name="half_transparent">#50000000</color>
     <color name="pink">#eb5391</color>
-    <color name="red">#F24B64</color>
     <!-- include_title -->
 
-    <color name="title_bg">#fafafa</color>
     <!-- LoginActivity -->
-    <color name="login_bg">#eeeeee</color>
-    <color name="login_register">#ad4b86</color>
 
     <!-- RegisterActivity -->
-    <color name="register_case_gray">#e2e2e2</color>
     <color name="register_text_hint_gray">#dad7d7</color>
-    <color name="register_pink">#ff64a2</color>
-    <color name="register_btn_pink">#ff84bf</color>
-    <color name="register_btn_fpink">#50ff84bf</color>
-    <color name="register_text_balck">#515250</color>
-    <color name="register_yellow">#e4b032</color>
     <!-- MeFragment -->
-    <color name="me_rank">#ac638f</color>
     <!-- home_head -->
-    <color name="home_head_green">#9bd778</color>
-    <color name="home_head_gray_text">#888585</color>
-    <color name="home_head_pink">#ea53a5</color>
-    <color name="home_head_blue">#51bdcd</color>
-    <color name="home_head_yellow">#e5c050</color>
-    <color name="home_head_red">#e20e40</color>
 
     <!-- MeFragment -->
-    <color name="mefra_pink">#ff64a2</color>
-    <color name="mefra_gray">#6c6a67</color>
-    <color name="mefra_gray_bg">#f6f2f1</color>
-    <color name="invite_red">#ab2875</color>
 
     <!-- 微信支付 -->
-    <color name="grey">#58616d</color>
-    <color name="darkgrey">#ff404040</color>
-    <color name="toasterro">#9fd524</color>
-    <color name="lightgrey">#ff888888</color>
-    <color name="semitransparent">#80000000</color>
-    <color name="lightransparent">#a0000000</color>
-    <color name="navpage">#FFE1E8EB</color>
-    <color name="oder_pink">#ff65a3</color>
-    <color name="oder_gray">#6b6b6b</color>
 
     <!-- MyCommissionActivity -->
-    <color name="mycommission_btn_pink">#ff64a2</color>
-    <color name="mycommission_fpink">#50ff64a2</color>
 
     <!-- 二维码 -->
-    <color name="viewfinder_mask">#60000000</color>
-    <color name="result_view">#b0000000</color>
-    <color name="viewfinder_frame">#FFFFFF</color>
-    <color name="viewfinder_laser">#ffff0000</color>
-    <color name="possible_result_points">#c0ffff00</color>
 
     <!-- 积分 -->
 
-    <color name="integral_color_add">#ff628a</color>
-    <color name="integral_color_reduce">#00B63F</color>
-    <color name="integral_color_gray">#D1D1D1</color>
     <!-- common -->
-    <color name="orange">#f27242</color>
 
     <!-- background -->
     <color name="bg">#FFF5F5F5</color>
-    <color name="bg_pressed">#FFF2F2F2</color>
 
     <!-- material design black font color -->
-    <color name="font_black_0">#212121</color>
-    <color name="font_black_1">#424242</color>
-    <color name="font_black_2">#616161</color>
-    <color name="font_black_3">#757575</color>
-    <color name="font_black_4">#9e9e9e</color>
-    <color name="font_black_5">#bdbdbd</color>
-    <color name="font_black_6">#e0e0e0</color>
 
     <!-- divider -->
-    <color name="divider_1">#e2e2e2</color>
-    <color name="divider_2">#e6e6e6</color>
 </resources>

@@ -1,16 +1,11 @@
 package com.zplh.zplh_android_yk.utils;
 
-import android.app.Activity;
-import android.app.Application;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.zplh.zplh_android_yk.base.MyApplication;
 import com.zplh.zplh_android_yk.bean.NodeXmlBean;
 import com.zplh.zplh_android_yk.bean.WxFriendsMessageBean;
-import com.zplh.zplh_android_yk.constant.URLS;
-
-
 
 import java.util.ArrayList;
 import java.util.List;

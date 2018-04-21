@@ -1,5 +1,6 @@
 package com.zplh.zplh_android_yk.receiver;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,13 +14,13 @@ import com.google.gson.Gson;
 import com.orhanobut.logger.Logger;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
-import com.zplh.zplh_android_yk.ui.MainActivity;
 import com.zplh.zplh_android_yk.bean.CheckImei;
 import com.zplh.zplh_android_yk.bean.TaskMessageBean;
 import com.zplh.zplh_android_yk.constant.TaskConstant;
 import com.zplh.zplh_android_yk.constant.URLS;
 import com.zplh.zplh_android_yk.event.TaskEvent;
 import com.zplh.zplh_android_yk.module.TaskManager;
+import com.zplh.zplh_android_yk.ui.MainActivity;
 import com.zplh.zplh_android_yk.utils.AdbUtils;
 import com.zplh.zplh_android_yk.utils.GsonUtils;
 import com.zplh.zplh_android_yk.utils.NetUtils;
@@ -35,16 +36,13 @@ import java.util.concurrent.TimeUnit;
 
 import cn.jpush.android.api.JPushInterface;
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Call;
 
 import static com.zplh.zplh_android_yk.bean.NetConstant.NET_SUCCESS;
-import static com.zplh.zplh_android_yk.constant.SpConstant.IMEI_SP;
 import static com.zplh.zplh_android_yk.constant.SpConstant.UID_SP;
 import static com.zplh.zplh_android_yk.constant.TaskConstant.TASK_WX_GO_XIAO_CHENG_XU;
 
@@ -66,31 +64,29 @@ public class MyJPushReceiver extends BroadcastReceiver {
         this.context = context;
         Bundle bundle = intent.getExtras();
         openApplicationFromBackground(context);
+
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
         } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
+
             String content = bundle.getString(JPushInterface.EXTRA_MESSAGE);
             String extra = bundle.getString(JPushInterface.EXTRA_EXTRA);
+            System.out.println("收到了自定义消息@@消息内容是:" + content);
+            System.out.println("收到了自定义消息@@消息extra是:" + extra);
+
 
             if (content != null && content.startsWith("wxversion")) {
                 double version = Double.valueOf(SystemUtils.getVersionName(context));
                 double ver = Double.valueOf(content.replace("wxversion", ""));
                 Logger.t("onReceiver").d("版本升级  ", "当前版本为:" + version + ",目标版本为：" + ver);
-                if (ver > version) {
-                    Observable.create(new ObservableOnSubscribe<File>() {
-                        @Override
-                        public void subscribe(ObservableEmitter<File> emitter) throws Exception {
-                            Logger.d("开始更新任务");//wxzs1.apk 正式       wxzs.apk测试
-//                                String uid = SPUtils.getString(context, UID_SP, "0001");
-//                                int sleepTime = Integer.valueOf(uid);
-//                                if (sleepTime > 0) {
-//                                    Logger.d("等待" + sleepTime + "秒下载");
-//                                    Thread.sleep(sleepTime * 1000);
 
+                if (ver > version) {
+                    Observable.create((ObservableOnSubscribe<File>) emitter -> {
+                            Logger.d("开始更新任务");//wxzs1.apk 正式       wxzs.apk测试
                             File filr = NetUtils.getApk("http://103.94.20.102:8087/download/wxzs.apk");
-                            if (filr != null && filr.exists())
-                                emitter.onNext(filr);
+                            if (filr!=null&&filr.exists())
+                            emitter.onNext(filr);
                             else emitter.onError(new Exception("下载apk失败"));
-                        }
+
                     }).subscribeOn(Schedulers.io())
                             .observeOn(Schedulers.io())
                             .subscribe(new Observer<File>() {
@@ -109,7 +105,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
 
                                 @Override
                                 public void onError(Throwable e) {
-                                    Logger.t("升级失败").d(e.getMessage());
+                                  Logger.t("升级失败").d(e.getMessage());
                                 }
 
                                 @Override
@@ -123,19 +119,14 @@ public class MyJPushReceiver extends BroadcastReceiver {
 
             //将任务数据序列化为bean
 
-            if (SPUtils.getBoolean(context, IMEI_SP, false)) {//绑定过设备才执行任务
-                //判断uid是否一样 是一样的才执行任务
 
                 if (!TextUtils.isEmpty(extra) && extra.contains(SPUtils.getString(context, UID_SP, "0000"))) {
                     TaskMessageBean taskBean = gson.fromJson(extra, TaskMessageBean.class);
 
                     List<TaskMessageBean.ContentBean.DataBean> taskDataBean = taskBean.getContent().getData();
-                    for (TaskMessageBean.ContentBean.DataBean dataBean : taskDataBean) {
-                    }
                     if (taskDataBean == null) {
                         Logger.d("结束:" + "taskBean为null");
                         return;
-
                     }
 
                     String uid_1 = SPUtils.getString(context, UID_SP, "0000");
@@ -179,7 +170,6 @@ public class MyJPushReceiver extends BroadcastReceiver {
                 }
 
 
-            }
         } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent
                 .getAction())) {
             // 在这里可以做些统计，或者做些其他工作
@@ -194,42 +184,14 @@ public class MyJPushReceiver extends BroadcastReceiver {
         }
     }
 
-//    private Handler handler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            super.handleMessage(msg);
-//            switch (msg.what) {
-//                case 1:
-//                    TaskMessageBean.ContentBean.DataBean dataBean = (TaskMessageBean.ContentBean.DataBean) msg.obj;
-//                    setTaskEvent(dataBean);
-//                    break;
-//            }
-//        }
-//    };
 
+    @SuppressLint("CheckResult")
     private void setTaskEvent(final TaskMessageBean.ContentBean.DataBean data) {
 
-        Disposable subscribe = Observable.timer(20000, TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
-            @Override
-            public void accept(Long aLong) throws Exception {
-                EventBus.getDefault().post(new TaskEvent(data));
-            }
-        });
+        Observable.timer(20000, TimeUnit.MILLISECONDS)
+                .subscribe(aLong -> EventBus.getDefault()
+                        .post(new TaskEvent(data)));
 
-
-//        Timer timer = new Timer();
-//        TimerTask timerTask = new TimerTask() {
-//            @Override
-//            public void run() {
-//                Intent intent2 = new Intent();
-//                intent2.setAction(MyConstains.Broadcast_Task);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("messageBean", data);
-//                intent2.putExtras(bundle);
-//                context.sendBroadcast(intent2);
-//            }
-//        };
-//        timer.schedule(timerTask, 20000);
 
     }
 
@@ -238,26 +200,11 @@ public class MyJPushReceiver extends BroadcastReceiver {
      *
      * @param task
      */
+    @SuppressLint("CheckResult")
     private void taskTime(final TaskMessageBean.ContentBean.DataBean task) {
 
         String todoTimes = task.getTodo_time();//执行时间
-        //        String interval_time = task.getParam().getInterval_time();//任务执行的间隔时间
-
-        //        List<String> rangeList = task.getRange();//判断是否是指定设备执行任务
-
-        //        if (rangeList != null && (rangeList.size() == 0 || rangeList.toString().contains(SPUtils.getString(context, UID_SP, "0000")))) {
-        //            if (task.getTask_id() == TASK_WX_GO_XIAO_CHENG_XU || task.getTask_id() == TASK_WX_QUN_TU_WEN) {
-        //                downImg(task);
-        //            }
-
-
-        //            stateRenwuBean = new StateRenwuBean(task.getTask_id(), Integer.parseInt(task.getLog_id()), "任务待执行", timeUtil.getDtae());
-        //            dao.addPerson(stateRenwuBean);
-
-        //每个任务进行缓存和持久化
         TaskManager.getInstance().addTask(task);
-
-
         upData_task_status(task.getLog_id());//反馈到服务器
         //网络请求 判断该lod_id任务是否取消 取消则不在往下进行
         if (task.getTask_id() == TaskConstant.TASK_WX_SHOU_FU_KUAN || task.getTask_id() == TASK_WX_GO_XIAO_CHENG_XU ||
@@ -275,12 +222,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
             } else {//定时执行
                 long time = TimeUtil.getLongTime(Long.parseLong(todoTimes));
 
-                Disposable subscribe = Observable.timer(time * 1000, TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) throws Exception {
-                        setTaskEvent(task);
-                    }
-                });
+                Observable.timer(time * 1000, TimeUnit.MILLISECONDS).subscribe(aLong -> setTaskEvent(task));
 
             }
         }
@@ -474,24 +416,24 @@ public class MyJPushReceiver extends BroadcastReceiver {
         if (!list.isEmpty() && list.get(0).topActivity.getPackageName().equals(context.getPackageName())) {
             //此时应用正在前台, 不作处理
             Logger.d("zplh在前台不处理");
+            return;
         }
-        for (ActivityManager.RunningTaskInfo info : list) {
-            if (info.topActivity.getPackageName().equals(context.getPackageName())) {
-                Logger.d("zplh在运行不处理");
+            for (ActivityManager.RunningTaskInfo info : list) {
+                if (info.topActivity.getPackageName().equals(context.getPackageName())) {
+                    Logger.d("zplh在运行不处理");
+                    return;
+                }
             }
-        }
         Logger.d("zplh在重新打开");
         intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
         context.startActivity(intent);
     }
-
     /**
      * 收到任务后反馈
      */
     public void upData_task_status(String log_id) {
-        Log.e("WG", "upData_task_status:进来11111 ");
-
         String uid = SPUtils.getString(context, UID_SP, "0000");
+
 
         OkHttpUtils.get().url(URLS.updata_task_status())
                 .addParams("log_id", log_id)
@@ -514,85 +456,6 @@ public class MyJPushReceiver extends BroadcastReceiver {
                     }
                 });
 
-
     }
-
-
-    //    /**
-    //     * 图片下载
-    //     *
-    //     * @param messageData
-    //     */
-    //    private void downloadFile(String messageData) {
-    //
-    //        String path = "";
-    //        String strMark = "";
-    //        String fileName = "";
-    //        String filePath = "";
-    //        String text = "";
-    //
-    //        if (!StringUtils.isEmpty(messageData)) {//判断请求地址是否为空
-    //            text = messageData;
-    //        } else {
-    //            LogUtils.d("x图文发布地址为空");
-    //            return;
-    //        }
-    //        path = URLS.pic_vo_flock + text.replace("\\", "/");
-    //        LogUtils.d("x文件url__" + path);
-    //        strMark = text.replace("\\", "/");
-    //        fileName = strMark.substring(strMark.lastIndexOf("/")).replace("/", "").replace(" ", "");
-    //        LogUtils.d("xa" + fileName);
-    //        filePath = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/ykimages/" + fileName;
-    //        LogUtils.d("xb" + filePath);
-    //        LogUtils.d("xc" + FileUtils.createDirs(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/ykimages"));
-    //
-    //        String pathUrl = Environment.getExternalStorageDirectory() + "/ykimages/" + fileName;
-    //
-    //        if (new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/ykimages", fileName).exists()) {//不存在，下载
-    //            LogUtils.d("x存在");
-    //            return;
-    //        } else {
-    //            LogUtils.d("x不存在");
-    //        }
-    //
-    //
-    //        RequestParams requestParams = new RequestParams(path);
-    //        requestParams.setSaveFilePath(pathUrl);
-    //        x.http().get(requestParams, new Callback.ProgressCallback<File>() {
-    //            @Override
-    //            public void onWaiting() {
-    //            }
-    //
-    //            @Override
-    //            public void onStarted() {
-    //            }
-    //
-    //            @Override
-    //            public void onLoading(long total, long current, boolean isDownloading) {
-    //
-    //                LogUtils.d((int) total + "");
-    //                LogUtils.d((int) current + "");
-    //            }
-    //
-    //            @Override
-    //            public void onSuccess(File result) {
-    //                LogUtils.d("xutils文件下载成功");
-    //            }
-    //
-    //            @Override
-    //            public void onError(Throwable ex, boolean isOnCallback) {
-    //                ex.printStackTrace();
-    //                LogUtils.d("x下载失败");
-    //            }
-    //
-    //            @Override
-    //            public void onCancelled(CancelledException cex) {
-    //            }
-    //
-    //            @Override
-    //            public void onFinished() {
-    //            }
-    //        });
-    //    }
 
 }
