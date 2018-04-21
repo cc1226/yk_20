@@ -3,7 +3,6 @@ package com.zplh.zplh_android_yk.ui;
 import android.annotation.SuppressLint;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,10 +14,7 @@ import com.zplh.zplh_android_yk.callback.TaskPCallback;
 import com.zplh.zplh_android_yk.presenter.TaskP;
 
 import butterknife.BindView;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
+import cn.jpush.android.api.JPushInterface;
 
 public class MainActivity extends BaseUI implements TaskPCallback {
 
@@ -60,6 +56,8 @@ public class MainActivity extends BaseUI implements TaskPCallback {
         //初始化taskP
         taskP = new TaskP(this);
         taskP.startTask();
+
+        JPushInterface.init(this);
     }
 
     @Override

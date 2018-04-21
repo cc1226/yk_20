@@ -43,4 +43,5 @@ public class TaskConstant {
     public static final int TASK_WX_FIND_DEV = 37;//微信寻找设备
 
 
+    public static final int Task_WX_ADD_FRIEND = 5;//通讯录加好友
 }

@@ -33,7 +33,7 @@ public class InitActivity extends BaseUI {
 
 
     void initPermission(){
-        String permissions[] = {Permission.CAMERA,Permission.WRITE_EXTERNAL_STORAGE,Permission.GET_ACCOUNTS,Permission.READ_CONTACTS,Permission.READ_PHONE_STATE};
+        String permissions[] = {Permission.WRITE_EXTERNAL_STORAGE,Permission.GET_ACCOUNTS,Permission.READ_PHONE_STATE};
 
         requestPermission(permissions,0);
 
@@ -47,7 +47,7 @@ public class InitActivity extends BaseUI {
             while (flag < permissions.length) {
             flag++;
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
                     AdbUtils.getAdbUtils().adbDimensClick(InitActivity.this, R.dimen.x224, R.dimen.y201, R.dimen.x282, R.dimen.y235);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

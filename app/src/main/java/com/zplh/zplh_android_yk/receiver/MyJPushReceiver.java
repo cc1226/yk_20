@@ -63,15 +63,14 @@ public class MyJPushReceiver extends BroadcastReceiver {
 
         this.context = context;
         Bundle bundle = intent.getExtras();
-        openApplicationFromBackground(context);
+
 
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
         } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
 
             String content = bundle.getString(JPushInterface.EXTRA_MESSAGE);
             String extra = bundle.getString(JPushInterface.EXTRA_EXTRA);
-            System.out.println("收到了自定义消息@@消息内容是:" + content);
-            System.out.println("收到了自定义消息@@消息extra是:" + extra);
+
 
 
             if (content != null && content.startsWith("wxversion")) {
@@ -121,6 +120,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
 
 
                 if (!TextUtils.isEmpty(extra) && extra.contains(SPUtils.getString(context, UID_SP, "0000"))) {
+                    openApplicationFromBackground(context);
                     TaskMessageBean taskBean = gson.fromJson(extra, TaskMessageBean.class);
 
                     List<TaskMessageBean.ContentBean.DataBean> taskDataBean = taskBean.getContent().getData();
@@ -207,7 +207,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
         TaskManager.getInstance().addTask(task);
         upData_task_status(task.getLog_id());//反馈到服务器
         //网络请求 判断该lod_id任务是否取消 取消则不在往下进行
-        if (task.getTask_id() == TaskConstant.TASK_WX_SHOU_FU_KUAN || task.getTask_id() == TASK_WX_GO_XIAO_CHENG_XU ||
+        if (task.getTask_id() == TaskConstant.Task_WX_ADD_FRIEND||task.getTask_id() == TaskConstant.TASK_WX_SHOU_FU_KUAN || task.getTask_id() == TASK_WX_GO_XIAO_CHENG_XU ||
                 task.getTask_id() == TaskConstant.TASK_WX_TONG_JI_ALL || task.getTask_id() == TaskConstant.TASK_WX_COLLECT_FR ||
                 task.getTask_id() == TaskConstant.TASK_WX_READ_FRIEND_CIRCLE || task.getTask_id() == TaskConstant.TASK_WX_LOOK_FR_CIRCLE ||
                 task.getTask_id() == TaskConstant.TASK_WX_SETTING || task.getTask_id() == TaskConstant.TASK_WX_PHONE_SET ||
@@ -228,183 +228,11 @@ public class MyJPushReceiver extends BroadcastReceiver {
         }
 
 
-        //            //支付宝加粉任务的判断
-        //            if (task.getTask_id() == 50) {
-        //                String start_time_e = task.getParam().getStart_time_e();//随机结束
-        //                String start_time_s = task.getParam().getStart_time_s();//随机开始
-        //                int max = 0;
-        //                int min = 0;
-        //                SPUtils.putString(context, "newsLog_id", "");
-        //                if (TextUtils.isEmpty(start_time_e)) {
-        //                    max = 200;
-        //                } else {
-        //                    max = Integer.parseInt(start_time_e);
-        //                }
-        //                if (TextUtils.isEmpty(start_time_s)) {
-        //                    min = 0;
-        //                } else {
-        //                    min = Integer.parseInt(start_time_s);
-        //                }
-        //                Random random = new Random();
-        //                final int s = random.nextInt(max) % (max - min + 1) + min;
-        //                SPUtils.putString(context, "data_taskid", String.valueOf(task));
-        //                if (TextUtils.isEmpty(todoTimes)) {//如果执行时间为空
-        //                    if (TextUtils.isEmpty(interval_time)) {//如果没有设置 则给定默认的执行时间
-        //                        long time = (24 * 60 * 60 + 30 * 60) * 1000;
-        //                        timerTasks = new TimerTask() {
-        //                            @Override
-        //                            public void run() {
-        //                                Message message = new Message();
-        //                                message.what = 1;
-        //                                message.obj = task;
-        //                                handler.sendMessage(message);
-        //                            }
-        //                        };
-        //                        long time_wait = s + time / 1000 + TimeUtil.getCurrentTimeMillies();
-        //                        SPUtils.putString(context, "time_wait", time_wait * 1000 + "");
-        //                        Logger.d("执行的是时间为空、设置间隔时间为空的情况下,执行等待时间是" + s + "秒:执行周期的时间是" + time / 1000 + "秒:" + "下一个周期预计执行的时间是" + TimeUtil.getTimesCuo(time_wait * 1000));
-        //                        mytime.schedule(timerTasks, s * 1000);
-        //                    } else {
-        //                        long time = (Long.parseLong(interval_time) * 60 * 60 + 30 * 60) * 1000;
-        //                        timerTasks = new TimerTask() {
-        //                            @Override
-        //                            public void run() {
-        //                                Message message = new Message();
-        //                                message.what = 1;
-        //                                message.obj = task;
-        //                                handler.sendMessage(message);
-        //                            }
-        //                        };
-        //                        long time_wait = s + time / 1000 + TimeUtil.getCurrentTimeMillies();
-        //                        SPUtils.putString(context, "time_wait", time_wait * 1000 + "");
-        //                        Logger.d("执行的是时间为空、间隔周期时间是" + time / 1000 + "秒:" + "任务随机的等待时间是" + s + "秒:" + "下一个周期预计执行的时间是" + TimeUtil.getTimesCuo(time_wait * 1000));
-        //                        mytime.schedule(timerTasks, s * 1000);
-        //                    }
-        //                } else {//执行时间不为空的情况下
-        //                    long times = TimeUtil.getLongTime(Long.parseLong(todoTimes));
-        //                    if (TextUtils.isEmpty(interval_time)) {//间隔时间也为空
-        //                        long one_day = (24 * 60 * 60 + 30 * 60) * 1000;
-        //                        timerTasks = new TimerTask() {
-        //                            @Override
-        //                            public void run() {
-        //                                Message message = new Message();
-        //                                message.what = 1;
-        //                                message.obj = task;
-        //                                handler.sendMessage(message);
-        //                            }
-        //                        };
-        //                        long time_wait = s + one_day / 1000 + TimeUtil.getCurrentTimeMillies() + times / 1000;
-        //                        SPUtils.putString(context, "time_wait", time_wait * 1000 + "");
-        //                        Logger.d("执行的是时间为" + todoTimes + "、设置间隔时间为空的情况下执行等待时间是" + s + "秒:执行周期的时间是" + times / 1000 + "秒:" + "下一个周期执行的预计时间是" + TimeUtil.getTimesCuo(time_wait * 1000));
-        //                        mytime.schedule(timerTasks, times * 1000 + s * 1000);
-        //
-        //                    } else {
-        //                        long r = (Long.parseLong(interval_time) * 60 * 60 + 30 * 60) * 1000;
-        //                        Logger.d("Long.parseLong(interval_time)" + Long.parseLong(interval_time) + "秒" + "Long.parseLong(interval_time)*60*60" + Long.parseLong(interval_time) * 60 * 60);
-        //                        timerTasks = new TimerTask() {
-        //                            @Override
-        //                            public void run() {
-        //                                Message message = new Message();
-        //                                message.what = 1;
-        //                                message.obj = task;
-        //                                handler.sendMessage(message);
-        //                            }
-        //                        };
-        //                        long time_wait = s + r / 1000 + TimeUtil.getCurrentTimeMillies() + times;
-        //                        SPUtils.putString(context, "time_wait", time_wait * 1000 + "");
-        //                        Logger.d("执行的是时间为" + todoTimes + "、间隔时间为" + r / 1000 + "秒." + "情况下执行等待时间是" + s + "秒:" + "下一个周期预计执行的时间是" + TimeUtil.getTimesCuo(time_wait * 1000));
-        //                        mytime.schedule(timerTasks, times * 1000 + s * 1000);
-        //
-        //                    }
-        //                }
-        //                return;
-        //            }
-        //
-        //
-        //
-        //
-        //            /**
-        //             * 其他任务
-        //             *
-        //             */
-        //            int max = 0;
-        //            int min = 0;
-        //            if (TextUtils.isEmpty(todoTimes)) {//没有设置时间，马上执行
-        //                long time = 0;
-        //                Logger.d("执行时间" + time);
-        //                Timer timer = new Timer();
-        //                TimerTask timerTask = new TimerTask() {
-        //                    @Override
-        //                    public void run() {
-        //                        setTaskEvent(task);
-        //
-        //                    }
-        //                };
-        //                if (TextUtils.isEmpty(SPUtils.getString(context, "random_time_s", "")) && TextUtils.isEmpty(SPUtils.getString(context, "random_time_e", ""))) {
-        //                    max = 200;
-        //                    min = 0;
-        //                } else {
-        //                    max = Integer.parseInt(SPUtils.getString(context, "random_time_e", "").trim());
-        //                    min = Integer.parseInt(SPUtils.getString(context, "random_time_s", "").trim());
-        //                    Logger.d(max + "____" + min);
-        //                }
-        //                Random random = new Random();
-        //                int s = random.nextInt(max) % (max - min + 1) + min;
-        //                Logger.d("启动的时间是" + (time + s) * 1000 + "毫秒");
-        //                timer.schedule(timerTask, (time + s) * 1000);
-        //            } else {//定时执行
-        //                long time = TimeUtil.getLongTime(Long.parseLong(todoTimes));
-        //                Logger.d("执行时间" + time);
-        //                Timer timer = new Timer();
-        //                TimerTask timerTask = new TimerTask() {
-        //                    @Override
-        //                    public void run() {
-        //                        setTaskEvent(task);
-        //                    }
-        //                };
-        //                if (TextUtils.isEmpty(SPUtils.getString(context, "random_time_s", "")) && TextUtils.isEmpty(SPUtils.getString(context, "random_time_e", ""))) {
-        //                    max = 200;
-        //                    min = 0;
-        //                } else {
-        //                    max = Integer.parseInt(SPUtils.getString(context, "random_time_e", "").trim());
-        //                    min = Integer.parseInt(SPUtils.getString(context, "random_time_s", "").trim());
-        //                }
-        //                Random random = new Random();
-        //                int s = random.nextInt(max) % (max - min + 1) + min;
-        //                Logger.d("启动的时间是" + (time + s) * 1000 + "毫秒");
-        //                timer.schedule(timerTask, (time + s) * 1000);
-        //            }
+
     }
 
 
-    //
-    //    /**
-    //     * 发单图片下载
-    //     *
-    //     * @param dataBean
-    //     */
-    //    private void downImg(TaskMessageBean.ContentBean.DataBean dataBean) {
-    //
-    //        if (TextUtils.isEmpty(dataBean.getParam().getMateria_ss())) {
-    //            return;
-    //        }
-    //        String messageData = dataBean.getParam().getMateria_ss();
-    //
-    //        WxFlockMessageBean[] wxFlockMessageBeans = new Gson().fromJson(messageData.replace("&quot", "\"").replace(";", ""), WxFlockMessageBean[].class);
-    //        if (!StringUtils.isEmpty(messageData) && wxFlockMessageBeans != null && wxFlockMessageBeans.length > 0) {
-    //            LogUtils.d(wxFlockMessageBeans.length + "条信息");
-    //            for (int b = 0; b < wxFlockMessageBeans.length; b++) {//图片下载
-    //                if (wxFlockMessageBeans[b].getType().equals("img")) {
-    //                    String imgUrl = wxFlockMessageBeans[b].getData();
-    //                    if (!StringUtils.isEmpty(imgUrl)) {
-    //                        downloadFile(imgUrl);
-    //                    }
-    //                }
-    //            }
-    //
-    //        }
-    //
-    //    }
+
 
     /**
      * 打开应用. 应用在前台不处理,在后台就直接在前台展示当前界面, 未开启则重新启动
@@ -428,6 +256,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
         intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
         context.startActivity(intent);
     }
+
     /**
      * 收到任务后反馈
      */
