@@ -221,30 +221,11 @@ public class BindingActivity extends BaseUI {
             }
         });
 
-        //        LogUtils.d(URLS.binding() + "?id=" + id + "&code=" + code + "&imei=" + imei);
-        //        HttpManager.getInstance().sendRequest(params, new HttpObjectCallback<ImeiData>() {
-        //
-        //            @Override
-        //            public void onSuccess(ImeiData bean) {
-        //                pd.dismiss();
-        //                showToast("绑定成功");
-        //                SPUtils.putString(mContext, "uid", id);
-        //                SPUtils.putBoolean(mContext, "imei", true);
-        //                SPUtils.putString(mContext, "imeiimei", imei);
-        //                Intent intent = new Intent(BindingActivity.this, MainActivity.class);
-        //                startActivity(intent);
-        //                isOpen = false;
-        //                finish();
-        //            }
-        //
-        //            @Override
-        //            public void onFailure(int errorCode, String errorString) {
-        //                pd.dismiss();
-        //                binding_tv.setClickable(true);
-        //                showToast("绑定失败" + errorString);
-        //            }
-        //        });
+
     }
+
+
+
 
     /**
      * 判断设备是否绑定

@@ -72,8 +72,10 @@ public class TaskQueue  {
                                         callback.onTaskError(currentItTask, new TaskErrorBean(TaskErrorBean.EXCEPTION_ERROR).setException(e));
                                     } catch (Exception e1) {
                                         e1.printStackTrace();
-                                        onComplete();
                                     }
+
+                                }finally {
+                                    onComplete();
                                 }
                             }
                             @Override
