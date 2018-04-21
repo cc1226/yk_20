@@ -217,7 +217,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
                 task.getTask_id() == TaskConstant.TASK_WX_USER_SEARCH || task.getTask_id() == TaskConstant.TASK_WX_CHECK_WALLET ||
                 task.getTask_id() == TaskConstant.TASK_WX_FIND_DEV) {//微信统计任务不需要加随机时间
 
-            if (TextUtils.isEmpty(todoTimes)) {//对于没有设置
+            if (!TextUtils.isEmpty(todoTimes)) {//对于没有设置
                 setTaskEvent(task);
             } else {//定时执行
                 long time = TimeUtil.getLongTime(Long.parseLong(todoTimes));

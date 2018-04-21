@@ -33,7 +33,7 @@ public class InitActivity extends BaseUI {
 
 
     void initPermission(){
-        String permissions[] = {Permission.WRITE_EXTERNAL_STORAGE,Permission.GET_ACCOUNTS,Permission.READ_PHONE_STATE};
+        String permissions[] = {Permission.READ_CONTACTS,Permission.WRITE_EXTERNAL_STORAGE,Permission.GET_ACCOUNTS,Permission.READ_PHONE_STATE};
 
         requestPermission(permissions,0);
 
@@ -53,10 +53,10 @@ public class InitActivity extends BaseUI {
                     e.printStackTrace();
                 }
             }
+
             Intent intent = new Intent(InitActivity.this, BindingActivity.class);
             startActivity(intent);
             finish();
-
         }).start();
 
     }

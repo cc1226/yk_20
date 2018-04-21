@@ -2,7 +2,6 @@ package com.zplh.zplh_android_yk.utils;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.zplh.zplh_android_yk.R;
 import com.zplh.zplh_android_yk.base.MyApplication;
@@ -40,19 +39,14 @@ public class WxIsInstallUtils {
     }
 
 
-    public boolean IsInstall(int task) throws Exception {
+    public void IsInstall(int task) throws Exception {
 
         if (WxTaskUtils.getWxTaskUtils().isInstallApp(MyApplication.getContext(), "com.tencent.mm")) {
-
-
             WxTaskUtils.getWxTaskUtils().openWx();
             TimeUnit.SECONDS.sleep(3);
             xmlData = AdbUtils.getAdbUtils().dumpXml2String();
             Log.e("WG", "IsInstall:安装助手走了么：： " + xmlData);
-            if (xmlData.contains("清除登录痕迹")) {
-                Log.e("WG", "IsInstall: 进来了");
-                AdbUtils.getAdbUtils().click(340,500);
-            }
+
             if (xmlData.contains("安全警告") && xmlData.contains("wx助手 正在尝试") && xmlData.contains("记住我的选择。")) {
                 AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x41, R.dimen.y232, R.dimen.x41, R.dimen.y232);//记住选择
                 AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x260, R.dimen.y272, R.dimen.x260, R.dimen.y272);//确定
@@ -72,9 +66,8 @@ public class WxIsInstallUtils {
             }
             if (xmlData.contains("忘记密码") || (xmlData.contains("登录") && xmlData.contains("注册")
                     && xmlData.contains("语言")) || (xmlData.contains("你的手机号码") && xmlData.contains("密码"))) {
-                Toast.makeText(MyApplication.getContext(), "请先登录微信", Toast.LENGTH_LONG).show();
                 status = 4;
-                return false;
+                throw new Exception("未登陆微信");
             } else if (xmlData.contains("通讯录") && xmlData.contains("发现") && xmlData.contains("我") && !(xmlData.contains("聊天信息"))) {
                 if (task == 0 || task == TaskConstant.TASK_WX_FRIENDS_DS ||
                         task == TaskConstant.TASK_WX_SUM_FRIENDS ||
@@ -94,13 +87,9 @@ public class WxIsInstallUtils {
                 if (task == TaskConstant.TASK_WX_ONE_MSG || task == TaskConstant.TASK_WX_CROWD_MSG) {
                     AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x160, R.dimen.y368, R.dimen.x240, R.dimen.y400);
                 }
-            } else {
-                return false;
             }
-        } else {
-            return false;
+
         }
-        return true;
     }
 
     //检查账号是否被封号
@@ -126,5 +115,4 @@ public class WxIsInstallUtils {
         }
         return true;
     }
-
 }

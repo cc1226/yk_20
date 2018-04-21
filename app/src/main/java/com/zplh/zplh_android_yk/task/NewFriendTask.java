@@ -1,16 +1,13 @@
 package com.zplh.zplh_android_yk.task;
 
 
-import android.app.Activity;
 import android.util.Log;
 
 import com.zplh.zplh_android_yk.base.MyApplication;
-import com.zplh.zplh_android_yk.bean.TaskErrorBean;
 import com.zplh.zplh_android_yk.bean.TaskMessageBean;
 import com.zplh.zplh_android_yk.callback.TaskCallback;
 import com.zplh.zplh_android_yk.constant.Priority;
 import com.zplh.zplh_android_yk.utils.GetPhoneAdd;
-import com.zplh.zplh_android_yk.utils.ShowToast;
 import com.zplh.zplh_android_yk.utils.WxIsInstallUtils;
 import com.zplh.zplh_android_yk.utils.WxTaskUtils;
 
@@ -27,7 +24,9 @@ public class NewFriendTask extends BaseTask {
     @Override
     public void run(TaskCallback callback) throws Exception {
 
-        if (WxIsInstallUtils.GetIsInstallWx().IsInstall(getTaskBean().getTask_id())) {
+        WxIsInstallUtils.GetIsInstallWx().IsInstall(getTaskBean().getTask_id());
+
+
                 Log.e("WG", "run: 读取联系人开始了");
                 callback.onTaskStart(this);
                 WxTaskUtils.getWxTaskUtils().backHome();
@@ -66,10 +65,7 @@ public class NewFriendTask extends BaseTask {
                     "3", "5");
             getPhoneAdd.getPhoneAdd();
 
-        } else {
-            callback.onTaskError(this, new TaskErrorBean(TaskErrorBean.OTHER_ERROR));
-            Log.e("WG", "添加联系人失败 ");
-        }
+
     }
 
     @Override
