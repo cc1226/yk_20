@@ -23,7 +23,6 @@ public class FileUtils {
      */
     public static String readTxtFile() {
         String path = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/wx_ui.xml";
-        ;
         StringBuilder builder = new StringBuilder();
         //打开文件
         File file = new File(path);

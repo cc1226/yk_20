@@ -78,6 +78,21 @@ public class AdbUtils {
         return FileUtils.readTxtFile();
     }
 
+//    public String getXmlData() {
+//        adbDump();
+//        return FileUtils.readTxtFile();
+//    }
+//
+//    public void adbDump() {
+//        if (commnandList != null) {
+//            commnandList.clear();
+//        } else {
+//            commnandList = new ArrayList<>();
+//        }
+//        commnandList.add("uiautomator dump /sdcard/uidump.xml");
+//        ShellUtils.CommandResult result = ShellUtils.execCommand(commnandList, true);
+//        Log.e("WG", "adbDump: 获取了：：" + result);
+//    }
 
     /**
      * 从字符串中提取数字
@@ -148,7 +163,7 @@ public class AdbUtils {
         ShellUtils.execCommand("input keyevent 4", true);
     }
 
-    public static boolean boardisShow() {
+    public boolean boardisShow() {
         ShellUtils.CommandResult commandResult = ShellUtils.execCommand("\"dumpsys input_method |grep mInputShown=true\"", true);
         return commandResult.result == 0;
     }
@@ -177,6 +192,7 @@ public class AdbUtils {
         }
         commnandList.add("input tap " + i + " " + i1);
         ShellUtils.CommandResult result = ShellUtils.execCommand(commnandList, true);
+        Log.e("WG", "click: 单点了坐标：" + result);
     }
 
     //安装apk

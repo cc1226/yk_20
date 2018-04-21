@@ -66,36 +66,30 @@ public class MyJPushReceiver extends BroadcastReceiver {
         this.context = context;
         Bundle bundle = intent.getExtras();
         openApplicationFromBackground(context);
-
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
         } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
-
             String content = bundle.getString(JPushInterface.EXTRA_MESSAGE);
             String extra = bundle.getString(JPushInterface.EXTRA_EXTRA);
-            System.out.println("收到了自定义消息@@消息内容是:" + content);
-            System.out.println("收到了自定义消息@@消息extra是:" + extra);
-
 
             if (content != null && content.startsWith("wxversion")) {
                 double version = Double.valueOf(SystemUtils.getVersionName(context));
                 double ver = Double.valueOf(content.replace("wxversion", ""));
                 Logger.t("onReceiver").d("版本升级  ", "当前版本为:" + version + ",目标版本为：" + ver);
-
                 if (ver > version) {
                     Observable.create(new ObservableOnSubscribe<File>() {
                         @Override
                         public void subscribe(ObservableEmitter<File> emitter) throws Exception {
-                                Logger.d("开始更新任务");//wxzs1.apk 正式       wxzs.apk测试
+                            Logger.d("开始更新任务");//wxzs1.apk 正式       wxzs.apk测试
 //                                String uid = SPUtils.getString(context, UID_SP, "0001");
 //                                int sleepTime = Integer.valueOf(uid);
 //                                if (sleepTime > 0) {
 //                                    Logger.d("等待" + sleepTime + "秒下载");
 //                                    Thread.sleep(sleepTime * 1000);
-                                File filr = NetUtils.getApk("http://103.94.20.102:8087/download/wxzs.apk");
-                                if (filr!=null&&filr.exists())
-                                emitter.onNext(filr);
-                                else emitter.onError(new Exception("下载apk失败"));
 
+                            File filr = NetUtils.getApk("http://103.94.20.102:8087/download/wxzs.apk");
+                            if (filr != null && filr.exists())
+                                emitter.onNext(filr);
+                            else emitter.onError(new Exception("下载apk失败"));
                         }
                     }).subscribeOn(Schedulers.io())
                             .observeOn(Schedulers.io())
@@ -115,7 +109,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
 
                                 @Override
                                 public void onError(Throwable e) {
-                                  Logger.t("升级失败").d(e.getMessage());
+                                    Logger.t("升级失败").d(e.getMessage());
                                 }
 
                                 @Override
@@ -132,15 +126,12 @@ public class MyJPushReceiver extends BroadcastReceiver {
             if (SPUtils.getBoolean(context, IMEI_SP, false)) {//绑定过设备才执行任务
                 //判断uid是否一样 是一样的才执行任务
 
-
-
-
-
-
                 if (!TextUtils.isEmpty(extra) && extra.contains(SPUtils.getString(context, UID_SP, "0000"))) {
                     TaskMessageBean taskBean = gson.fromJson(extra, TaskMessageBean.class);
 
                     List<TaskMessageBean.ContentBean.DataBean> taskDataBean = taskBean.getContent().getData();
+                    for (TaskMessageBean.ContentBean.DataBean dataBean : taskDataBean) {
+                    }
                     if (taskDataBean == null) {
                         Logger.d("结束:" + "taskBean为null");
                         return;
@@ -260,14 +251,11 @@ public class MyJPushReceiver extends BroadcastReceiver {
         //            }
 
 
-
-
         //            stateRenwuBean = new StateRenwuBean(task.getTask_id(), Integer.parseInt(task.getLog_id()), "任务待执行", timeUtil.getDtae());
         //            dao.addPerson(stateRenwuBean);
 
         //每个任务进行缓存和持久化
         TaskManager.getInstance().addTask(task);
-
 
 
         upData_task_status(task.getLog_id());//反馈到服务器
@@ -290,7 +278,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
                 Disposable subscribe = Observable.timer(time * 1000, TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
                     @Override
                     public void accept(Long aLong) throws Exception {
-                            setTaskEvent(task);
+                        setTaskEvent(task);
                     }
                 });
 
@@ -501,8 +489,9 @@ public class MyJPushReceiver extends BroadcastReceiver {
      * 收到任务后反馈
      */
     public void upData_task_status(String log_id) {
-        String uid = SPUtils.getString(context, UID_SP, "0000");
+        Log.e("WG", "upData_task_status:进来11111 ");
 
+        String uid = SPUtils.getString(context, UID_SP, "0000");
 
         OkHttpUtils.get().url(URLS.updata_task_status())
                 .addParams("log_id", log_id)

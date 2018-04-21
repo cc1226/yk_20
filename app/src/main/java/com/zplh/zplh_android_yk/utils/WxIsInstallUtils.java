@@ -1,6 +1,7 @@
 package com.zplh.zplh_android_yk.utils;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.zplh.zplh_android_yk.R;
@@ -10,6 +11,8 @@ import com.zplh.zplh_android_yk.constant.TaskConstant;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static com.tencent.bugly.crashreport.inner.InnerAPI.context;
 
 
 /**
@@ -41,9 +44,16 @@ public class WxIsInstallUtils {
     public boolean IsInstall(int task) throws Exception {
 
         if (WxTaskUtils.getWxTaskUtils().isInstallApp(MyApplication.getContext(), "com.tencent.mm")) {
+
+
             WxTaskUtils.getWxTaskUtils().openWx();
             TimeUnit.SECONDS.sleep(3);
             xmlData = AdbUtils.getAdbUtils().dumpXml2String();
+            Log.e("WG", "IsInstall:安装助手走了么：： " + xmlData);
+            if (xmlData.contains("清除登录痕迹")) {
+                Log.e("WG", "IsInstall: 进来了");
+                AdbUtils.getAdbUtils().click(340,500);
+            }
             if (xmlData.contains("安全警告") && xmlData.contains("wx助手 正在尝试") && xmlData.contains("记住我的选择。")) {
                 AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x41, R.dimen.y232, R.dimen.x41, R.dimen.y232);//记住选择
                 AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x260, R.dimen.y272, R.dimen.x260, R.dimen.y272);//确定
@@ -94,5 +104,28 @@ public class WxIsInstallUtils {
         return true;
     }
 
+    //检查账号是否被封号
+    public Boolean getIsAccountIsOk() throws InterruptedException {
+        Thread.sleep(2000);
+//        xmlData = wxUtils.getXmlData();
+        xmlData = AdbUtils.getAdbUtils().dumpXml2String();
+
+        if (xmlData.contains("紧急冻结") && xmlData.contains("找回密码") && xmlData.contains("微信安全中心")) {
+            String currentLocation = SPUtils.getString(context, "WxAccountLocation", "0");
+            AdbUtils.getAdbUtils().adb("input keyevent 4");//返回
+
+            if (currentLocation.equals("1")) {
+//                wxUtils.adbClick(288, 457, 384, 553);
+                AdbUtils.getAdbUtils().click4xy(288, 457, 384, 553);
+
+            } else {
+//                wxUtils.adbClick(96, 457, 192, 553);
+                AdbUtils.getAdbUtils().click4xy(96, 457, 192, 553);
+            }
+            Thread.sleep(10000);
+            return false;
+        }
+        return true;
+    }
 
 }

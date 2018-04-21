@@ -8,6 +8,7 @@ public class TaskErrorBean {
     public static final int NET_ERROR = 0;//网络错误;
     public static final int EXCEPTION_ERROR = 1;//程序异常错误
     public static final int OTHER_ERROR = 2;//其他错误;
+    public static final int ACCOUNT_ERROR=3;//账号检查异常
 
     public int errorType;
     public Exception exception = new Exception("未知错误");

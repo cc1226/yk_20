@@ -13,7 +13,7 @@ public class GsonUtils {
     private static final Gson GSON;
 
     static {
-       GSON = new Gson();
+        GSON = new Gson();
     }
 
     //获取gson解析器
