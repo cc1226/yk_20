@@ -85,6 +85,7 @@ public class TaskQueue  {
 
                             @Override
                             public void onComplete() {
+                                mTaskQueue.remove(currentItTask);
                                 isRunning.compareAndSet(true,false);
 
                             }

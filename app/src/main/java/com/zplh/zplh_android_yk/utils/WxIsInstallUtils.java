@@ -99,17 +99,7 @@ public class WxIsInstallUtils {
         xmlData = AdbUtils.getAdbUtils().dumpXml2String();
 
         if (xmlData.contains("紧急冻结") && xmlData.contains("找回密码") && xmlData.contains("微信安全中心")) {
-//            String currentLocation = SPUtils.getString(context, "WxAccountLocation", "0");
-//            AdbUtils.getAdbUtils().adb("input keyevent 4");//返回
-//
-//            if (currentLocation.equals("1")) {
-//                wxUtils.adbClick(288, 457, 384, 553);
-//                AdbUtils.getAdbUtils().click4xy(288, 457, 384, 553);
-//
-//            } else {
-//                wxUtils.adbClick(96, 457, 192, 553);
-//                AdbUtils.getAdbUtils().click4xy(96, 457, 192, 553);
-//            }
+
             Thread.sleep(10000);
             return false;
         }
