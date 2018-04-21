@@ -10,8 +10,7 @@ import com.zplh.zplh_android_yk.bean.NodeXmlBean;
 import com.zplh.zplh_android_yk.bean.WxFriendsMessageBean;
 import com.zplh.zplh_android_yk.constant.URLS;
 
-import org.xutils.HttpManager;
-import org.xutils.http.RequestParams;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,21 +112,21 @@ public class StatisticsWxFriendsMessage {
         String str = new Gson().toJson(mWxFriendsMessageBean);
         Log.e("WG", "JSON" + str.toString());
 //            sendWxFriendsMessage(str);
-        RequestParams params = new RequestParams(URLS.statictis_wx_message_store());
-        params.addBodyParameter("json", str.replace("\\", ""));
-        HttpManagerUtils.getInstance().sendPostRequest(params, new HttpObjectCallbackUtils<Object>() {
-
-            @Override
-            public void onSuccess(Object bean) {
+//        RequestParams params = new RequestParams(URLS.statictis_wx_message_store());
+//        params.addBodyParameter("json", str.replace("\\", ""));
+//        HttpManagerUtils.getInstance().sendPostRequest(params, new HttpObjectCallbackUtils<Object>() {
+//
+//            @Override
+//            public void onSuccess(Object bean) {
 //                    LogUtils.d("好友个人信息上传成功");
-                Log.e("WG", "好友个人信息上传成功 ");
-            }
-
-            @Override
-            public void onFailure(int errorCode, String errorString) {
+//                Log.e("WG", "好友个人信息上传成功 ");
+//            }
+//
+//            @Override
+//            public void onFailure(int errorCode, String errorString) {
 //                LogUtils.d("好友数量上传失败");
-            }
-        });
+//            }
+//        });
 //        AdbUtils.getAdbUtils().adb("input keyevent 4");
 
         return true;
@@ -135,6 +134,6 @@ public class StatisticsWxFriendsMessage {
     }
 //        wxUtils.adb("input keyevent 4");
 //        return false;
-//    }
 
+//
 }

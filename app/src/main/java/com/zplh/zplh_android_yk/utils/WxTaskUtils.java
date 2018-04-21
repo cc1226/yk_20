@@ -1,6 +1,5 @@
 package com.zplh.zplh_android_yk.utils;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -8,39 +7,20 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.zhy.http.okhttp.OkHttpUtils;
 import com.zplh.zplh_android_yk.R;
-import com.zplh.zplh_android_yk.base.BaseApplication;
 import com.zplh.zplh_android_yk.base.MyApplication;
 import com.zplh.zplh_android_yk.bean.NodeXmlBean;
 import com.zplh.zplh_android_yk.bean.WxFriendsMessageBean;
-import com.zplh.zplh_android_yk.bean.WxNumBean;
-import com.zplh.zplh_android_yk.constant.URLS;
-import com.zplh.zplh_android_yk.R;
-import com.zplh.zplh_android_yk.base.MyApplication;
-import com.zplh.zplh_android_yk.bean.NodeXmlBean;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import okhttp3.Response;
 
 
 /* 封装了一些普遍的微信adb操作
@@ -53,7 +33,7 @@ public class WxTaskUtils {
     private static WxTaskUtils wxTaskUtils;
     private NodeXmlBean.NodeBean nodeBean;
     private List<Integer> listXY;
-    private BaseApplication app = new BaseApplication();
+//    private BaseApplication app = new BaseApplication();
 
     private WxTaskUtils() {
 
@@ -192,26 +172,26 @@ public class WxTaskUtils {
 
                     //设置间隔时间
                     int start;
-                    if (StringUtils.isEmpty(app.getWxGeneralSettingsBean().getRemark_interval_time_s())) {
-                        start = 3;
-                    } else {
-                        start = Integer.valueOf(app.getWxGeneralSettingsBean().getRemark_interval_time_s());
-                    }
-                    int end;
-                    if (StringUtils.isEmpty(app.getWxGeneralSettingsBean().getRemark_interval_time_e())) {
-                        end = 6;
-                    } else {
-                        end = Integer.valueOf(app.getWxGeneralSettingsBean().getRemark_interval_time_e());
-                    }
-                    int timeSleep = random.nextInt(end - start + 1) + start;
+//                    if (StringUtils.isEmpty(app.getWxGeneralSettingsBean().getRemark_interval_time_s())) {
+//                        start = 3;
+//                    } else {
+//                        start = Integer.valueOf(app.getWxGeneralSettingsBean().getRemark_interval_time_s());
+//                    }
+//                    int end;
+//                    if (StringUtils.isEmpty(app.getWxGeneralSettingsBean().getRemark_interval_time_e())) {
+//                        end = 6;
+//                    } else {
+//                        end = Integer.valueOf(app.getWxGeneralSettingsBean().getRemark_interval_time_e());
+//                    }
+//                    int timeSleep = random.nextInt(end - start + 1) + start;
 //                    LogUtils.e("end=" + end + "__start=" + start + "___间隔随机数=" + timeSleep);
-                    Log.e("WG", "end=" + end + "__start=" + start + "___间隔随机数=" + timeSleep);
+//                    Log.e("WG", "end=" + end + "__start=" + start + "___间隔随机数=" + timeSleep);
 //                    ShowToast.show("间隔时间：" + timeSleep + "秒", (Activity) context);
-                    try {
-                        Thread.sleep(timeSleep * 1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+//                        Thread.sleep(timeSleep * 1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
                     break;
                 }
             }
