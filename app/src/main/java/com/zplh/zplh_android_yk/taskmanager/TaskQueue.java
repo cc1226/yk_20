@@ -51,9 +51,9 @@ public class TaskQueue  {
 
 
         iTaskObservable = Observable.create(emitter -> {
-            ITask take = mTaskQueue.take();
+
             while (!isRunning.get())
-            emitter.onNext(take);
+            emitter.onNext( mTaskQueue.take());
         });
         iTaskObservable
                 .subscribeOn(Schedulers.from(executor))
@@ -85,9 +85,9 @@ public class TaskQueue  {
 
                             @Override
                             public void onComplete() {
+                                Logger.t("Rx").d("结束");
                                 mTaskQueue.remove(currentItTask);
                                 isRunning.compareAndSet(true,false);
-
                             }
                         });
     }

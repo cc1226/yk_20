@@ -19,6 +19,12 @@ public class AmendRemarkTask extends BaseTask {
 
     @Override
     public void run(TaskCallback callback) throws Exception {
+//        if (WxIsInstallUtils.GetIsInstallWx().IsInstall(getTaskBean().getTask_id())){
+//            WxTaskUtils.getWxTaskUtils().switchWxAccount();
+//            AdbUtils.getAdbUtils().click4xy(153, 822, 207, 847);
+//            callback.onTaskStart(this);
+//
+//        }
         WxIsInstallUtils.GetIsInstallWx().IsInstall(getTaskBean().getTask_id());
             WxTaskUtils.getWxTaskUtils().switchWxAccount();
             AdbUtils.getAdbUtils().click4xy(153, 822, 207, 847);

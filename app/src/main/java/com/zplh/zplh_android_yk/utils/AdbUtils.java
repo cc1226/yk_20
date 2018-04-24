@@ -11,7 +11,6 @@ import com.zplh.zplh_android_yk.R;
 import com.zplh.zplh_android_yk.XmlToJson.XmlToJson;
 import com.zplh.zplh_android_yk.bean.NodeXmlBean;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -47,6 +46,7 @@ public class AdbUtils {
      * @param str
      */
     public void adb(String str) {
+
         if (commnandList != null) {
             commnandList.clear();
         } else {

@@ -35,4 +35,5 @@ dependencies {
     api 'com.yanzhenjie:permission:2.0.0-rc4'
     api files('libs/jcore-android-1.2.0.jar')
     api files('libs/jpush-android-3.1.2.jar')
+    api 'com.android.support:recyclerview-v7:25.4.0'
 }

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical" android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_marginTop="10sp"
+        android:layout_width="match_parent"
+        android:layout_height="44sp">
+        <TextView
+            android:textSize="12sp"
+            android:layout_marginLeft="8sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="任务名称:嗅探加好友"
+            android:id="@+id/renwu_name"/>
+        <TextView
+            android:textSize="12sp"
+            android:id="@+id/renwu_log_id"
+            android:layout_marginRight="8sp"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LogID的值是:"/>
+        <TextView
+            android:id="@+id/renwu_time"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="6sp"
+            android:textSize="12sp"
+            android:layout_marginLeft="8sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="任务时间:2015年6月25"
+            android:layout_alignParentLeft="true"/>
+
+        <ImageView
+            android:layout_marginBottom="2sp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/image_state"
+            android:layout_marginRight="6sp"
+            android:layout_toLeftOf="@+id/renwu_state"
+            android:src="@mipmap/wait"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:textSize="12sp"
+            android:layout_marginRight="8sp"
+            android:gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="任务状态:等待执行"
+            android:id="@+id/renwu_state"
+            android:layout_alignBaseline="@+id/renwu_time"
+            android:layout_alignBottom="@+id/renwu_time"
+            android:layout_alignEnd="@+id/renwu_log_id"
+            android:layout_alignRight="@+id/renwu_log_id"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

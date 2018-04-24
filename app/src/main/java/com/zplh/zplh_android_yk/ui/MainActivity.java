@@ -56,7 +56,6 @@ public class MainActivity extends BaseUI implements TaskPCallback {
         //初始化taskP
         taskP = new TaskP(this);
         taskP.startTask();
-
         JPushInterface.init(this);
     }
 

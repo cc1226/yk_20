@@ -231,6 +231,111 @@ public class WxTaskUtils {
     }
 
 
+    /**
+     * 微信账号切换 6.6.3 版本  只有发送 新号或者老号中的一个
+     */
+
+    public void switchWxAccount1() throws Exception {
+        AdbUtils adbUtils = AdbUtils.getAdbUtils();
+        String xmlData = "";
+        SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "0");
+        int sendAccountType = SPUtils.getInt(MyApplication.getContext(), "is_accType", 0);//1为新号 2为老号 3为全部
+        int accountNum = 0;
+        adbUtils.click4xy(411, 822, 429, 847);// 点击右下角的我
+        xmlData =   AdbUtils.getAdbUtils().dumpXml2String();
+        if (!xmlData.contains("相册") || !xmlData.contains("收藏")) {
+            return;
+        } else {
+            List<String> ud = adbUtils.getNodeList(xmlData);
+            for (int a = 0; a < ud.size(); a++) {
+                NodeXmlBean.NodeBean nodeBean = adbUtils.getNodeXmlBean(ud.get(a)).getNode();
+                if (nodeBean != null && nodeBean.getResourceid() != null && (nodeBean.getResourceid().equals("com.tencent.mm:id/cdh")) && nodeBean.getText() != null && nodeBean.getText().contains("微信号")) {
+                    String str = nodeBean.getText();
+                    String wxAccount = str.replaceAll("微信号：", "");
+                    SPUtils.putString(MyApplication.getContext(), "wxAccount", wxAccount);
+                    break;
+                }
+            }
+        }
+        adbUtils.adbUpSlide(MyApplication.getContext());
+        goSwitchAccounts();
+            Thread.sleep(3000);
+        xmlData = AdbUtils.getAdbUtils().dumpXml2String();
+        List<String> nodeList = adbUtils.getNodeList(xmlData);
+        for (int i = 0; i < nodeList.size() - 1; i++) {
+            nodeBean = adbUtils.getNodeXmlBean(nodeList.get(i)).getNode();
+            if (nodeBean != null && nodeBean.getText() != null && !nodeBean.getText().equals("切换账号")&& nodeBean.getResourceid() != null && nodeBean.getResourceid().equals("com.tencent.mm:id/d5s")) {
+                accountNum++;
+            }
+        }
+        for (int i = 0; i < nodeList.size() - 1; i++) {
+            nodeBean = adbUtils.getNodeXmlBean(nodeList.get(i)).getNode();
+            if (nodeBean != null && nodeBean.getText() != null && nodeBean.getText().equals("当前使用") && nodeBean.getResourceid() != null && nodeBean.getResourceid().equals("com.tencent.mm:id/d5v")) {
+                listXY = adbUtils.getXY(nodeBean.getBounds());//获取 当前使用的坐标
+                break;
+            }
+        }
+        if ( accountNum == 2 ) {  //老号在左边  新号在右边
+
+            //说明已经登录了两个账号
+            if (listXY.get(0) == 110) {
+                //正在使用的账号 在左边（老号）， 点击右边的账号切换
+
+                if ((sendAccountType == 3) || (sendAccountType == 1)) {
+                    SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "1"); //目前的账号在左边
+                    adbUtils.click4xy(0, 36, 90, 108);//点击左上角的返回
+                    SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "1"); // 没有切换
+                    adbUtils.click4xy(0, 36, 90, 108);//点击左上角的返回
+                    return;
+                }
+                if (sendAccountType == 2) {
+                    SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "2"); //切换后的账号在右边
+                    adbUtils.click4xy(288, 457, 384, 553);
+                    SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "2"); // 切换成功
+                }
+            } else if (listXY.get(0) == 302) {
+                //正在使用的账号 在右边(新号)， 点击左边的账号切换
+
+                if ((sendAccountType == 3) || (sendAccountType == 2)) {
+                    SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "2"); //目前的账号在右边
+                    adbUtils.click4xy(0, 36, 90, 108);//点击左上角的返回
+                    SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "1"); // 没有切换
+                    adbUtils.click4xy(0, 36, 90, 108);//点击左上角的返回
+                    return;
+                }
+                if (sendAccountType == 1) {
+                    SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "1"); //切换后的账号在右边
+                    adbUtils.click4xy(96, 457, 192, 553);
+                    SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "2"); // 切换成功
+                }
+            }
+                Thread.sleep(15000);
+
+        }else {
+            if (listXY.get(0) == 110){
+                if (sendAccountType == 1){
+                    SPUtils.putString(MyApplication.getContext(),"AccountIsOnlyOne","2");
+                    SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "1"); //目前的账号在左边
+                }else {
+                    SPUtils.putString(MyApplication.getContext(),"AccountIsOnlyOne","1");  //失败
+                    SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "1"); //目前的账号在右边
+                }
+            } else if (listXY.get(0) == 302) {
+                if (sendAccountType == 1){
+                    SPUtils.putString(MyApplication.getContext(),"AccountIsOnlyOne","1");//失败
+                    SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "2"); //目前的账号在右边
+                }else {
+                    SPUtils.putString(MyApplication.getContext(),"AccountIsOnlyOne","2");
+                    SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "2"); //目前的账号在右边
+                }
+            }
+
+        }
+
+    }
+
+
+
     public void switchWxAccount() throws Exception {
         Log.e("WG", "switchWxAccount: 切换新老账户");
         String xmlData;
@@ -399,6 +504,35 @@ public class WxTaskUtils {
 
     }
 
+
+    /**
+     * 判断是否被封号
+     * @return
+     */
+    public Boolean getIsAccountIsOk() throws Exception {
+        String xmlData = AdbUtils.getAdbUtils().dumpXml2String();
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (xmlData.contains("紧急冻结") && xmlData.contains("找回密码") && xmlData.contains("微信安全中心")) {
+            String currentLocation = SPUtils.getString(MyApplication.getContext(), "WxAccountLocation", "0");
+            AdbUtils.getAdbUtils().back();
+            if (currentLocation.equals("1")) {
+                AdbUtils.getAdbUtils().click4xy(288, 457, 384, 553);
+            } else {
+                AdbUtils.getAdbUtils().click4xy(96, 457, 192, 553);
+            }
+                Thread.sleep(10000);
+            return false;
+        }
+        return true;
+    }
+
+
+
     public void goMobileFriend() {
         ShellUtils.CommandResult commandResult = ShellUtils.execCommand("am start com.tencent.mm/com.tencent.mm.ui.bindmobile.MobileFriendUI", true);
     }
@@ -543,5 +677,40 @@ public class WxTaskUtils {
 //        sendWxFriendsMessage(str);
 //        NetUtils.get()
         return;
+    }
+
+
+    /**
+     * 初始化微信 到第一个界面
+     */
+    public void openWxIsHome() throws Exception {
+        AdbUtils adbUtils = AdbUtils.getAdbUtils();
+            closeWx();
+            openWx();
+        Thread.sleep(2500);
+        String xml = adbUtils.dumpXml2String();
+        //不在初始化界面 一般情况下是未登陆
+        if (!xml.contains("通讯录") ||!xml.contains("发现")){
+                //在注册界面
+                if (xml.contains("注册")){
+                    throw new Exception("未登录");
+                }
+                //在切换账号界面
+                if (xml.contains("清除登录痕迹")){
+                        switchWxAccount();
+                }
+        }
+    }
+
+    /**
+     * 进入指定的ui
+     */
+    public void goUI(){
+
+
+    }
+
+    public void goSearch() {
+        ShellUtils.CommandResult commandResult = ShellUtils.execCommand("am start com.tencent.mm/.plugin.search.ui.FTSMainUI", true);
     }
 }

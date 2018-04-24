@@ -33,7 +33,7 @@ public class InitActivity extends BaseUI {
 
 
     void initPermission(){
-        String permissions[] = {Permission.READ_CONTACTS,Permission.WRITE_EXTERNAL_STORAGE,Permission.GET_ACCOUNTS,Permission.READ_PHONE_STATE};
+        String permissions[] = {Permission.WRITE_CONTACTS,Permission.WRITE_EXTERNAL_STORAGE,Permission.GET_ACCOUNTS,Permission.READ_PHONE_STATE};
 
         requestPermission(permissions,0);
 

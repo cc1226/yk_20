@@ -58,6 +58,16 @@ public class TaskMessageBean implements Serializable {
             private String todo_time;
             private List<String> range;
             private String log_id;
+            private int states;//任务状态
+
+            public int getStates() {
+                return states;
+            }
+
+            public DataBean setStates(int states) {
+                this.states = states;
+                return this;
+            }
 
             public boolean isListTask() {
                 return isListTask;
@@ -200,13 +210,16 @@ public class TaskMessageBean implements Serializable {
                 public void setIs_accType(String[] is_accType) {
                     this.is_accType = is_accType;
                 }
+                private  String  fanType ;     //粉丝类型
+                private  String  fanId ;          //  粉丝ID
+                private  String  addGroupNum ;  //拉群次数
+                private  String  groupType ; //群类型
+                private  String  preGrpName ; // 群名前缀
+                private  String  personNum ; // 群人数
+                private  String  fanNum_s ;
+                private  String  fanNum_e;
+                private  String   fanNum_default ;
 
-                private String fanType;     //粉丝类型
-                private String fanId;          //  粉丝ID
-                private String addGroupNum;  //拉群次数
-                private String groupType; //群类型
-                private String preGrpName; // 群名前缀
-                private String personNum; // 群人数
 
                 public String getFanType() {
                     return fanType;
@@ -218,6 +231,105 @@ public class TaskMessageBean implements Serializable {
 
                 public String getFanId() {
                     return fanId;
+                }
+
+                public String getFanNum_s() {
+                    return fanNum_s;
+                }
+
+                public ParamBean setFanNum_s(String fanNum_s) {
+                    this.fanNum_s = fanNum_s;
+                    return this;
+                }
+
+                public String getFanNum_e() {
+                    return fanNum_e;
+                }
+
+                public ParamBean setFanNum_e(String fanNum_e) {
+                    this.fanNum_e = fanNum_e;
+                    return this;
+                }
+
+                public String getFanNum_default() {
+                    return fanNum_default;
+                }
+
+                public ParamBean setFanNum_default(String fanNum_default) {
+                    this.fanNum_default = fanNum_default;
+                    return this;
+                }
+
+                public String getPay_num_s() {
+                    return pay_num_s;
+                }
+
+                public ParamBean setPay_num_s(String pay_num_s) {
+                    this.pay_num_s = pay_num_s;
+                    return this;
+                }
+
+                public String getPay_num_e() {
+                    return pay_num_e;
+                }
+
+                public ParamBean setPay_num_e(String pay_num_e) {
+                    this.pay_num_e = pay_num_e;
+                    return this;
+                }
+
+                public String getPay_password() {
+                    return pay_password;
+                }
+
+                public ParamBean setPay_password(String pay_password) {
+                    this.pay_password = pay_password;
+                    return this;
+                }
+
+                public String getShopping_s() {
+                    return shopping_s;
+                }
+
+                public ParamBean setShopping_s(String shopping_s) {
+                    this.shopping_s = shopping_s;
+                    return this;
+                }
+
+                public String getShopping_e() {
+                    return shopping_e;
+                }
+
+                public ParamBean setShopping_e(String shopping_e) {
+                    this.shopping_e = shopping_e;
+                    return this;
+                }
+
+                public String getGame_s() {
+                    return game_s;
+                }
+
+                public ParamBean setGame_s(String game_s) {
+                    this.game_s = game_s;
+                    return this;
+                }
+
+                public String getGame_e() {
+                    return game_e;
+                }
+
+                public ParamBean setGame_e(String game_e) {
+                    this.game_e = game_e;
+                    return this;
+                }
+
+                public String getReply_msg() {
+                    return reply_msg;
+                }
+
+                public ParamBean setReply_msg(String reply_msg) {
+                    this.reply_msg = reply_msg;
+                    return this;
                 }
 
                 public void setFanId(String fanId) {

@@ -5,6 +5,7 @@ import android.content.Context;
 import com.orhanobut.logger.Logger;
 import com.zplh.zplh_android_yk.base.MyApplication;
 import com.zplh.zplh_android_yk.bean.TaskErrorBean;
+import com.zplh.zplh_android_yk.bean.TaskMessageBean;
 import com.zplh.zplh_android_yk.callback.TaskPCallback;
 import com.zplh.zplh_android_yk.constant.Priority;
 import com.zplh.zplh_android_yk.event.TaskEvent;
@@ -12,6 +13,7 @@ import com.zplh.zplh_android_yk.imp.ITask;
 import com.zplh.zplh_android_yk.task.BaseTask;
 import com.zplh.zplh_android_yk.task.InfoNumTask;
 import com.zplh.zplh_android_yk.task.NewFriendTask;
+import com.zplh.zplh_android_yk.task.TestTask;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,6 +36,15 @@ public class TaskP extends BaseP {
         if (taskQueue!=null){
             taskQueue.start();
         }
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(10000);
+                taskQueue.add(new TestTask(Priority.DEFAULT,mAtomicInteger.incrementAndGet(),new TaskMessageBean.ContentBean.DataBean()));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     //生成不同的任务
