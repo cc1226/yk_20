@@ -98,11 +98,12 @@ public class WxIsInstallUtils {
     }
 
     //检查账号是否被封号
-    public void getIsAccountIsOk() throws Exception {
+    public boolean getIsAccountIsOk() throws Exception {
         Thread.sleep(2000);
         xmlData = AdbUtils.getAdbUtils().dumpXml2String();
         if (xmlData.contains("紧急冻结") && xmlData.contains("找回密码") && xmlData.contains("微信安全中心")) {
             AdbUtils.getAdbUtils().back();
+            Log.e("WG", "getIsAccountIsOk: 账号异常");
             String currentLocation = SPUtils.getString(MyApplication.getContext(), "WxAccountLocation", "0");
             if (currentLocation.equals("1")) {
                 AdbUtils.getAdbUtils().click4xy(288, 457, 384, 553);
@@ -111,9 +112,9 @@ public class WxIsInstallUtils {
             }
             Thread.sleep(10000);
 //            WxTaskUtils.getWxTaskUtils().switchWxAccount();
-//            return false;
+            return false;
         }
-//        return true;
+        return true;
     }
 
 }

@@ -1,7 +1,11 @@
 package com.zplh.zplh_android_yk.utils;
 
 import android.app.Activity;
+import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.ClipboardManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -14,6 +18,8 @@ import com.zplh.zplh_android_yk.bean.WxPhone;
 import com.zplh.zplh_android_yk.bean.WxPhoneNumeAskBean;
 import com.zplh.zplh_android_yk.bean.wxReplyMessageBean;
 import com.zplh.zplh_android_yk.constant.URLS;
+import com.zplh.zplh_android_yk.ui.MainActivity;
+import com.zplh.zplh_android_yk.ui.TaskFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,7 +48,7 @@ import static android.content.Context.CLIPBOARD_SERVICE;
 
 public class GetPhoneAdd {
 
-    private String wx_Sex;
+    private boolean flg;
     private String one_add_num_s;//通讯录加好友 开始
     private String one_add_num_e;//通讯录加好友 结束
     private String[] sex_key;
@@ -55,10 +61,17 @@ public class GetPhoneAdd {
     private List<String> nodeList;
     private NodeXmlBean.NodeBean nodeBean;
     private String xmlData;
+    private List<Integer> listXY;
+    private String reply_msg;//微信通讯录加好友成功之后，发送的一条消息
+    private ClipboardManager cm;
+    private ClipboardManager cmm;
+    private ClipboardManager cmm2;
+    public Handler handler = new Handler(Looper.getMainLooper());
 
-    public GetPhoneAdd(String wx_Sex, String one_add_num_s, String one_add_num_e, String add_interval_time_s
+
+    public GetPhoneAdd(boolean flg, String one_add_num_s, String one_add_num_e, String add_interval_time_s
             , String add_interval_time_e, String contact_verify_msg, String day_add_num, String one_add_num) {
-        this.wx_Sex = wx_Sex;
+        this.flg = flg;
         this.one_add_num_s = one_add_num_s;
         this.one_add_num_e = one_add_num_e;
         this.add_interval_time_s = add_interval_time_s;
@@ -72,11 +85,12 @@ public class GetPhoneAdd {
         List<Integer> listXY;
         //"http://103.94.20.101:8087/api_wechat/index.php";
         // 模拟http请求，提交数据到服务器
+
         String uid = SPUtils.getString(MyApplication.getContext(), "uid", "0000");
         int add_nums = 0;
         int max = 0;
         int min = 0;
-        Log.e("WG", "进来的第一次");
+        Log.e("WG", "添加联系人进来");
         if (StringUtils.isEmpty(one_add_num_s) || StringUtils.isEmpty(one_add_num_e)) {
             add_nums = 5;
         } else {
@@ -88,7 +102,6 @@ public class GetPhoneAdd {
 //        }
             String account = SPUtils.getString(MyApplication.getContext(), "wxAccount", ""); //目前的微信号
             Log.e("WG", "微信搜索添加好友的接口是:" + URLS.phone_url + "?zh=" + uid + "&limit=" + add_nums + "&account=" + account);
-
             try {
                 //通讯录加好友请求网络访问部分
                 Response data = OkHttpUtils.get().url(URLS.phone_url).addParams("zh", uid).addParams("limit", add_nums + "").addParams("account", account).build().execute();
@@ -107,8 +120,14 @@ public class GetPhoneAdd {
                     addCommunication();
                 } else {
                     Log.e("WG", " 获取号码失败");
-                }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MyApplication.getContext(), "连接服务器超时,获取号码失败", Toast.LENGTH_LONG).show();
+                        }
 
+                    });
+                }
             } catch (IOException e) {
                 Log.e("WG", "getPhoneAdd: 异常：" + e.toString());
                 e.printStackTrace();
@@ -122,10 +141,12 @@ public class GetPhoneAdd {
          */
         String xmlData;
         List<Integer> listXY;
-
-//        WxTaskUtils.getWxTaskUtils().switchWxAccount();
-//        WxTaskUtils.getWxTaskUtils().switchWxAccount();
-        WxTaskUtils.getWxTaskUtils().backHome();
+        Log.e("WG", "addCommunication: " + flg);
+        if (!flg) {
+            WxTaskUtils.getWxTaskUtils().switchWxAccount();
+            WxTaskUtils.getWxTaskUtils().switchWxAccount();
+        }
+//        WxTaskUtils.getWxTaskUtils().backHome();
         AdbUtils.getAdbUtils().wxActivityJump("com.tencent.mm/com.tencent.mm.ui.bindmobile.MobileFriendUI");
         Log.e("WG", "等待中 ");
 //        ShowToast.show("等待25秒刷新联系人界面", (Activity) context);
@@ -159,16 +180,13 @@ public class GetPhoneAdd {
 //            List<String> meWxFriend = wxUtils.getNodeList(xmlData);
             if (xmlData.contains("添加")) {
                 for (int i = 5; i < meWxFriend.size(); i++) {
-//                    NodeXmlBean.NodeBean nodeBean = wxUtils.getNodeXmlBean(meWxFriend.get(i)).getNode();
                     NodeXmlBean.NodeBean nodeBean = AdbUtils.getAdbUtils().getNodeXmlBean(meWxFriend.get(i)).getNode();
                     if (nodeBean != null && nodeBean.getText() != null && "添加".equals(nodeBean.getText())) {
                         str_name = AdbUtils.getAdbUtils().getNodeXmlBean(meWxFriend.get(i - 3)).getNode().getText();
-//                        str_name = wxUtils.getNodeXmlBean(meWxFriend.get(i - 3)).getNode().getText();
                         Log.e("WG", "addCommunication: " + "通讯录好友名称是" + str_name);
 //                        LogUtils.d("通讯录好友名称是" + str_name);
                         if (nodeBean.getResourceid() != null && ("com.tencent.mm:id/b_k".equals(nodeBean.getResourceid()))) {
-//                            listXY = wxUtils.getXY(nodeBean.getBounds());//获取添加坐标
-                            listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());
+                            listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());//获取添加坐标
                             x1 = listXY.get(0);
                             y1 = listXY.get(1);
                             x2 = listXY.get(2);
@@ -176,9 +194,7 @@ public class GetPhoneAdd {
                             //在添加之前，我们先点击通讯录的个人信息，统计微信好友信息
                             if (str_name != null && !meName.contains(str_name)) {//统计一次之后记录之前的名字，下次就不要统计了
                                 meName = meName + str_name;
-                                if (!new StatisticsWxFriendsMessage(listXY, str_name, sex_key).sStatisticsWxFriends()) {
-                                    continue;
-                                }
+                                new StatisticsWxFriendsMessage(listXY, str_name, sex_key).sStatisticsWxFriends();
                                 Thread.sleep(3000);
                             } else {
                                 continue;
@@ -190,8 +206,8 @@ public class GetPhoneAdd {
                             }
                             if (StringUtils.isEmpty(SPUtils.getString(MyApplication.getContext(), "add_" +
                                     "+interval_time_s", "")) && StringUtils.isEmpty(SPUtils.getString(MyApplication.getContext(), "add_interval_time_e", ""))) {
-                                min = 30;
-                                max = 60;
+                                min = 20;
+                                max = 30;
 //                                min = 10;
 //                                max = 15;
                             } else {
@@ -213,7 +229,7 @@ public class GetPhoneAdd {
                                     continue;//证明无需验证，自动通过了
                                 }
                                 List<String> sendneirong = AdbUtils.getAdbUtils().getNodeList(xmlData);
-                                Log.e("WG", "addCommunication: "+sendneirong.size());
+                                Log.e("WG", "addCommunication: " + sendneirong.size());
                                 for (int a = 0; a < sendneirong.size(); a++) {
                                     NodeXmlBean.NodeBean nodeBeans = AdbUtils.getAdbUtils().getNodeXmlBean(sendneirong.get(a)).getNode();
                                     if (nodeBeans != null && "com.tencent.mm:id/d0c".equals(nodeBeans.getResourceid())) {
@@ -227,9 +243,14 @@ public class GetPhoneAdd {
                                         int x = MyApplication.getContext().getResources().getDimensionPixelSize(R.dimen.x160);
                                         int y = MyApplication.getContext().getResources().getDimensionPixelSize(R.dimen.y93);//EdiText
                                         AdbUtils.getAdbUtils().adb("input swipe " + x + " " + y + " " + x + " " + y + " " + 1000);//长按EdiText
-
-//                                        ClipboardManager cm = (ClipboardManager) MyApplication.getContext().getSystemService(CLIPBOARD_SERVICE);
-//                                        cm.setText(neirong);
+                                        String finalNeirong = neirong;
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                cm = (ClipboardManager) TaskFragment.mContext.getSystemService(CLIPBOARD_SERVICE);
+                                                cm.setText(finalNeirong);
+                                            }
+                                        });
                                         Log.e("WG", "addCommunication: 复制了");
                                         AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x24, R.dimen.y51, R.dimen.x96, R.dimen.y80);//点击复制 黏贴
                                         Log.e("WG", "addCommunication: 复制点击了");
@@ -254,7 +275,8 @@ public class GetPhoneAdd {
 
                                 } else {
                                     if (zuiduo_num == Integer.parseInt(day_add_num)) {
-                                        WxTaskUtils.getWxTaskUtils().backHome();
+//                                        WxTaskUtils.getWxTaskUtils().backHome();
+                                        AdbUtils.getAdbUtils().back();
                                         Log.e("WG", "第一个位置");
                                         break;
                                     }
@@ -266,7 +288,8 @@ public class GetPhoneAdd {
                                         SPUtils.put(MyApplication.getContext(), "meici_num", meici_num);
                                         Thread.sleep(3000);
                                         Log.e("WG", "任务完成");
-                                        WxTaskUtils.getWxTaskUtils().backHome();
+//                                        WxTaskUtils.getWxTaskUtils().backHome();
+                                        AdbUtils.getAdbUtils().back();
                                         Log.e("WG", "第二个位置");
                                         //CheckMessage();
                                         break;
@@ -280,7 +303,8 @@ public class GetPhoneAdd {
                 AdbUtils.getAdbUtils().adbUpSlide(MyApplication.getContext());
                 xmlData = AdbUtils.getAdbUtils().dumpXml2String();
                 if (TAG.equals(xmlData)) {
-                    WxTaskUtils.getWxTaskUtils().backHome();
+//                    WxTaskUtils.getWxTaskUtils().backHome();
+                    AdbUtils.getAdbUtils().back();
                     Log.e("WG", " 第三个位置");
 //                    LogUtils.d("第三个位置");
                     // CheckMessage();
@@ -344,12 +368,9 @@ public class GetPhoneAdd {
     public void toForUnRead() throws Exception {
         String xmlData;
         List<Integer> listXY;
-//        wxUtils.openWx((Activity) context);
-        WxTaskUtils.getWxTaskUtils().openWx();
+//        WxTaskUtils.getWxTaskUtils().openWx();
         WxTaskUtils.getWxTaskUtils().backHome();
-//        backHome();
-//        wxUtils.adbClick(42, 822, 78, 847);//点击微信
-        AdbUtils.getAdbUtils().click4xy(42, 822, 78, 847);//点击微信
+        AdbUtils.getAdbUtils().click4xy(42, 822, 78, 847);//点击微信通讯录
         String meName = "";
         int kkk = 0;
         SPUtils.putInt(MyApplication.getContext(), "HuaDongCiShu", 0);
@@ -366,10 +387,9 @@ public class GetPhoneAdd {
                     NodeXmlBean.NodeBean nodeBean3 = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(b - 8)).getNode();
                     if (nodeBean.getResourceid() != null && nodeBean.getResourceid().equals("com.tencent.mm:id/apt")
                             && nodeBean.getText() != null && nodeBean2.getText() != null && nodeBean3.getText() != null) {
-                        listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());//
+//                        listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());//
                         listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());
                         AdbUtils.getAdbUtils().click4xy(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));
-
                         wxReply(nodeBean.getText(), nodeBean2.getText());
                     }
                 }
@@ -412,7 +432,8 @@ public class GetPhoneAdd {
                                 listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());
                                 AdbUtils.getAdbUtils().click4xy(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));
                                 Thread.sleep(2000);
-                                WxTaskUtils.getWxTaskUtils().backHome();
+//                                WxTaskUtils.getWxTaskUtils().backHome();
+                                AdbUtils.getAdbUtils().back();
                                 break;
                             }
                         }
@@ -430,6 +451,7 @@ public class GetPhoneAdd {
 
     private void wxReply(String str, String str2) throws Exception {
         String xmlData;
+        AdbUtils.getAdbUtils().adb("settings put secure default_input_method com.android.inputmethod.latin/.LatinIME");
         xmlData = AdbUtils.getAdbUtils().dumpXml2String();
         if (!xmlData.contains("com.tencent.mm:id/he")) {
             WxTaskUtils.getWxTaskUtils().backHome();
@@ -451,7 +473,7 @@ public class GetPhoneAdd {
                 } else if (qunNameBean.getText().contains("腾讯新闻")) {
                     AdbUtils.getAdbUtils().click4xy(45, 401, 435, 482);//点击腾讯新闻 阅读
                     Log.e("WG", "阅读中 ");
-                    Thread.sleep(60000);
+                    Thread.sleep(40000);
                     WxTaskUtils.getWxTaskUtils().backHome();
                     return;
                 } else {
@@ -506,19 +528,12 @@ public class GetPhoneAdd {
                             sendReply(newStr2);
                         }
                     }).start();
-
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
+                    Thread.sleep(8000);
                     String[] imageData1 = {"[微笑]", "[得意]", "[呲牙]", "[嘿哈]", "[捂脸]", "[机智]", "[奸笑]", "[耶]", "[爱情]"};
                     Random rand = new Random();
                     int x = MyApplication.getContext().getResources().getDimensionPixelSize(R.dimen.x136);
                     int y = MyApplication.getContext().getResources().getDimensionPixelSize(R.dimen.y383);//EdiText
                     int randNum1 = rand.nextInt(9);
-//                    xmlData = wxUtils.getXmlData();
                     xmlData = AdbUtils.getAdbUtils().dumpXml2String();
                     if (!xmlData.contains("切换到按住说话")) {
                         AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x4, R.dimen.y367, R.dimen.x52, R.dimen.y400);//切换到键盘
@@ -528,17 +543,21 @@ public class GetPhoneAdd {
                     }
 //                    wxUtils.adb("input swipe " + 100 + " " + 420 + " " + 100 + " " + 420 + " " + 5000);  //长按3秒
                     AdbUtils.getAdbUtils().adb("input swipe " + 100 + " " + 420 + " " + 100 + " " + 420 + " " + 5000);//长按5秒
-                    ClipboardManager cm = (ClipboardManager) MyApplication.getContext().getSystemService(CLIPBOARD_SERVICE);
-                    String replyMessageData = SPUtils.getString(MyApplication.getContext(), "WxReplyMessage", "");
-                    cm.setText(imageData1[randNum1] + replyMessageData);
-//                    wxUtils.adbClick(110, 385, 110, 385);//点击粘贴
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ClipboardManager cm = (ClipboardManager) TaskFragment.mContext.getSystemService(CLIPBOARD_SERVICE);
+                            String replyMessageData = SPUtils.getString(MyApplication.getContext(), "WxReplyMessage", "");
+                            cm.setText(imageData1[randNum1] + replyMessageData);
+                        }
+                    });
                     AdbUtils.getAdbUtils().click4xy(110, 385, 110, 385);//点击粘贴
-//                    wxUtils.adbClick(405, 411, 471, 459); //点击发送
                     AdbUtils.getAdbUtils().click4xy(405, 411, 471, 459);//点击发送
-                    WxTaskUtils.getWxTaskUtils().backHome();
+//                    WxTaskUtils.getWxTaskUtils().backHome();
+                    AdbUtils.getAdbUtils().back();
+                    AdbUtils.getAdbUtils().back();
                     break;
                 }
-
             }
         }
 
@@ -576,6 +595,122 @@ public class GetPhoneAdd {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+
+    public void addFriendsReturn() throws Exception {
+//        WxTaskUtils.getWxTaskUtils().openWx();
+        WxTaskUtils.getWxTaskUtils().backHome();
+        AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x80, R.dimen.y367, R.dimen.x160, R.dimen.y400);//点击通讯录
+        AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x80, R.dimen.y367, R.dimen.x160, R.dimen.y400);//点击通讯录
+        AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x14, R.dimen.y51, R.dimen.x296, R.dimen.y87);//新的朋友
+        int count = 0;
+        while (count < 3) {
+            count++;
+            xmlData = AdbUtils.getAdbUtils().dumpXml2String();
+            if (!(xmlData.contains("添加朋友") && xmlData.contains("新的朋友"))) {
+                Log.e("WG", "addFriendsReturn: 任务完成了");
+                return;
+            }
+            nodeList = AdbUtils.getAdbUtils().getNodeList(xmlData);
+            Log.e("WG", "addFriendsReturn: " + nodeList);
+            for (int a = 0; a < nodeList.size(); a++) {
+                if (a < 4) {
+                    continue;
+                }
+                NodeXmlBean.NodeBean nodeBean = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(a)).getNode();
+                NodeXmlBean.NodeBean nodeBean1 = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(a - 2)).getNode();
+                if (nodeBean.getResourceid() != null && "com.tencent.mm:id/b8j".equals(nodeBean.getResourceid()) && nodeBean.getText() != null && nodeBean.getText().equals("添加")) {
+                    if (!StringUtils.isEmpty(nodeBean1.getText()) && !nodeBean1.getText().contains("您是京东挑选的优质用户") && !nodeBean1.getText().contains("手机联系人")) {
+                        listXY = AdbUtils.getAdbUtils().getXY(nodeBean1.getBounds());//
+                        AdbUtils.getAdbUtils().click4xy(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));
+                        //进入详细资料界面
+                        xmlData = AdbUtils.getAdbUtils().dumpXml2String();
+                        if (reply_msg == null) {
+                            reply_msg = "你好";
+                        }
+                        if (!xmlData.contains("详细资料") && !xmlData.contains("设置备注和标签") || xmlData.contains(reply_msg) || xmlData.contains("滚") || xmlData.contains("病")
+                                || xmlData.contains("傻逼") || xmlData.contains("妈") || xmlData.contains("死") || xmlData.contains("智障") || xmlData.contains("白痴")
+                                ) {//判断下是否已经回复了，回复了就返回
+                            AdbUtils.getAdbUtils().back();//返回
+                            continue;
+                        }
+                        List<String> returnList = AdbUtils.getAdbUtils().getNodeList(xmlData);
+                        String newFriends = "";
+                        for (int ccc = 0; ccc < returnList.size(); ccc++) {
+                            NodeXmlBean.NodeBean nodeBean_ccc = AdbUtils.getAdbUtils().getNodeXmlBean(returnList.get(ccc)).getNode();
+                            if (nodeBean_ccc != null && nodeBean_ccc.getText() != null && nodeBean_ccc.getResourceid() != null && nodeBean_ccc.getResourceid().equals("com.tencent.mm:id/pl")) {
+                                newFriends = nodeBean_ccc.getText();
+                                Log.e("WG", "addFriendsReturn: " + newFriends);
+                                break;
+                            }
+                        }
+                        int kkk = 0;
+                        for (int ddd = 0; ddd < returnList.size(); ddd++) {
+                            NodeXmlBean.NodeBean nodeBean_ddd = AdbUtils.getAdbUtils().getNodeXmlBean(returnList.get(ddd)).getNode();
+                            if (nodeBean_ddd != null && nodeBean_ddd.getText() != null && nodeBean_ddd.getText().contains("我:")) {
+                                kkk++;
+                                break;
+                            }
+                        }
+                        if (kkk == 2 || kkk == 3) {
+                            AdbUtils.getAdbUtils().back();
+                            continue;
+                        }
+                        String newFriends2 = "";
+                        for (int eee = returnList.size() - 5; eee > 0; eee--) {
+                            NodeXmlBean.NodeBean nodeBean_eee = AdbUtils.getAdbUtils().getNodeXmlBean(returnList.get(eee)).getNode();
+                            if (nodeBean_eee != null && nodeBean_eee.getText() != null && nodeBean_eee.getResourceid() != null
+                                    && nodeBean_eee.getResourceid().equals("com.tencent.mm:id/b8z")) {
+                                newFriends2 = nodeBean_eee.getText();
+                                break;
+                            }
+                        }
+                        if (newFriends2.contains("我")) {
+                            AdbUtils.getAdbUtils().back();
+                            continue;
+                        }
+                        for (int b = 0; b < returnList.size(); b++) {
+                            NodeXmlBean.NodeBean nodeBean2 = AdbUtils.getAdbUtils().getNodeXmlBean(returnList.get(b)).getNode();
+                            if (nodeBean2.getResourceid() != null && "com.tencent.mm:id/b90".equals(nodeBean2.getResourceid()) && nodeBean2.getText() != null && nodeBean2.getText().equals("回复")) {
+                                listXY = AdbUtils.getAdbUtils().getXY(nodeBean2.getBounds());//
+//                                wxUtils.adbClick(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));//
+                                AdbUtils.getAdbUtils().click4xy(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));
+                                //点击了回复
+                                if (!TextUtils.isEmpty(reply_msg)) {//不为null，服务器给了 数据。需要设置，然后回复给刚刚加的好友
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            cmm2 = (ClipboardManager) TaskFragment.mContext.getSystemService(CLIPBOARD_SERVICE);
+                                            cmm2.setText(reply_msg);
+                                        }
+                                    });
+                                    AdbUtils.getAdbUtils().adb("input swipe " + 150 + " " + 260 + " " + 200 + " " + 265 + " " + 2000);//长按
+                                    Thread.sleep(1000);
+                                    AdbUtils.getAdbUtils().click4xy(100, 215, 110, 220);
+                                    //重新加载页面，计算出 确定 的位置
+                                    xmlData = AdbUtils.getAdbUtils().dumpXml2String();
+                                    List<String> nodeList3 = AdbUtils.getAdbUtils().getNodeList(xmlData);
+                                    for (int c = 0; c < nodeList3.size(); c++) {
+                                        NodeXmlBean.NodeBean nodeBean3 = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList3.get(c)).getNode();
+                                        if (nodeBean3.getResourceid() != null && "com.tencent.mm:id/all".equals(nodeBean3.getResourceid()) && nodeBean3.getText() != null && nodeBean3.getText().equals("确定")) {
+                                            listXY = AdbUtils.getAdbUtils().getXY(nodeBean3.getBounds());
+                                            AdbUtils.getAdbUtils().click4xy(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));
+                                            break;
+                                        }
+                                    }
+                                }
+                                Thread.sleep(2000);
+                                AdbUtils.getAdbUtils().back();
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+            AdbUtils.getAdbUtils().adbUpSlide(MyApplication.getContext());//向上滑动
         }
     }
 

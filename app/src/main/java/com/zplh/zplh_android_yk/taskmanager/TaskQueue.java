@@ -53,6 +53,7 @@ public class TaskQueue  {
         iTaskObservable = Observable.create(emitter -> {
 
             while (!isRunning.get())
+            emitter.onNext(mTaskQueue.take());
             emitter.onNext( mTaskQueue.take());
         });
         iTaskObservable

@@ -235,8 +235,6 @@ public class CustomQRQun extends BaseTask {
 //                }
 //            }
         }
-
-
     }
 
 

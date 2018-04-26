@@ -33,7 +33,7 @@ public class StatisticsUtils {
     }
 
 
-    public void statistics() throws IOException {
+    public void statistics() throws IOException, InterruptedException {
         String xmlData;
 //        xmlData = wxUtils.getXmlData();
         xmlData = AdbUtils.getAdbUtils().dumpXml2String();
@@ -59,12 +59,10 @@ public class StatisticsUtils {
 
         //设置好友数
         for (String s : strings) {
-//            NodeXmlBean.NodeBean nodeBean = wxUtils.getNodeXmlBean(s).getNode();
             NodeXmlBean.NodeBean nodeBean = AdbUtils.getAdbUtils().getNodeXmlBean(s).getNode();
             if ("com.tencent.mm:id/amy".equals(nodeBean.getResourceid())) {
                 contentBean.setFriends_num(nodeBean.getText().replace("位联系人", ""));
                 Log.e("WG", "statistics: " + "联系人" + nodeBean.getText().replace("位联系人", ""));
-//                LogUtils.d("联系人" + nodeBean.getText().replace("位联系人", ""));
                 break;
             }
         }
@@ -73,11 +71,7 @@ public class StatisticsUtils {
 
         //设置群信息
         AdbUtils.getAdbUtils().adbDimensClick(mContext, R.dimen.x80, R.dimen.y367, R.dimen.x160, R.dimen.y400);//点击通讯录
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Thread.sleep(1000);
         AdbUtils.getAdbUtils().adbDimensClick(mContext, R.dimen.x1, R.dimen.y87, R.dimen.x320, R.dimen.y124);//群聊
 /*        //进入群聊
         nodeList = wxUtils.getNodeList(xmlData);
@@ -97,13 +91,9 @@ public class StatisticsUtils {
         //进入了群列表
         w:
         while (true) {
-//            xmlData = wxUtils.getXmlData();
             xmlData = AdbUtils.getAdbUtils().dumpXml2String();
             if (xmlData.contains("新群聊") && xmlData.contains("你可以通过群聊中的“保存到通讯录”选项，将其保存到这里")) {
-//                wxUtils.adb("input keyevent 4");
-                AdbUtils.getAdbUtils().adb("input keyevent 4");
-
-//                ShowToast.show("没有群...", (Activity) context);
+                AdbUtils.getAdbUtils().back();
                 break;
             }
 
@@ -115,19 +105,9 @@ public class StatisticsUtils {
             }
 
             for (int a = 0; a < nodeList.size(); a++) {
-//                NodeXmlBean.NodeBean nodeBean = wxUtils.getNodeXmlBean(nodeList.get(a)).getNode();
                 NodeXmlBean.NodeBean nodeBean = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(a)).getNode();
                 if (nodeBean.getText() != null && nodeBean.getResourceid() != null && nodeBean.getResourceid().contains("com.tencent.mm:id/a9u")) {
                     String flockName = nodeBean.getText();
-                   /* if (true) {//给自己群发
-                        if (nodeBean.getText().length() < 7) {
-                            continue;
-                        }
-                        if (!(nodeBean.getText().substring(nodeBean.getText().length() - 7).startsWith("a") || nodeBean.getText().substring(nodeBean.getText().length() - 7).startsWith("A")) && !(nodeBean.getText().substring(nodeBean.getText().length() - 7).startsWith("b") || nodeBean.getText().substring(nodeBean.getText().length() - 7).startsWith("B"))) {
-                            continue;
-                        }
-                    }*/
-
 
                     if (qunClickMark.contains(nodeBean.getText())) {
                         continue;
@@ -139,9 +119,7 @@ public class StatisticsUtils {
                             }
                         }
                         isOneSlide = false;
-//                        listXY = wxUtils.getXY(nodeBean.getBounds());//获取群坐标
                         listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());//获取群坐标
-//                        wxUtils.adbClick(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));//点击进入群
                         AdbUtils.getAdbUtils().click4xy(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));
                         qunClickMark = qunClickMark + nodeBean.getText() + ",";
                     }
@@ -149,7 +127,6 @@ public class StatisticsUtils {
                     //_______________________________________________________________________________________________
                     String qunName = "";
                     //获取群人数，男女群信息
-//                    String qunNameData = wxUtils.getXmlData();
                     String qunNameData = AdbUtils.getAdbUtils().dumpXml2String();
                     List<String> qunNameDataList = new ArrayList<String>();
                     Matcher matcherA = pattern.matcher(qunNameData);
@@ -157,19 +134,15 @@ public class StatisticsUtils {
                         qunNameDataList.add(matcherA.group() + "/>");
                     }
                     if (!(qunNameData.contains("当前所在页面,与"))) {
-                        Toast.makeText(MyApplication.getContext(), "任务被中断，结束拉群任务", Toast.LENGTH_LONG).show();
-//                        ShowToast.show("任务被中断，结束拉群任务", (Activity) context);
-
+//                        Toast.makeText(MyApplication.getContext(), "任务被中断，结束拉群任务", Toast.LENGTH_LONG).show();
                         break w;
                     }
 
                     for (int c = 0; c < qunNameDataList.size(); c++) {
-//                        NodeXmlBean.NodeBean qunNameBean = wxUtils.getNodeXmlBean(qunNameDataList.get(c)).getNode();
                         NodeXmlBean.NodeBean qunNameBean = AdbUtils.getAdbUtils().getNodeXmlBean(qunNameDataList.get(c)).getNode();
                         if ("com.tencent.mm:id/hj".equals(qunNameBean.getResourceid())) {
                             qunName = qunNameBean.getText();
                             Log.e("WG", "statistics: " + qunName);
-//                            LogUtils.d(qunName + "qunName");
                             break;
                         }
                     }
@@ -188,7 +161,7 @@ public class StatisticsUtils {
 //--------------------------------------------------------------------------------------------------------------------------------------
 
                     //返回
-                    AdbUtils.getAdbUtils().adb("input keyevent 4");
+                    AdbUtils.getAdbUtils().back();
                     AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x80, R.dimen.y367, R.dimen.x160, R.dimen.y400);
                     AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x1, R.dimen.y87, R.dimen.x320, R.dimen.y124);
 
@@ -205,10 +178,8 @@ public class StatisticsUtils {
             xmlData = AdbUtils.getAdbUtils().dumpXml2String();
             if (xmlData.equals(strXmlData)) {
 //                wxUtils.adb("input keyevent 4");
-                AdbUtils.getAdbUtils().adb("input keyevent 4");
-//                ShowToast.show("群消息发送完成", (Activity) context);
-                Log.e("WG", "statistics: 群发消息发送完成");
-//                Toast.makeText(MyApplication.getContext(), "群消息发送完成", Toast.LENGTH_LONG).show();
+                AdbUtils.getAdbUtils().back();
+                Log.e("WG", "statistics: 消息发送完成");
                 break;
             }
         }
@@ -225,7 +196,7 @@ public class StatisticsUtils {
 //        LogUtils.d("JSON" + str.toString());
 //        ShowToast.show(str.toString(), (Activity) context);
 //        setWxnum(str);
-        Response response = NetUtils.get(URLS.wxNewstatictis_crowd(), null);
+//        Response response = NetUtils.get(URLS.wxNewstatictis_crowd(), null);
         try {
             Response data = OkHttpUtils.post().url(URLS.wxNewstatictis_crowd()).addParams("data", str.replace("\\", "")).build().execute();
             if (data.code() == 200) {

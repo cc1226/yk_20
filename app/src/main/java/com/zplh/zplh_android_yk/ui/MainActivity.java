@@ -1,6 +1,7 @@
 package com.zplh.zplh_android_yk.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.FrameLayout;
@@ -31,7 +32,7 @@ public class MainActivity extends BaseUI implements TaskPCallback {
     ImageView ivAction;
     @BindView(R.id.tv_enter)
     TextView tvEnter;
-//    @BindView(R.id.rl_title)
+    //    @BindView(R.id.rl_title)
 //    LinearLayout rlTitle;
     @BindView(R.id.fragmentLayout)
     FrameLayout fragmentLayout;
@@ -49,6 +50,7 @@ public class MainActivity extends BaseUI implements TaskPCallback {
     DrawerLayout drawerLayout;
     private TaskP taskP;
     private TaskFragment taskFragment;
+    public static Activity myActivity;
 
     @SuppressLint("CheckResult")
     @Override
@@ -56,14 +58,17 @@ public class MainActivity extends BaseUI implements TaskPCallback {
         //初始化taskP
         taskP = new TaskP(this);
         taskP.startTask();
+        myActivity = this;
         JPushInterface.init(this);
     }
 
     @Override
     protected void initView() {
-        taskFragment = TaskFragment.newInstance();
+//        taskFragment = TaskFragment.newInstance();
+        TaskListFragment taskListFragment = TaskListFragment.newInstance();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.contentLayout,taskFragment).commit();
+        fragmentTransaction.add(R.id.contentLayout, taskListFragment).commit();
+//        getFragmentManager().findFragmentById(R.layout.task_list_fragment).getView().findViewById(R.layout.activity_main);
     }
 
     @Override

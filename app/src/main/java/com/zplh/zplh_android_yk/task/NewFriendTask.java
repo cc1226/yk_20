@@ -19,6 +19,7 @@ import com.zplh.zplh_android_yk.utils.WxTaskUtils;
  */
 public class NewFriendTask extends BaseTask {
     int conunt = 0;
+    public boolean flg;
 
     public NewFriendTask(Priority priority, int sequence, TaskMessageBean.ContentBean.DataBean taskBean) {
         super(priority, sequence, taskBean);
@@ -28,13 +29,15 @@ public class NewFriendTask extends BaseTask {
     public void run(TaskCallback callback) throws Exception {
 
         WxIsInstallUtils.GetIsInstallWx().IsInstall(getTaskBean().getTask_id());
-        Log.e("WG", "run: 读取联系人开始了");
+        Log.e("WG", "run: 添加联系人开始了");
         callback.onTaskStart(this);
-        WxTaskUtils.getWxTaskUtils().backHome();
-        WxTaskUtils.getWxTaskUtils().switchWxAccount();
+        WxTaskUtils.getWxTaskUtils().openWxIsHome();
+        WxTaskUtils.getWxTaskUtils().switchWxAccount1();
 
-        WxIsInstallUtils.GetIsInstallWx().getIsAccountIsOk();
-
+        if (!WxIsInstallUtils.GetIsInstallWx().getIsAccountIsOk()) {
+            Log.e("WG", "有账号登录异常");
+            flg = true;
+        }
         while (true) {
             Log.e("WG", "run: 正在清理手机联系人请稍后...");
             WxTaskUtils.getWxTaskUtils().DeletPhone(MyApplication.getContext());
@@ -52,11 +55,13 @@ public class NewFriendTask extends BaseTask {
         //contact_verify_msg = "";//申请添加好友的发送内容
         // day_add_num = "";	/*10*///一个微信号每天最多请求加好友次数:(通讯录加好友)
         //one_add_num = "";	/*13*///一个微信号每次任务最多请求加好友次数(通讯录加好友)
-        GetPhoneAdd getPhoneAdd = new GetPhoneAdd("3", getTaskBean().getParam().getOne_add_num_s(),
+        GetPhoneAdd getPhoneAdd = new GetPhoneAdd(flg, getTaskBean().getParam().getOne_add_num_s(),
                 getTaskBean().getParam().getOne_add_num_e(), getTaskBean().getParam().getAdd_interval_time_s(),
                 getTaskBean().getParam().getAdd_interval_time_e(), getTaskBean().getParam().getContact_verify_msg(),
                 getTaskBean().getParam().getDay_add_num(), getTaskBean().getParam().getOne_add_num());
         getPhoneAdd.getPhoneAdd();
+        getPhoneAdd.addFriendsReturn();
+        getPhoneAdd.toForUnRead();
         callback.onTaskSuccess(this);
     }
 
@@ -64,5 +69,4 @@ public class NewFriendTask extends BaseTask {
     public void stop() {
         Thread.interrupted();
     }
-
 }

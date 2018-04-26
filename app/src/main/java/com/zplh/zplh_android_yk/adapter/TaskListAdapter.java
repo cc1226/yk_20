@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHolder> {
     List<TaskMessageBean.ContentBean.DataBean> dataBeans;
 
+
     public List<TaskMessageBean.ContentBean.DataBean> getDataBeans() {
         return dataBeans;
     }
@@ -65,10 +66,6 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-
         }
     }
-
-
-
 }

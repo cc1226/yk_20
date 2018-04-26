@@ -17,6 +17,7 @@ import com.zplh.zplh_android_yk.base.MyApplication;
 import com.zplh.zplh_android_yk.bean.NodeXmlBean;
 import com.zplh.zplh_android_yk.bean.WxFriendsMessageBean;
 
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,8 @@ public class WxTaskUtils {
     private static WxTaskUtils wxTaskUtils;
     private NodeXmlBean.NodeBean nodeBean;
     private List<Integer> listXY;
-//    private BaseApplication app = new BaseApplication();
+    private boolean flag;
+    //    private BaseApplication app = new BaseApplication();
 
     private WxTaskUtils() {
 
@@ -169,26 +171,6 @@ public class WxTaskUtils {
 
                     //设置间隔时间
                     int start;
-//                    if (StringUtils.isEmpty(app.getWxGeneralSettingsBean().getRemark_interval_time_s())) {
-//                        start = 3;
-//                    } else {
-//                        start = Integer.valueOf(app.getWxGeneralSettingsBean().getRemark_interval_time_s());
-//                    }
-//                    int end;
-//                    if (StringUtils.isEmpty(app.getWxGeneralSettingsBean().getRemark_interval_time_e())) {
-//                        end = 6;
-//                    } else {
-//                        end = Integer.valueOf(app.getWxGeneralSettingsBean().getRemark_interval_time_e());
-//                    }
-//                    int timeSleep = random.nextInt(end - start + 1) + start;
-//                    LogUtils.e("end=" + end + "__start=" + start + "___间隔随机数=" + timeSleep);
-//                    Log.e("WG", "end=" + end + "__start=" + start + "___间隔随机数=" + timeSleep);
-//                    ShowToast.show("间隔时间：" + timeSleep + "秒", (Activity) context);
-//                    try {
-//                        Thread.sleep(timeSleep * 1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
                     break;
                 }
             }
@@ -240,9 +222,10 @@ public class WxTaskUtils {
         String xmlData = "";
         SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "0");
         int sendAccountType = SPUtils.getInt(MyApplication.getContext(), "is_accType", 0);//1为新号 2为老号 3为全部
+        Log.e("WG", "什么号： " + sendAccountType);
         int accountNum = 0;
         adbUtils.click4xy(411, 822, 429, 847);// 点击右下角的我
-        xmlData =   AdbUtils.getAdbUtils().dumpXml2String();
+        xmlData = AdbUtils.getAdbUtils().dumpXml2String();
         if (!xmlData.contains("相册") || !xmlData.contains("收藏")) {
             return;
         } else {
@@ -259,12 +242,12 @@ public class WxTaskUtils {
         }
         adbUtils.adbUpSlide(MyApplication.getContext());
         goSwitchAccounts();
-            Thread.sleep(3000);
+        Thread.sleep(3000);
         xmlData = AdbUtils.getAdbUtils().dumpXml2String();
         List<String> nodeList = adbUtils.getNodeList(xmlData);
         for (int i = 0; i < nodeList.size() - 1; i++) {
             nodeBean = adbUtils.getNodeXmlBean(nodeList.get(i)).getNode();
-            if (nodeBean != null && nodeBean.getText() != null && !nodeBean.getText().equals("切换账号")&& nodeBean.getResourceid() != null && nodeBean.getResourceid().equals("com.tencent.mm:id/d5s")) {
+            if (nodeBean != null && nodeBean.getText() != null && !nodeBean.getText().equals("切换帐号") && nodeBean.getResourceid() != null && nodeBean.getResourceid().equals("com.tencent.mm:id/d5s")) {
                 accountNum++;
             }
         }
@@ -275,20 +258,24 @@ public class WxTaskUtils {
                 break;
             }
         }
-        if ( accountNum == 2 ) {  //老号在左边  新号在右边
+        if (accountNum == 2) {  //老号在左边  新号在右边
 
             //说明已经登录了两个账号
             if (listXY.get(0) == 110) {
                 //正在使用的账号 在左边（老号）， 点击右边的账号切换
 
                 if ((sendAccountType == 3) || (sendAccountType == 1)) {
+                    Log.e("WG", "switchWxAccount1 110: " + sendAccountType);
                     SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "1"); //目前的账号在左边
                     adbUtils.click4xy(0, 36, 90, 108);//点击左上角的返回
+//                    adbUtils.back();
                     SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "1"); // 没有切换
                     adbUtils.click4xy(0, 36, 90, 108);//点击左上角的返回
+//                    adbUtils.back();
                     return;
                 }
                 if (sendAccountType == 2) {
+                    Log.e("WG", "switchWxAccount1 110: " + sendAccountType);
                     SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "2"); //切换后的账号在右边
                     adbUtils.click4xy(288, 457, 384, 553);
                     SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "2"); // 切换成功
@@ -297,35 +284,39 @@ public class WxTaskUtils {
                 //正在使用的账号 在右边(新号)， 点击左边的账号切换
 
                 if ((sendAccountType == 3) || (sendAccountType == 2)) {
+                    Log.e("WG", "switchWxAccount1 302: " + sendAccountType);
                     SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "2"); //目前的账号在右边
                     adbUtils.click4xy(0, 36, 90, 108);//点击左上角的返回
+//                    adbUtils.back();
                     SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "1"); // 没有切换
                     adbUtils.click4xy(0, 36, 90, 108);//点击左上角的返回
+//                    adbUtils.back();
                     return;
                 }
                 if (sendAccountType == 1) {
+                    Log.e("WG", "switchWxAccount1 302: " + sendAccountType);
                     SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "1"); //切换后的账号在右边
                     adbUtils.click4xy(96, 457, 192, 553);
                     SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "2"); // 切换成功
                 }
             }
-                Thread.sleep(15000);
+            Thread.sleep(10000);
 
-        }else {
-            if (listXY.get(0) == 110){
-                if (sendAccountType == 1){
-                    SPUtils.putString(MyApplication.getContext(),"AccountIsOnlyOne","2");
+        } else {
+            if (listXY.get(0) == 110) {
+                if (sendAccountType == 1) {
+                    SPUtils.putString(MyApplication.getContext(), "AccountIsOnlyOne", "2");
                     SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "1"); //目前的账号在左边
-                }else {
-                    SPUtils.putString(MyApplication.getContext(),"AccountIsOnlyOne","1");  //失败
+                } else {
+                    SPUtils.putString(MyApplication.getContext(), "AccountIsOnlyOne", "1");  //失败
                     SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "1"); //目前的账号在右边
                 }
             } else if (listXY.get(0) == 302) {
-                if (sendAccountType == 1){
-                    SPUtils.putString(MyApplication.getContext(),"AccountIsOnlyOne","1");//失败
+                if (sendAccountType == 1) {
+                    SPUtils.putString(MyApplication.getContext(), "AccountIsOnlyOne", "1");//失败
                     SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "2"); //目前的账号在右边
-                }else {
-                    SPUtils.putString(MyApplication.getContext(),"AccountIsOnlyOne","2");
+                } else {
+                    SPUtils.putString(MyApplication.getContext(), "AccountIsOnlyOne", "2");
                     SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "2"); //目前的账号在右边
                 }
             }
@@ -333,7 +324,6 @@ public class WxTaskUtils {
         }
 
     }
-
 
 
     public void switchWxAccount() throws Exception {
@@ -352,8 +342,8 @@ public class WxTaskUtils {
         List<String> nodeList = AdbUtils.getAdbUtils().getNodeList(xmlData);
         for (int i = 0; i < nodeList.size() - 1; i++) {
             nodeBean = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(i)).getNode();
-            if (nodeBean.getText() != null && !nodeBean.getText().isEmpty() && nodeBean.getResourceid() != null && nodeBean.getResourceid().equals("com.tencent.mm:id/d5s")) {
-                Log.e("WG", "switchWxAccount: 第一次循环进来了");
+            if (nodeBean != null && nodeBean.getText() != null && !nodeBean.getText().equals("切换帐号") && nodeBean.getResourceid() != null && nodeBean.getResourceid().equals("com.tencent.mm:id/d5s")) {
+                Log.e("WG", "switchWxAccount: 进来了1");
                 accountNum++;
             }
         }
@@ -361,7 +351,7 @@ public class WxTaskUtils {
             nodeBean = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(i)).getNode();
             if (nodeBean.getText() != null && nodeBean.getText().equals("当前使用") && nodeBean.getResourceid() != null && nodeBean.getResourceid().equals("com.tencent.mm:id/d5v")) {
                 listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());//获取 当前使用的坐标
-                Log.e("WG", "switchWxAccount: 第二次循环进来了");
+                Log.e("WG", "switchWxAccount: 进来了2");
             }
         }
 
@@ -369,21 +359,30 @@ public class WxTaskUtils {
 //        AdbUtils.getAdbUtils().click4xy(0, 36, 90, 108);
 
         if (accountNum == 2) {  //老号在左边  新号在右边
+            Log.e("WG", "switchWxAccount: 两个号" );
 //            Log.e("WG", "switchWxAccount: 111111");
             //说明已经登录了两个账号
             if (listXY.get(0) == 110) {
                 AdbUtils.getAdbUtils().click4xy(288, 457, 384, 553);
                 SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "2");
+                if (!getIsAccountIsOk()) {
+//                    AdbUtils.getAdbUtils().back();
+                    Log.e("WG", "switchWxAccount: 左边");
+                }
             } else if (listXY.get(0) == 302) {
                 //正在使用的账号 在右边(老号)， 点击左边的账号切换
                 AdbUtils.getAdbUtils().click4xy(96, 457, 192, 553);
                 SPUtils.putString(MyApplication.getContext(), "WxAccountLocation", "1");
+                if (!getIsAccountIsOk()) {
+//                    AdbUtils.getAdbUtils().back();
+                    Log.e("WG", "switchWxAccount: 右边");
+                }
             }
-            Thread.sleep(15000);
+            Thread.sleep(10000);
             return;
         }
         AdbUtils.getAdbUtils().back();
-        backHome();
+//        backHome();
     }
 
 
@@ -507,30 +506,32 @@ public class WxTaskUtils {
 
     /**
      * 判断是否被封号
+     *
      * @return
      */
     public Boolean getIsAccountIsOk() throws Exception {
-        String xmlData = AdbUtils.getAdbUtils().dumpXml2String();
 
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        String xmlData = AdbUtils.getAdbUtils().dumpXml2String();
         if (xmlData.contains("紧急冻结") && xmlData.contains("找回密码") && xmlData.contains("微信安全中心")) {
             String currentLocation = SPUtils.getString(MyApplication.getContext(), "WxAccountLocation", "0");
             AdbUtils.getAdbUtils().back();
             if (currentLocation.equals("1")) {
+                Log.e("WG", "getIsAccountIsOk: 封右边");
                 AdbUtils.getAdbUtils().click4xy(288, 457, 384, 553);
             } else {
                 AdbUtils.getAdbUtils().click4xy(96, 457, 192, 553);
+                Log.e("WG", "getIsAccountIsOk: 封左边");
             }
-                Thread.sleep(10000);
+            Thread.sleep(10000);
             return false;
         }
         return true;
     }
-
 
 
     public void goMobileFriend() {
@@ -546,6 +547,11 @@ public class WxTaskUtils {
     */
     public void addContact(String name, String phoneNumber, Context context) {
         // 创建一个空的ContentValues
+        try {
+            ViewCheckUtils.check();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         ContentValues values = new ContentValues();
 
         // 向RawContacts.CONTENT_URI空值插入，
@@ -593,23 +599,32 @@ public class WxTaskUtils {
      * @param context
      */
     public void DeletPhone(Context context) {
+        try {
+            ViewCheckUtils.check();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         ContentResolver cr = context.getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
-        while (cur.moveToNext()) {
-            try {
-                String lookupKey = cur.getString(cur.getColumnIndex(
-                        ContactsContract.Contacts.LOOKUP_KEY));
-                Uri uri = Uri.withAppendedPath(ContactsContract.
-                        Contacts.CONTENT_LOOKUP_URI, lookupKey);
-                System.out.println("The uri is " + uri.toString());
-                cr.delete(uri, null, null);
-            } catch (Exception e) {
-                System.out.println(e.getStackTrace());
+        boolean flag = SPUtils.getBoolean(MyApplication.getContext(), "flag", true);
+        Log.e("WG", "DeletPhone: " + cur);
+        if (cur != null) {
+            while (cur.moveToNext()) {
+                try {
+                    String lookupKey = cur.getString(cur.getColumnIndex(
+                            ContactsContract.Contacts.LOOKUP_KEY));
+                    Uri uri = Uri.withAppendedPath(ContactsContract.
+                            Contacts.CONTENT_LOOKUP_URI, lookupKey);
+                    System.out.println("The uri is " + uri.toString());
+                    cr.delete(uri, null, null);
+                } catch (Exception e) {
+                    System.out.println(e.getStackTrace());
+                }
             }
+            // ShowToast.show("手机联系人清理完成", (Activity) context);
+            Log.e("WG", "清理完成 ");
         }
-        // ShowToast.show("手机联系人清理完成", (Activity) context);
-        Log.e("WG", "清理完成 ");
     }
 
     private void StatisticsWxFriends(String xmlData) {
@@ -685,27 +700,27 @@ public class WxTaskUtils {
      */
     public void openWxIsHome() throws Exception {
         AdbUtils adbUtils = AdbUtils.getAdbUtils();
-            closeWx();
-            openWx();
+        closeWx();
+        openWx();
         Thread.sleep(2500);
         String xml = adbUtils.dumpXml2String();
         //不在初始化界面 一般情况下是未登陆
-        if (!xml.contains("通讯录") ||!xml.contains("发现")){
-                //在注册界面
-                if (xml.contains("注册")){
-                    throw new Exception("未登录");
-                }
-                //在切换账号界面
-                if (xml.contains("清除登录痕迹")){
-                        switchWxAccount();
-                }
+        if (!xml.contains("通讯录") || !xml.contains("发现")) {
+            //在注册界面
+            if (xml.contains("注册")) {
+                throw new Exception("未登录");
+            }
+            //在切换账号界面
+            if (xml.contains("清除登录痕迹")) {
+                switchWxAccount();
+            }
         }
     }
 
     /**
      * 进入指定的ui
      */
-    public void goUI(){
+    public void goUI() {
 
 
     }
