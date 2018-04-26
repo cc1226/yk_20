@@ -58,7 +58,6 @@ public class InitActivity extends BaseUI {
             startActivity(intent);
             finish();
         }).start();
-
     }
 
     @Override

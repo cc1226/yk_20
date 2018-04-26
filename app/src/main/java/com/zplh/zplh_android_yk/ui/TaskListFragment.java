@@ -45,10 +45,13 @@ public class TaskListFragment extends Fragment {
     private void init() {
         list = TaskManager.getInstance().getTaskList();
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.rv);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         TaskListAdapter myAdapter = new TaskListAdapter();
         myAdapter.setDataBeans(list);
+        int itemCount = myAdapter.getItemCount();
         recyclerView.setAdapter(myAdapter);
     }
+
 
 
     @Override

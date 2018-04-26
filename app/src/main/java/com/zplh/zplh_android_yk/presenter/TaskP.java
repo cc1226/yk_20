@@ -2,7 +2,6 @@ package com.zplh.zplh_android_yk.presenter;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -18,8 +17,6 @@ import com.zplh.zplh_android_yk.module.TaskManager;
 import com.zplh.zplh_android_yk.task.BaseTask;
 import com.zplh.zplh_android_yk.task.InfoNumTask;
 import com.zplh.zplh_android_yk.task.NewFriendTask;
-import com.zplh.zplh_android_yk.utils.ShowToast;
-import com.zplh.zplh_android_yk.utils.ViewCheckUtils;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,19 +27,17 @@ import okhttp3.Response;
  * Created by yong hao zeng on 2018/4/18/018.
  */
 public class TaskP extends BaseP {
+    public TaskP(TaskPCallback taskPCallback) {
+        super(taskPCallback);
 
-    private String log_id;
-    private int task_id;
+    }
+
+
     public static int TASK_SUCCESS = 0;
     public static int TASK_STATES = 1;//任务开始
     public static int TASK_PROGRESS = 2;//任务中止
     public static int TASK_ERROR = 3;//任务异常
 
-
-    public TaskP(TaskPCallback taskPCallback) {
-        super(taskPCallback);
-
-    }
 
 
     private AtomicInteger mAtomicInteger = new AtomicInteger();
@@ -53,6 +48,8 @@ public class TaskP extends BaseP {
         if (taskQueue != null) {
             taskQueue.start();
         }
+
+
     }
 
     //生成不同的任务
@@ -106,10 +103,11 @@ public class TaskP extends BaseP {
     @Override
     public void onTaskSuccess(BaseTask iTask) {
         // TODO: 2018/4/25/025 网络
-
+         String log_id = "" ;
+         int task_id = 0 ;
         for (TaskMessageBean.ContentBean.DataBean dataBean : TaskManager.getInstance().getTaskList()) {
             log_id = dataBean.getLog_id();
-            task_id = dataBean.getTask_id();
+             task_id = dataBean.getTask_id();
             dataBean.setStates(TASK_SUCCESS);
         }
         try {
@@ -122,6 +120,8 @@ public class TaskP extends BaseP {
             Log.e("WG", "上传任务成功 异常 " + e.toString());
         }
     }
+
+
 
 
     /**
