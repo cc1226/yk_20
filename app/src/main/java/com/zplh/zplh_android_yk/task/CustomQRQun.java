@@ -72,6 +72,7 @@ public class CustomQRQun extends BaseTask {
 //            }
 //        }
 
+
         // 进入搜索界面
         wxTaskUtils.goSearch();
 

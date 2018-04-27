@@ -15,6 +15,7 @@ import com.zplh.zplh_android_yk.event.TaskEvent;
 import com.zplh.zplh_android_yk.imp.ITask;
 import com.zplh.zplh_android_yk.module.TaskManager;
 import com.zplh.zplh_android_yk.task.BaseTask;
+import com.zplh.zplh_android_yk.task.HavenoTash;
 import com.zplh.zplh_android_yk.task.InfoNumTask;
 import com.zplh.zplh_android_yk.task.NewFriendTask;
 
@@ -32,30 +33,20 @@ public class TaskP extends BaseP {
 
     }
 
-
-    public static int TASK_SUCCESS = 0;
-    public static int TASK_STATES = 1;//任务开始
-    public static int TASK_PROGRESS = 2;//任务中止
-    public static int TASK_ERROR = 3;//任务异常
-
-
-
     private AtomicInteger mAtomicInteger = new AtomicInteger();
-
 
     @Override
     public void startTask() {
         if (taskQueue != null) {
             taskQueue.start();
         }
-
-
     }
 
     //生成不同的任务
     @Override
     public void taskEvent(TaskEvent event) {
         Logger.t("event").d("收到eventbus：" + event.getTask().getTask_id());
+        Log.e("WG", "taskEvent: " + event.getTask().getParam().getRecord_time_s());
         ITask task = null;
         switch (event.getTask().getTask_id()) {
             case 5:
@@ -64,11 +55,16 @@ public class TaskP extends BaseP {
             case 25:
                 task = new InfoNumTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
                 break;
-        }
+            case 31:
+//                task = new HavenoTash(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
 
+                break;
+
+        }
         if (task != null)
             taskQueue.add(task);
     }
+
 
     @Override
     public void onTaskStart(BaseTask iTask) {
@@ -78,7 +74,6 @@ public class TaskP extends BaseP {
         //todo 网络  标记taskmanager的状态
         for (TaskMessageBean.ContentBean.DataBean dataBean : TaskManager.getInstance().getTaskList()) {
             if (dataBean.getLog_id().equals(iTask.getTaskBean().getLog_id())) {
-                dataBean.setStates(TASK_STATES);
                 start_logid = dataBean.getLog_id();
                 start_taskid = dataBean.getTask_id();
             }
@@ -87,9 +82,11 @@ public class TaskP extends BaseP {
             Response json = OkHttpUtils.post().url(URLS.updata_task_status()).addParams("log_id", start_logid).addParams("uid", String.valueOf(start_taskid)).build().execute();
             if (json.code() == 200) {
                 Log.e("WG", "任务开始 上传成功");
+                TaskManager.getInstance().startTask(start_taskid);
             }
         } catch (IOException e) {
             e.printStackTrace();
+            TaskManager.getInstance().errorTask(start_taskid);
             Log.e("WG", "上传任务开始 异常 " + e.toString());
         }
     }
@@ -103,26 +100,24 @@ public class TaskP extends BaseP {
     @Override
     public void onTaskSuccess(BaseTask iTask) {
         // TODO: 2018/4/25/025 网络
-         String log_id = "" ;
-         int task_id = 0 ;
+        String log_id = "";
+        int task_id = 0;
         for (TaskMessageBean.ContentBean.DataBean dataBean : TaskManager.getInstance().getTaskList()) {
             log_id = dataBean.getLog_id();
-             task_id = dataBean.getTask_id();
-            dataBean.setStates(TASK_SUCCESS);
+            task_id = dataBean.getTask_id();
         }
         try {
             Response json = OkHttpUtils.post().url(URLS.getResut()).addParams("log_id", log_id).addParams("uid", String.valueOf(task_id)).build().execute();
             if (json.code() == 200) {
                 Log.e("WG", "上传任务成功 完成 ");
+                TaskManager.getInstance().successTask(task_id);
             }
         } catch (IOException e) {
             e.printStackTrace();
+            TaskManager.getInstance().errorTask(task_id);
             Log.e("WG", "上传任务成功 异常 " + e.toString());
         }
     }
-
-
-
 
     /**
      * 应当及时回掉progress 在每一步操作完成完之后  令其可以判断是否被终中止
@@ -149,9 +144,13 @@ public class TaskP extends BaseP {
      */
     @Override
     public void onTaskError(ITask iTask, TaskErrorBean taskErrorBean) throws Exception {
+        int taskid = 0;
         Logger.t(iTask.getTaskBean().getTask_id() + "").e(taskErrorBean.getErrorMsg());
+        for (TaskMessageBean.ContentBean.DataBean dataBean : TaskManager.getInstance().getTaskList()) {
+            taskid = dataBean.getTask_id();
+        }
+        TaskManager.getInstance().errorTask(taskid);
         throw new Exception(taskErrorBean.getException());
-
     }
 
     @Override

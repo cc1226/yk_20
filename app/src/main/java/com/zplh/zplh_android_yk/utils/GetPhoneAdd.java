@@ -2,9 +2,16 @@ package com.zplh.zplh_android_yk.utils;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.ClipboardManager;
+import android.content.ClipboardManager;
+import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -64,7 +71,6 @@ public class GetPhoneAdd {
     private List<Integer> listXY;
     private String reply_msg;//微信通讯录加好友成功之后，发送的一条消息
     private ClipboardManager cm;
-    private ClipboardManager cmm;
     private ClipboardManager cmm2;
     public Handler handler = new Handler(Looper.getMainLooper());
 
@@ -109,12 +115,10 @@ public class GetPhoneAdd {
                 if (data.code() == 200) {
                     String string = data.body().string();
                     Log.e("zs1", string);
-//                WxPhone phoneBean = GsonUtil.parseJsonWithGson(string, WxPhone.class);
                     WxPhone phoneBean = GsonUtils.fromJson(string, WxPhone.class);
-//                ShowToast.show("正在添加手机联系人请稍后...", (Activity) MyApplication.getContext());
                     Log.e("WG", "正在添加手机联系人请稍后... ");
                     for (int i = 0; i < phoneBean.getData().size(); i++) {
-                        WxTaskUtils.getWxTaskUtils().addContact(phoneBean.getData().get(i).getName(), phoneBean.getData().get(i).getPhone(), MyApplication.getContext());
+                        addContact(phoneBean.getData().get(i).getName(), phoneBean.getData().get(i).getPhone(), MyApplication.getContext());
                         Log.e("WG", "电话号码为" + phoneBean.getData().get(i).getPhone());
                     }
                     addCommunication();
@@ -146,10 +150,8 @@ public class GetPhoneAdd {
             WxTaskUtils.getWxTaskUtils().switchWxAccount();
             WxTaskUtils.getWxTaskUtils().switchWxAccount();
         }
-//        WxTaskUtils.getWxTaskUtils().backHome();
         AdbUtils.getAdbUtils().wxActivityJump("com.tencent.mm/com.tencent.mm.ui.bindmobile.MobileFriendUI");
         Log.e("WG", "等待中 ");
-//        ShowToast.show("等待25秒刷新联系人界面", (Activity) context);
         Thread.sleep(15000);
         xmlData = AdbUtils.getAdbUtils().dumpXml2String();
 
@@ -208,8 +210,6 @@ public class GetPhoneAdd {
                                     "+interval_time_s", "")) && StringUtils.isEmpty(SPUtils.getString(MyApplication.getContext(), "add_interval_time_e", ""))) {
                                 min = 20;
                                 max = 30;
-//                                min = 10;
-//                                max = 15;
                             } else {
                                 min = Integer.parseInt(SPUtils.getString(MyApplication.getContext(), "add_interval_time_s", "").trim());
                                 max = Integer.parseInt(SPUtils.getString(MyApplication.getContext(), "add_interval_time_e", "").trim());
@@ -242,12 +242,13 @@ public class GetPhoneAdd {
                                         AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x252, R.dimen.y80, R.dimen.x312, R.dimen.y107);
                                         int x = MyApplication.getContext().getResources().getDimensionPixelSize(R.dimen.x160);
                                         int y = MyApplication.getContext().getResources().getDimensionPixelSize(R.dimen.y93);//EdiText
-                                        AdbUtils.getAdbUtils().adb("input swipe " + x + " " + y + " " + x + " " + y + " " + 1000);//长按EdiText
+                                        AdbUtils.getAdbUtils().adb("input swipe " + x + " " + y + " " + x + " " + y + " " + 2000);//长按EdiText
                                         String finalNeirong = neirong;
                                         handler.post(new Runnable() {
                                             @Override
                                             public void run() {
-                                                cm = (ClipboardManager) TaskFragment.mContext.getSystemService(CLIPBOARD_SERVICE);
+                                                AdbUtils.getAdbUtils().adb("settings put secure default_input_method com.android.inputmethod.latin/.LatinIME");
+                                                cm = (ClipboardManager) MyApplication.getContext().getSystemService(CLIPBOARD_SERVICE);
                                                 cm.setText(finalNeirong);
                                             }
                                         });
@@ -333,31 +334,14 @@ public class GetPhoneAdd {
             Response data = OkHttpUtils.post().url(URLS.wxAccountApply()).addParams("data", str.replace("\\", "")).build().execute();
             if (data.code() == 200) {
                 String string = data.body().string();
-//                ShowToast.show("好友申请数据上传成功", (Activity) MyApplication.getContext());
                 Log.e("WG", "上传成功 ");
                 Log.d("zs1", string);
             } else {
-//                ShowToast.show("失败了，继续上传", (Activity) MyApplication.getContext());
                 Log.e("WG", "上传失败 ");
                 data = OkHttpUtils.post().url(URLS.wxAccountApply()).addParams("data", str.replace("\\", "")).build().execute();
                 if (data.code() == 200) {
                     String string = data.body().string();
                     Log.d("zs2", string);
-//                    ShowToast.show("好友申请数据上传成功", (Activity) MyApplication.getContext());
-                    Log.e("WG", "上传成功 ");
-                } else {
-//                    ShowToast.show("又失败了，继续上传", (Activity) MyApplication.getContext());
-                    Log.e("WG", "上传失败 ");
-                    data = OkHttpUtils.post().url(URLS.wxAccountApply()).addParams("data", str.replace("\\", "")).build().execute();
-                    if (data.code() == 200) {
-                        String string = data.body().string();
-                        Log.d("zs3", string);
-//                        ShowToast.show("好友申请数据上传成功", (Activity) MyApplication.getContext());
-                        Log.e("WG", "上传成功 ");
-                    } else {
-//                        ShowToast.show("又又失败了，继续上传", (Activity) MyApplication.getContext());
-                        Log.e("WG", "上传失败 ");
-                    }
                 }
             }
         } catch (IOException e) {
@@ -368,7 +352,6 @@ public class GetPhoneAdd {
     public void toForUnRead() throws Exception {
         String xmlData;
         List<Integer> listXY;
-//        WxTaskUtils.getWxTaskUtils().openWx();
         WxTaskUtils.getWxTaskUtils().backHome();
         AdbUtils.getAdbUtils().click4xy(42, 822, 78, 847);//点击微信通讯录
         String meName = "";
@@ -464,11 +447,9 @@ public class GetPhoneAdd {
         for (int c = 0; c < qunNameDataList.size(); c++) {
             NodeXmlBean.NodeBean qunNameBean = AdbUtils.getAdbUtils().getNodeXmlBean(qunNameDataList.get(c)).getNode();
             if (qunNameBean != null && qunNameBean.getResourceid() != null && "com.tencent.mm:id/hj".equals(qunNameBean.getResourceid()) && qunNameBean.getText() != null) {
-//                ShowToast.show("名称为：" + qunNameBean.getText(), (Activity) MyApplication.getContext());
                 Log.e("WG", "程序名称 ：" + qunNameBean.getText());
                 if (qunNameBean.getText().contains("群截图") || qunNameBean.getText().contains("微商引流会") || qunNameBean.getText().contains("京东内部福利群")) {
                     WxTaskUtils.getWxTaskUtils().backHome();
-//                    backHome();
                     break;
                 } else if (qunNameBean.getText().contains("腾讯新闻")) {
                     AdbUtils.getAdbUtils().click4xy(45, 401, 435, 482);//点击腾讯新闻 阅读
@@ -538,18 +519,15 @@ public class GetPhoneAdd {
                     if (!xmlData.contains("切换到按住说话")) {
                         AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x4, R.dimen.y367, R.dimen.x52, R.dimen.y400);//切换到键盘
                     } else {
-//                        wxUtils.adbClick(100, 820, 100, 820); //点击输入框
                         AdbUtils.getAdbUtils().click4xy(100, 820, 100, 820);//点击输入框
                     }
-//                    wxUtils.adb("input swipe " + 100 + " " + 420 + " " + 100 + " " + 420 + " " + 5000);  //长按3秒
-                    AdbUtils.getAdbUtils().adb("input swipe " + 100 + " " + 420 + " " + 100 + " " + 420 + " " + 5000);//长按5秒
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            ClipboardManager cm = (ClipboardManager) TaskFragment.mContext.getSystemService(CLIPBOARD_SERVICE);
-                            String replyMessageData = SPUtils.getString(MyApplication.getContext(), "WxReplyMessage", "");
-                            cm.setText(imageData1[randNum1] + replyMessageData);
-                        }
+                    AdbUtils.getAdbUtils().adb("input swipe " + 100 + " " + 420 + " " + 100 + " " + 420 + " " + 3000);//长按5秒
+
+                    handler.post(() -> {
+                        ClipboardManager cm = (ClipboardManager) MyApplication.getContext().getSystemService(CLIPBOARD_SERVICE);
+                        String replyMessageData = SPUtils.getString(MyApplication.getContext(), "WxReplyMessage", "");
+                        cm.setText(imageData1[randNum1] + replyMessageData);
+//
                     });
                     AdbUtils.getAdbUtils().click4xy(110, 385, 110, 385);//点击粘贴
                     AdbUtils.getAdbUtils().click4xy(405, 411, 471, 459);//点击发送
@@ -560,7 +538,6 @@ public class GetPhoneAdd {
                 }
             }
         }
-
     }
 
 
@@ -679,10 +656,12 @@ public class GetPhoneAdd {
                                 AdbUtils.getAdbUtils().click4xy(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));
                                 //点击了回复
                                 if (!TextUtils.isEmpty(reply_msg)) {//不为null，服务器给了 数据。需要设置，然后回复给刚刚加的好友
+
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            cmm2 = (ClipboardManager) TaskFragment.mContext.getSystemService(CLIPBOARD_SERVICE);
+                                            AdbUtils.getAdbUtils().adb("settings put secure default_input_method com.android.inputmethod.latin/.LatinIME");
+                                            ClipboardManager cmm2 = (ClipboardManager) MyApplication.getContext().getSystemService(CLIPBOARD_SERVICE);
                                             cmm2.setText(reply_msg);
                                         }
                                     });
@@ -711,6 +690,92 @@ public class GetPhoneAdd {
                 }
             }
             AdbUtils.getAdbUtils().adbUpSlide(MyApplication.getContext());//向上滑动
+        }
+    }
+    /*
+       *
+       *
+       *添加联系人
+       *
+       *
+       */
+    public void addContact(String name, String phoneNumber, Context context) {
+        // 创建一个空的ContentValues
+        try {
+            ViewCheckUtils.check();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ContentValues values = new ContentValues();
+
+        // 向RawContacts.CONTENT_URI空值插入，
+        // 先获取Android系统返回的rawContactId
+        // 后面要基于此id插入值
+        Uri rawContactUri = context.getContentResolver().insert(ContactsContract.RawContacts.CONTENT_URI, values);
+        long rawContactId = ContentUris.parseId(rawContactUri);
+        values.clear();
+
+        values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
+        // 内容类型
+        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
+        // 联系人名字
+        values.put(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, name);
+        // 向联系人URI添加联系人名字
+        context.getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
+        values.clear();
+
+        values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
+        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+        // 联系人的电话号码
+        values.put(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNumber);
+        // 电话类型
+        values.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
+        // 向联系人电话号码URI添加电话号码
+        context.getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
+        values.clear();
+
+        values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
+        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE);
+        // 联系人的Email地址
+//        values.put(ContactsContract.CommonDataKinds.Email.DATA, "zhangphil@xxx.com");
+        // 电子邮件的类型
+        values.put(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK);
+        // 向联系人Email URI添加Email数据
+        context.getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
+
+    }
+
+
+    /**
+     * 清除所有联系人
+     *
+     * @param context
+     */
+    public void DeletPhone(Context context) {
+        try {
+            ViewCheckUtils.check();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ContentResolver cr = context.getContentResolver();
+        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                null, null, null, null);
+        boolean flag = SPUtils.getBoolean(MyApplication.getContext(), "flag", true);
+        Log.e("WG", "DeletPhone: " + cur);
+        if (cur != null) {
+            while (cur.moveToNext()) {
+                try {
+                    String lookupKey = cur.getString(cur.getColumnIndex(
+                            ContactsContract.Contacts.LOOKUP_KEY));
+                    Uri uri = Uri.withAppendedPath(ContactsContract.
+                            Contacts.CONTENT_LOOKUP_URI, lookupKey);
+                    System.out.println("The uri is " + uri.toString());
+                    cr.delete(uri, null, null);
+                } catch (Exception e) {
+                    System.out.println(e.getStackTrace());
+                }
+            }
+            Log.e("WG", "清理完成 ");
         }
     }
 

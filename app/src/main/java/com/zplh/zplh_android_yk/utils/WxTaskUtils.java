@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,16 +13,22 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.zhy.http.okhttp.OkHttpUtils;
 import com.zplh.zplh_android_yk.R;
 import com.zplh.zplh_android_yk.base.MyApplication;
 import com.zplh.zplh_android_yk.bean.NodeXmlBean;
 import com.zplh.zplh_android_yk.bean.WxFriendsMessageBean;
+import com.zplh.zplh_android_yk.constant.URLS;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import okhttp3.Response;
 
 
 /* 封装了一些普遍的微信adb操作
@@ -49,168 +56,6 @@ public class WxTaskUtils {
     }
 
     private String yunYingMark = "";//运营号
-
-    /**
-     * 修改备注.
-     */
-    Random random = new Random();
-
-    private void startAlterName(String zzz) {
-        String xmlData;
-        if (StringUtils.isEmpty(zzz)) {
-            zzz = "ZZZ0";
-        } else if (zzz != null && zzz.length() > 10) {
-            zzz = "ZZZ9";
-        }
-        boolean bottom = false;//到了底部
-        int sex = 0;//0代表女。   1代表男   2代表性别未知
-        DecimalFormat df = new DecimalFormat("0000");
-        int zzzNum = 0;//判断是否直接到#号修改
-        String endData = "";
-        String meName = "";
-        w:
-        while (true) {
-
-
-            while (true) {
-//                xmlData = wxUtils.getXmlData();//修改完一个重新获取页面数据
-                xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-                if (xmlData.contains("wx助手") || (xmlData.contains("应用") && xmlData.contains("主屏幕"))) {
-//                    ShowToast.show("任务被中断，结束修改备注任务", (Activity) context);
-                    Log.e("WG", "任务被中断，结束修改备注任务 ");
-                    break w;
-                } else if (!(xmlData.contains("通讯录") && xmlData.contains("发现"))) {
-//                    wxUtils.adb("input keyevent 4");//返回
-                    AdbUtils.getAdbUtils().adb("input keyevent 4");
-                } else {
-                    break;
-                }
-            }
-
-
-            List<String> nodeList = AdbUtils.getAdbUtils().getNodeList(xmlData);
-            a:
-            for (int a = 0; a < nodeList.size(); a++) {
-                nodeBean = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(a)).getNode();
-                if (nodeBean.getResourceid() != null && (nodeBean.getResourceid().equals("com.tencent.mm:id/j_")) && nodeBean.getContentdesc() != null && nodeBean.getContentdesc() != "" && !nodeBean.getContentdesc().startsWith("微信") && !nodeBean.getContentdesc().equals("文件传输助手") && !nodeBean.getContentdesc().startsWith("ZZZ") && !nodeBean.getContentdesc().startsWith("zzz") && !meName.equals(nodeBean.getContentdesc()) && !yunYingMark.contains(nodeBean.getContentdesc())) {
-                    //筛选出好友
-                    listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());//获取好友坐标
-
-                    Log.e("WG", "点击进入 ");
-                    xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-                    if (!xmlData.contains("标签")) {
-//                        wxUtils.adb("input keyevent 4");
-                        AdbUtils.getAdbUtils().adb("input keyevent 4");
-                        meName = nodeBean.getContentdesc();
-                        continue;
-                    }
-                    StatisticsWxFriends(xmlData);//统计新增好友的信息
-                    List<String> meWxIdList = AdbUtils.getAdbUtils().getNodeList(xmlData);
-
-                    if (xmlData.contains("女")) {
-                        sex = 0;
-                    } else if (xmlData.contains("男")) {
-                        sex = 1;
-                    } else {
-                        sex = 2;
-                    }
-//                    xmlData = wxUtils.getXmlData();//重新获取页面数据
-                    xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-                    //                    wxUtils.adbDimensClick(context, R.dimen.x1, R.dimen.y135, R.dimen.x320, R.dimen.y166);//点击设置备注和标签
-
-                    List<String> remarkList = AdbUtils.getAdbUtils().getNodeList(xmlData);
-                    for (int r = 0; r < remarkList.size(); r++) {
-                        nodeBean = AdbUtils.getAdbUtils().getNodeXmlBean(remarkList.get(r)).getNode();
-                        if (nodeBean.getResourceid() != null && (nodeBean.getResourceid().equals("com.tencent.mm:id/anw"))) {
-                            //筛选出好友
-                            listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());//获取修改备注标签
-//                            wxUtils.adbClick(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));//点击修改备注
-                            AdbUtils.getAdbUtils().click4xy(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));
-                            break;
-                        }
-                    }
-//                    xmlData = wxUtils.getXmlData();
-                    xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-                    if (xmlData.contains("备注信息") && xmlData.contains("完成")) {
-
-                    } else {
-                        continue w;
-                    }
-                    AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x16, R.dimen.y89, R.dimen.x304, R.dimen.y115);//点击名字EditText
-                    AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x252, R.dimen.y89, R.dimen.x312, R.dimen.y115);//清空名字
-
-                    switch (sex) {//0代表女。   1代表男   2代表性别未知
-                        case 0:
-                            int wx_name_number_girl = (int) SPUtils.get(MyApplication.getContext(), "wx_name_number_girl", 0);
-                            String wx_nume_number_new_girl = df.format(wx_name_number_girl + 1);
-                            AdbUtils.getAdbUtils().adb("input text " + zzz + "B" + wx_nume_number_new_girl);
-                            SPUtils.put(MyApplication.getContext(), "wx_name_number_girl", wx_name_number_girl + 1);
-                            break;
-                        case 1:
-                            int wx_name_number_boy = (int) SPUtils.get(MyApplication.getContext(), "wx_name_number_boy", 0);
-                            String wx_nume_number_new_boy = df.format(wx_name_number_boy + 1);
-                            AdbUtils.getAdbUtils().adb("input text " + zzz + "A" + wx_nume_number_new_boy);
-                            SPUtils.put(MyApplication.getContext(), "wx_name_number_boy", wx_name_number_boy + 1);
-                            break;
-                        case 2:
-                            int wx_name_number_c = (int) SPUtils.get(MyApplication.getContext(), "wx_name_number_c", 0);
-                            String wx_nume_number_c = df.format(wx_name_number_c + 1);
-                            AdbUtils.getAdbUtils().adb("input text " + zzz + "C" + wx_nume_number_c);
-                            SPUtils.put(MyApplication.getContext(), "wx_name_number_c", wx_name_number_c + 1);
-                            break;
-                    }
-                    AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x252, R.dimen.y23, R.dimen.x312, R.dimen.y44);//确定修改
-                    //  LogUtils.d(nodeList.get(a));
-                    AdbUtils.getAdbUtils().adb("input keyevent 4");
-//                    xmlData = wxUtils.getXmlData();
-                    xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-                    if (!(xmlData.contains("微信") && xmlData.contains("通讯录") && xmlData.contains("发现") && xmlData.contains("我"))) {
-                        AdbUtils.getAdbUtils().adb("input keyevent 4");
-
-                    }
-
-                    //设置间隔时间
-                    int start;
-                    break;
-                }
-            }
-//            xmlData = wxUtils.getXmlData();//修改完一个重新获取页面数据
-            AdbUtils.getAdbUtils().dumpXml2String();
-            nodeList = AdbUtils.getAdbUtils().getNodeList(xmlData);
-
-            if (!xmlData.contains("发现")) {
-//                ShowToast.show("任务被中断，结束修改备注任务", (Activity) context);
-                continue w;
-            }
-            zzzNum = 0;
-            for (int b = 0; b < nodeList.size(); b++) {
-                nodeBean = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(b)).getNode();
-                if (nodeBean.getResourceid() != null && (nodeBean.getResourceid().equals("com.tencent.mm:id/j_")) && nodeBean.getContentdesc() != null && nodeBean.getContentdesc() != "" && !nodeBean.getContentdesc().startsWith("微信") && !nodeBean.getContentdesc().equals("文件传输助手") && !nodeBean.getContentdesc().startsWith("ZZZ") && !nodeBean.getContentdesc().startsWith("zzz") && !meName.equals(nodeBean.getContentdesc())) {
-                    continue w;
-                } else if (nodeBean.getResourceid() != null && (nodeBean.getResourceid().equals("com.tencent.mm:id/j_")) && nodeBean.getContentdesc() != null && nodeBean.getContentdesc() != "" && nodeBean.getContentdesc().startsWith("ZZZ")) {
-                    zzzNum++;
-                }
-            }
-            if (!bottom) {
-                if (zzzNum >= 9) {
-                    AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x296, R.dimen.y357, R.dimen.x320, R.dimen.y365);
-                } else {
-                    AdbUtils.getAdbUtils().adbUpSlide(MyApplication.getContext());//向上滑动
-                }
-            }
-            endData = xmlData;
-//            xmlData = wxUtils.getXmlData();//滑动后重新获取页面数据
-            xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-            if (endData.equals(xmlData)) {
-//                ShowToast.show("修改备注完成", (Activity) context);
-                Log.e("WG", "修改备注完成 ");
-                break w;
-            }
-            if (xmlData.contains("位联系人")) {//判断是否到达底部
-                bottom = true;
-            }
-        }
-    }
 
 
     /**
@@ -359,7 +204,7 @@ public class WxTaskUtils {
 //        AdbUtils.getAdbUtils().click4xy(0, 36, 90, 108);
 
         if (accountNum == 2) {  //老号在左边  新号在右边
-            Log.e("WG", "switchWxAccount: 两个号" );
+            Log.e("WG", "switchWxAccount: 两个号");
 //            Log.e("WG", "switchWxAccount: 111111");
             //说明已经登录了两个账号
             if (listXY.get(0) == 110) {
@@ -537,97 +382,66 @@ public class WxTaskUtils {
     public void goMobileFriend() {
         ShellUtils.CommandResult commandResult = ShellUtils.execCommand("am start com.tencent.mm/com.tencent.mm.ui.bindmobile.MobileFriendUI", true);
     }
+    public String imageData = "[微笑],[撇嘴],[色],[发呆],[得意],[流泪],[害羞],[闭嘴],[睡],[大哭],[尴尬],[调皮],[呲牙],[惊讶],[难过],[酷],[冷汗],[吐],[偷笑],[愉快],[白眼],[傲慢],[饥饿],[困],[惊恐],[流汗],[憨笑],[悠闲],[奋斗],[疑问],[嘘],[晕],[疯了],[敲打],[再见],[擦汗],[抠鼻],[鼓掌],[糗大了],[坏笑],[左哼哼],[右哼哼],[哈欠],[鄙视],[委屈],[快哭了],[阴险],[亲亲],[吓],[可怜],[西瓜],[啤酒],[篮球],[乒乓],[咖啡],[饭],[猪头],[玫瑰],[凋谢],[嘴唇],[爱心],[心碎],[蛋糕],[闪电],[足球],[瓢虫],[月亮],[太阳],[礼物],[拥抱],[强],[握手],[胜利],[抱拳],[勾引],[拳头],[差劲],[NO],[OK],[爱情],[飞吻],[跳跳],[发抖],[怄火],[转圈],[磕头],[回头],[跳绳],[投降]";
 
-    /*
-    *
-    *
-    *添加联系人
-    *
-    *
-    */
-    public void addContact(String name, String phoneNumber, Context context) {
-        // 创建一个空的ContentValues
-        try {
-            ViewCheckUtils.check();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ContentValues values = new ContentValues();
+    Random random = new Random();// 定义随机类
+    public String getFaceText(String data) {
 
-        // 向RawContacts.CONTENT_URI空值插入，
-        // 先获取Android系统返回的rawContactId
-        // 后面要基于此id插入值
-        Uri rawContactUri = context.getContentResolver().insert(ContactsContract.RawContacts.CONTENT_URI, values);
-        long rawContactId = ContentUris.parseId(rawContactUri);
-        values.clear();
+//        String data="我爱哭的时候便哭，想笑的时候便笑，只要这一切出于自然。";
+        String[] strings = imageData.split(",");
+        int count = 0;
+        String[] texts = data.split("，");
 
-        values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
-        // 内容类型
-        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
-        // 联系人名字
-        values.put(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, name);
-        // 向联系人URI添加联系人名字
-        context.getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
-        values.clear();
+        for (int a = 0; a < texts.length; a++) {
+            if (count >= 4) {
+                break;
+            } else {
 
-        values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
-        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
-        // 联系人的电话号码
-        values.put(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNumber);
-        // 电话类型
-        values.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
-        // 向联系人电话号码URI添加电话号码
-        context.getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
-        values.clear();
-
-        values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
-        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE);
-        // 联系人的Email地址
-//        values.put(ContactsContract.CommonDataKinds.Email.DATA, "zhangphil@xxx.com");
-        // 电子邮件的类型
-        values.put(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK);
-        // 向联系人Email URI添加Email数据
-        context.getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
-
-//        Toast.makeText(context, "联系人数据添加成功", Toast.LENGTH_SHORT).show();
-    }
-
-
-    /**
-     * 清除所有联系人
-     *
-     * @param context
-     */
-    public void DeletPhone(Context context) {
-        try {
-            ViewCheckUtils.check();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ContentResolver cr = context.getContentResolver();
-        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
-                null, null, null, null);
-        boolean flag = SPUtils.getBoolean(MyApplication.getContext(), "flag", true);
-        Log.e("WG", "DeletPhone: " + cur);
-        if (cur != null) {
-            while (cur.moveToNext()) {
-                try {
-                    String lookupKey = cur.getString(cur.getColumnIndex(
-                            ContactsContract.Contacts.LOOKUP_KEY));
-                    Uri uri = Uri.withAppendedPath(ContactsContract.
-                            Contacts.CONTENT_LOOKUP_URI, lookupKey);
-                    System.out.println("The uri is " + uri.toString());
-                    cr.delete(uri, null, null);
-                } catch (Exception e) {
-                    System.out.println(e.getStackTrace());
+                if (random.nextInt(texts.length) == 0) {
+                    int num = random.nextInt(3);
+                    switch (num) {
+                        case 0:
+                            texts[a] = texts[a] + strings[random.nextInt(strings.length - 1)];
+                            break;
+                        case 1:
+                            texts[a] = texts[a] + strings[random.nextInt(strings.length - 1)] + strings[random.nextInt(strings.length - 1)];
+                            break;
+                        case 2:
+                            texts[a] = texts[a] + strings[random.nextInt(strings.length - 1)] + strings[random.nextInt(strings.length - 1)] + strings[random.nextInt(strings.length - 1)];
+                            break;
+                    }
+                    count++;
                 }
             }
-            // ShowToast.show("手机联系人清理完成", (Activity) context);
-            Log.e("WG", "清理完成 ");
         }
-    }
 
-    private void StatisticsWxFriends(String xmlData) {
+        StringBuffer stringBuffer = new StringBuffer("");
+        for (int b = 0; b < texts.length; b++) {
+            if (count == 0) {
+                int num = random.nextInt(3);
+                switch (num) {
+                    case 0:
+                        stringBuffer.append(strings[random.nextInt(strings.length - 1)]);
+                        break;
+                    case 1:
+                        stringBuffer.append(strings[random.nextInt(strings.length - 1)]).append(strings[random.nextInt(strings.length - 1)]);
+                        break;
+                    case 2:
+                        stringBuffer.append(strings[random.nextInt(strings.length - 1)]).append(strings[random.nextInt(strings.length - 1)]).append(strings[random.nextInt(strings.length - 1)]);
+                        break;
+                }
+                count = 1;
+            }
+            if (b == 0) {
+                stringBuffer.append(texts[b].toString());
+            } else {
+                stringBuffer.append(",").append(texts[b].toString());
+            }
+
+        }
+        return stringBuffer.toString();
+    }
+    public void StatisticsWxFriends(String xmlData) {
         List<String> wxFriendsMessage = AdbUtils.getAdbUtils().getNodeList(xmlData);
         String wx_number = null; //微信号
         String wx_name = null;  //昵称
@@ -688,10 +502,27 @@ public class WxTaskUtils {
         //       JSON[{"wx_location":"安道尔","wx_name":"女人如烟 ","wx_phone_name":"李霞","wx_phone_number":"13801522864","wx_uid":"1122"}]
         mWxFriendsMessageBean.add(messageBean);
         String str = new Gson().toJson(mWxFriendsMessageBean);
-//        LogUtils.d("JSON" + str.toString());
-//        sendWxFriendsMessage(str);
-//        NetUtils.get()
+        try {
+            Response json = OkHttpUtils.post().url(URLS.statictis_wx_message_store()).addParams("json", str).build().execute();
+            if (json.code() == 200) {
+                Log.e("WG", "新好友统计信息上传成功 ");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return;
+    }
+
+    /*
+    *
+    * 添加到相册
+    *
+    * */
+    public static void addimages(File result, Context context) {
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri uri = Uri.fromFile(result);
+        intent.setData(uri);
+        context.sendBroadcast(intent);
     }
 
 
@@ -717,13 +548,6 @@ public class WxTaskUtils {
         }
     }
 
-    /**
-     * 进入指定的ui
-     */
-    public void goUI() {
-
-
-    }
 
     public void goSearch() {
         ShellUtils.CommandResult commandResult = ShellUtils.execCommand("am start com.tencent.mm/.plugin.search.ui.FTSMainUI", true);

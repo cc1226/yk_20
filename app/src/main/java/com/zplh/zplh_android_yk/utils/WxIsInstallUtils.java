@@ -93,6 +93,7 @@ public class WxIsInstallUtils {
                     Log.e("WG", "IsInstall: +++进来点击了");
                     AdbUtils.getAdbUtils().click(150, 500);
                 }
+                SPUtils.putString(MyApplication.getContext(), "AccountIsOnlyOne", "0");
             }
         }
     }

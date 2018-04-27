@@ -2,6 +2,7 @@ package com.zplh.zplh_android_yk.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,9 +45,21 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         TaskMessageBean.ContentBean.DataBean taskBean = dataBeans.get(position);
-        holder.renwuName.setText(TaskConstant.getTaskNameForID(taskBean.getTask_id()));
-        holder.renwuLogId.setText(taskBean.getLog_id());
-        holder.renwuTime.setText(taskBean.getTodo_time());
+        holder.mRenwuName.setText(TaskConstant.getTaskNameForID(taskBean.getTask_id()));
+        holder.mRenwuLogId.setText(taskBean.getLog_id());
+        holder.mRenwuTime.setText(taskBean.getTodo_time());
+        holder.mRenwuState.setText("任务状态:正在执行");
+        switch (taskBean.getStates()) {
+            case 1:
+                holder.mRenwuState.setText("任务状态:任务完成");
+                break;
+            case 2:
+                holder.mRenwuState.setText("任务状态:正在执行");
+                break;
+            case 3:
+                holder.mRenwuState.setText("任务状态:任务出错");
+                break;
+        }
     }
 
     @Override
@@ -54,18 +67,22 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
         return dataBeans == null ? 0 : dataBeans.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+
+    class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.renwu_name)
-        TextView renwuName;
+        TextView mRenwuName;
         @BindView(R.id.renwu_log_id)
-        TextView renwuLogId;
+        TextView mRenwuLogId;
         @BindView(R.id.renwu_time)
-        TextView renwuTime;
+        TextView mRenwuTime;
         @BindView(R.id.image_state)
-        ImageView imageState;
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        ImageView mImageState;
+        @BindView(R.id.renwu_state)
+        TextView mRenwuState;
+
+        ViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
         }
     }
 }

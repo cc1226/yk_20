@@ -98,31 +98,6 @@ public class NetworkChange extends BroadcastReceiver {
         if (!mobNetInfo.isConnected() && !wifiNetInfo.isConnected()) {
 //            LogUtils.i("通知", "网络不可以用");
             Log.e("WG", "网络不可用" );
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    try {
-//                        Thread.sleep(12000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                    if (mobNetInfo.isConnected()){
-//                        stop();
-//                        audioManage.setStreamMute(AudioManager.STREAM_SYSTEM, true);
-//                        audioManage.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-////                        Vibrator vib = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
-////                        vib.cancel();
-//                    }else if (!mobNetInfo.isConnected() && !wifiNetInfo.isConnected()){
-//                        audioManage.setStreamMute(AudioManager.STREAM_SYSTEM,true);
-//                        audioManage.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-//                        audioManage.adjustVolume(AudioManager.ADJUST_RAISE, 100);
-//                        paly(context);
-//                    }
-//
-////                        VibratorUtil.Vibrate((Activity) context, new long[]{1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000},true);
-//                }
-//            }).start();
-
             SPUtils.putBoolean(context,"isNetWork",false);
             setChange(none);
         } else if (mobNetInfo.isConnected()) {

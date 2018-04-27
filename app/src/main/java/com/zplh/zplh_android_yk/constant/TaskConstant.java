@@ -30,6 +30,7 @@ public class TaskConstant {
     public static final int TASK_WX_SETTING = 27;//微信通用设置
     public static final int TASK_WX_PHONE_SET = 28;//微信手机设置
     public static final int TASK_WX_CROWD_TUWEN = 30;//微信群发图文
+    public static final int TASK_WX_HAVENO = 31;//养号互聊
     public static final int TASK_WX_INIT = 32;//微信初始化
     public static final int TASK_WX_TIME_START = 33;//微信定时开关
     public static final int TASK_WX_CHECK_COLLECT_CONTENT = 55;//查看收藏内容
@@ -41,8 +42,8 @@ public class TaskConstant {
     public static final int Task_WX_ADD_FRIEND = 5;//通讯录加好友
 
 
-    public static String getTaskNameForID(int taskId){
-        switch (taskId){
+    public static String getTaskNameForID(int taskId) {
+        switch (taskId) {
             case TASK_WX_FRIENDS_DS:
                 return "朋友圈点赞";
             case TASK_WX_SUM_FRIENDS:
@@ -55,7 +56,8 @@ public class TaskConstant {
                 return "通讯录加好友";
             case TASK_WX_COUNT:
                 return "统计好友和群成员";
-
+            case TASK_WX_HAVENO:
+                return "养号互聊";
         }
         return "未知任务";
     }

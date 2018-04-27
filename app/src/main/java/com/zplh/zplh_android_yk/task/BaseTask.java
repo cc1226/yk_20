@@ -75,5 +75,4 @@ public abstract class BaseTask<T extends TaskMessageBean.ContentBean.DataBean> i
                 it.ordinal() - me.ordinal();
     }
 
-
 }

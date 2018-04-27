@@ -71,18 +71,9 @@ public class StatisticsUtils {
 
         //设置群信息
         AdbUtils.getAdbUtils().adbDimensClick(mContext, R.dimen.x80, R.dimen.y367, R.dimen.x160, R.dimen.y400);//点击通讯录
+
         Thread.sleep(1000);
         AdbUtils.getAdbUtils().adbDimensClick(mContext, R.dimen.x1, R.dimen.y87, R.dimen.x320, R.dimen.y124);//群聊
-/*        //进入群聊
-        nodeList = wxUtils.getNodeList(xmlData);
-        for (int a = 0; a < nodeList.size(); a++) {
-            NodeXmlBean.NodeBean nodeBean = wxUtils.getNodeXmlBean(nodeList.get(a)).getNode();
-            if ("群聊".equals(nodeBean.getText())) {//获取群聊node节点
-                listXY = wxUtils.getXY(nodeBean.getBounds());//获取群聊坐标
-                wxUtils.adbClick(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));//点击群聊
-                break;
-            }
-        }*/
 
         String qunClickMark = "";//进过的群
         boolean isOneSlide = false;
@@ -159,13 +150,10 @@ public class StatisticsUtils {
                     }
 
 //--------------------------------------------------------------------------------------------------------------------------------------
-
                     //返回
                     AdbUtils.getAdbUtils().back();
                     AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x80, R.dimen.y367, R.dimen.x160, R.dimen.y400);
                     AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x1, R.dimen.y87, R.dimen.x320, R.dimen.y124);
-
-
                 }
             }
 
@@ -193,10 +181,6 @@ public class StatisticsUtils {
         wxNumBean.setContent(contentBean);
         String str = new Gson().toJson(wxNumBean);
         Log.e("WG", "statistics: " + "JSON" + str.toString());
-//        LogUtils.d("JSON" + str.toString());
-//        ShowToast.show(str.toString(), (Activity) context);
-//        setWxnum(str);
-//        Response response = NetUtils.get(URLS.wxNewstatictis_crowd(), null);
         try {
             Response data = OkHttpUtils.post().url(URLS.wxNewstatictis_crowd()).addParams("data", str.replace("\\", "")).build().execute();
             if (data.code() == 200) {

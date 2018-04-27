@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,13 +26,15 @@ import butterknife.Unbinder;
  * 当前任务列表
  * Created by yong hao zeng on 2018/4/23/023.
  */
-public class TaskListFragment extends Fragment {
+public class TaskListFragment extends Fragment implements TaskManager.TaskListener {
     @BindView(R.id.rv)
     RecyclerView rv;
     Unbinder unbinder;
     private View rootView;
     private LinearLayoutManager mLayoutManager;
     private List<TaskMessageBean.ContentBean.DataBean> list = new ArrayList();
+    private TaskListAdapter myAdapter;
+
 
     @Nullable
     @Override
@@ -43,16 +46,14 @@ public class TaskListFragment extends Fragment {
     }
 
     private void init() {
+        TaskManager.getInstance().setListener(this);
         list = TaskManager.getInstance().getTaskList();
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.rv);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
-        TaskListAdapter myAdapter = new TaskListAdapter();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        myAdapter = new TaskListAdapter();
         myAdapter.setDataBeans(list);
-        int itemCount = myAdapter.getItemCount();
         recyclerView.setAdapter(myAdapter);
     }
-
-
 
     @Override
     public void onDestroyView() {
@@ -65,5 +66,45 @@ public class TaskListFragment extends Fragment {
         TaskListFragment fragment = new TaskListFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onSuccess(TaskMessageBean.ContentBean.DataBean dataBean) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                myAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void onError(TaskMessageBean.ContentBean.DataBean dataBean) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                myAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void onStart(TaskMessageBean.ContentBean.DataBean dataBean) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                myAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void onAdd(TaskMessageBean.ContentBean.DataBean dataBean) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                myAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }

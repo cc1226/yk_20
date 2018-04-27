@@ -64,11 +64,9 @@ public class MainActivity extends BaseUI implements TaskPCallback {
 
     @Override
     protected void initView() {
-//        taskFragment = TaskFragment.newInstance();
         TaskListFragment taskListFragment = TaskListFragment.newInstance();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.contentLayout, taskListFragment).commit();
-//        getFragmentManager().findFragmentById(R.layout.task_list_fragment).getView().findViewById(R.layout.activity_main);
     }
 
     @Override

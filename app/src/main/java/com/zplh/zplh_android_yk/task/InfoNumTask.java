@@ -44,7 +44,7 @@ public class InfoNumTask extends BaseTask {
         }
         TimeUnit.SECONDS.sleep(3);
         AdbUtils.getAdbUtils().click(180, 839);
-        new StatisticsUtils(TaskFragment.mContext).statistics();
+        new StatisticsUtils(MyApplication.getContext()).statistics();
         sendAccountType = SPUtils.getInt(MyApplication.getContext(), "is_accType", 0);
         if (sendAccountType == 3) {
             Log.e("WG", "run: 333333");

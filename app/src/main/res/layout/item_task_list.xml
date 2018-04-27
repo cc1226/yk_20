@@ -43,13 +43,13 @@
             android:layout_height="wrap_content" />
 
         <TextView
+            android:id="@+id/renwu_state"
             android:textSize="12sp"
             android:layout_marginRight="8sp"
             android:gravity="right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="任务状态:等待执行"
-            android:id="@+id/renwu_state"
+            android:text="任务状态:"
             android:layout_alignBaseline="@+id/renwu_time"
             android:layout_alignBottom="@+id/renwu_time"
             android:layout_alignEnd="@+id/renwu_log_id"

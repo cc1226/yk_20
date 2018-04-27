@@ -22,7 +22,6 @@ public class TaskFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
-        AdbUtils.getAdbUtils().adb("settings put secure default_input_method com.android.inputmethod.latin/.LatinIME");
 
     }
 

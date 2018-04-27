@@ -25,10 +25,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
-
         JPushInterface.setDebugMode(true);
-
-
         Logger.addLogAdapter(new AndroidLogAdapter());
         //初始化eventbus 索引类
         EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
