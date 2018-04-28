@@ -79,7 +79,7 @@ public class AdbUtils {
 
     /**
      * 点击某个节点
-     *
+     * 获取Bounds[] 坐标 完成点击
      * @param isRefreshData 是否刷新当前截取的界面
      * @param nodeBean      点击的节点
      */
@@ -92,14 +92,13 @@ public class AdbUtils {
             NodeXmlBean.NodeBean node = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(i)).getNode();
             Log.e("WG", "requestPermission: 2222" + node);
             if (TextUtils.equals(node.getResourceid(), nodeBean.getResourceid())) {
-                if (!TextUtils.isEmpty(node.getText()) || node.getText().contains(nodeBean.getText())) {
+                if (!TextUtils.isEmpty(node.getText())  || node.getText().contains(nodeBean.getText())) {
                     List<Integer> xy = AdbUtils.getAdbUtils().getXY(node.getBounds());
                     AdbUtils.getAdbUtils().click4xy(xy.get(0), xy.get(1), xy.get(2), xy.get(3));
                     Log.e("WG", "requestPermission: " + node.getText());
                     break;
                 }
             }
-
         }
     }
 
