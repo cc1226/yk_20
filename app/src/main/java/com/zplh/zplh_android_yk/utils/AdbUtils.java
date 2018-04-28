@@ -29,6 +29,8 @@ public class AdbUtils {
 
     private static AdbUtils adbUtils;
 
+    private String WX_UI_XML;
+
     private AdbUtils() {
     }
 
@@ -58,35 +60,39 @@ public class AdbUtils {
         Log.e("WG ", "adb: " + result.result + "adb" + result.successMsg);
     }
 
-    public void clickText(String text) {
-        String xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-        Log.e("WG", "requestPermission: " + xmlData);
-        List<String> nodeList = AdbUtils.getAdbUtils().getNodeList(xmlData);
-        for (int i = 0; i < nodeList.size(); i++) {
-            NodeXmlBean.NodeBean node = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(i)).getNode();
-            Log.e("WG", "requestPermission: 2222" + node);
-            if (TextUtils.equals(node.getText(), text)) {
-                List<Integer> xy = AdbUtils.getAdbUtils().getXY(node.getBounds());
-                AdbUtils.getAdbUtils().click4xy(xy.get(0), xy.get(1), xy.get(2), xy.get(3));
-                Log.e("WG", "requestPermission: " + node.getText());
-                break;
-            }
-        }
-    }
+//    public void clickText(String text) {
+//        String xmlData = AdbUtils.getAdbUtils().dumpXml2String();
+//        Log.e("WG", "requestPermission: " + xmlData);
+//        List<String> nodeList = AdbUtils.getAdbUtils().getNodeList(xmlData);
+//        for (int i = 0; i < nodeList.size(); i++) {
+//            NodeXmlBean.NodeBean node = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(i)).getNode();
+//            Log.e("WG", "requestPermission: 2222" + node);
+//            if (TextUtils.equals(node.getText(), text)) {
+//                List<Integer> xy = AdbUtils.getAdbUtils().getXY(node.getBounds());
+//                AdbUtils.getAdbUtils().click4xy(xy.get(0), xy.get(1), xy.get(2), xy.get(3));
+//                Log.e("WG", "requestPermission: " + node.getText());
+//                break;
+//            }
+//        }
+//    }
 
 
-    /***
-     *  点击某个节点
+    /**
+     * 点击某个节点
+     *
+     * @param isRefreshData 是否刷新当前截取的界面
+     * @param nodeBean      点击的节点
      */
-    public void clickNode(NodeXmlBean.NodeBean nodeBean) {
-        String xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-        Log.e("WG", "requestPermission: " + xmlData);
-        List<String> nodeList = AdbUtils.getAdbUtils().getNodeList(xmlData);
+    public void clickNode(Boolean isRefreshData, NodeXmlBean.NodeBean nodeBean) {
+        if (isRefreshData)
+              AdbUtils.getAdbUtils().dumpXml2String();
+        Log.e("WG", "requestPermission: " + WX_UI_XML);
+        List<String> nodeList = AdbUtils.getAdbUtils().getNodeList(WX_UI_XML);
         for (int i = 0; i < nodeList.size(); i++) {
             NodeXmlBean.NodeBean node = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(i)).getNode();
             Log.e("WG", "requestPermission: 2222" + node);
             if (TextUtils.equals(node.getResourceid(), nodeBean.getResourceid())) {
-                if (!TextUtils.isEmpty(node.getText()) || TextUtils.equals(node.getText(), nodeBean.getText())) {
+                if (!TextUtils.isEmpty(node.getText()) || node.getText().contains(nodeBean.getText())) {
                     List<Integer> xy = AdbUtils.getAdbUtils().getXY(node.getBounds());
                     AdbUtils.getAdbUtils().click4xy(xy.get(0), xy.get(1), xy.get(2), xy.get(3));
                     Log.e("WG", "requestPermission: " + node.getText());
@@ -128,10 +134,10 @@ public class AdbUtils {
     }
 
     public String dumpXml2String() {
-
         ShellUtils.CommandResult commandResult = ShellUtils.execCommand("uiautomator dump /sdcard/wx_ui.xml", true);
         if (commandResult.result != 0) return "";
-        return FileUtils.readTxtFile();
+        WX_UI_XML = FileUtils.readTxtFile();
+        return WX_UI_XML;
     }
 
     /**

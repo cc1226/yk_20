@@ -55,7 +55,7 @@ public class InitActivity extends BaseUI {
                 flag++;
                 try {
                     Thread.sleep(2000);
-                    AdbUtils.getAdbUtils().clickText("允许");
+//                    AdbUtils.getAdbUtils().clickText("允许");
 //                    String xmlData = AdbUtils.getAdbUtils().dumpXml2String();
 //                    Log.e("WG", "requestPermission: " + xmlData);
 //                    List<String> nodeList = AdbUtils.getAdbUtils().getNodeList(xmlData);

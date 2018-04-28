@@ -42,7 +42,7 @@ public class AmendRemarkTask extends BaseTask {
             callback.onTaskError(this, new TaskErrorBean(TaskErrorBean.EXCEPTION_ERROR).setException(e));
         }
         WxTaskUtils.getWxTaskUtils().switchWxAccount1();
-        AdbUtils.getAdbUtils().clickNode(new NodeXmlBean.NodeBean().getCustomNode("通讯录", "com.tencent.mm:id/c_z")); //点击通讯录
+        AdbUtils.getAdbUtils().clickNode(true, new NodeXmlBean.NodeBean().getCustomNode("通讯录", "com.tencent.mm:id/c_z")); //点击通讯录
         callback.onTaskStart(this);
         Logger.d("修改备注开始");
         startAlterName(getTaskBean().getParam().getRemark(), MyApplication.getContext());
@@ -105,7 +105,7 @@ public class AmendRemarkTask extends BaseTask {
                         continue;
                     }
                     WxTaskUtils.getWxTaskUtils().StatisticsWxFriends(xmlData);//统计新增好友的信息
-                    List<String> meWxIdList = AdbUtils.getAdbUtils().getNodeList(xmlData);
+//                    List<String> meWxIdList = AdbUtils.getAdbUtils().getNodeList(xmlData);
                     if (xmlData.contains("女")) {
                         sex = 0;
                     } else if (xmlData.contains("男")) {
@@ -113,23 +113,9 @@ public class AmendRemarkTask extends BaseTask {
                     } else {
                         sex = 2;
                     }
-                    xmlData = AdbUtils.getAdbUtils().dumpXml2String();//重新获取页面数据
-                    //                    wxUtils.adbDimensClick(context, R.dimen.x1, R.dimen.y135, R.dimen.x320, R.dimen.y166);//点击设置备注和标签
-                    List<String> remarkList = AdbUtils.getAdbUtils().getNodeList(xmlData);
-                    for (int r = 0; r < remarkList.size(); r++) {
-                        nodeBean = AdbUtils.getAdbUtils().getNodeXmlBean(remarkList.get(r)).getNode();
-                        if (nodeBean.getResourceid() != null && (nodeBean.getResourceid().equals("com.tencent.mm:id/anw"))) {
-                            //筛选出好友
-                            listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());//获取修改备注标签
-                            AdbUtils.getAdbUtils().click4xy(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));//点击修改备注
-                            break;
-                        }
-                    }
+                    AdbUtils.getAdbUtils().clickNode(true, new NodeXmlBean.NodeBean().getCustomNode("备注", "com.tencent.mm:id/anw")); //点击通讯录
                     xmlData = AdbUtils.getAdbUtils().dumpXml2String();
-
-                    if (xmlData.contains("备注信息") && xmlData.contains("完成")) {
-
-                    } else {
+                    if (!xmlData.contains("备注信息") && !xmlData.contains("完成")) {
                         continue w;
                     }
                     AdbUtils.getAdbUtils().adbDimensClick(context, R.dimen.x16, R.dimen.y89, R.dimen.x304, R.dimen.y115);//点击名字EditText
