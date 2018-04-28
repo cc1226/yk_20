@@ -82,7 +82,7 @@ public class AmendRemarkTask extends BaseTask {
                     Logger.d("任务被中断，结束修改备注任务");
                     break w;
                 } else if (!(xmlData.contains("通讯录") && xmlData.contains("发现"))) {
-                    AdbUtils.getAdbUtils().adb("input keyevent 4");//返回
+                    AdbUtils.getAdbUtils().back();
                 } else {
                     break;
                 }
