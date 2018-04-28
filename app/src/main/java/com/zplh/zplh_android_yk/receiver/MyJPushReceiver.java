@@ -122,6 +122,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
                     return;
                 }
 
+
                 String uid_1 = SPUtils.getString(context, UID_SP, "0000");
                 String[] isAccType = new String[1];
 
@@ -198,7 +199,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
 //        Logger.e("task.getTask_id()--->"+task.getTask_id());
         //网络请求 判断该lod_id任务是否取消 取消则不在往下进行
         if (task.getTask_id() == TaskConstant.TASK_WX_SHOU_FU_KUAN || task.getTask_id() == TASK_WX_GO_XIAO_CHENG_XU ||
-                task.getTask_id() == TaskConstant.Task_WX_ADD_FRIEND ||task.getTask_id()==TaskConstant.TASK_WX_HAVENO||
+                task.getTask_id() == TaskConstant.Task_WX_ADD_FRIEND || task.getTask_id() == TaskConstant.TASK_WX_HAVENO ||
                 task.getTask_id() == TaskConstant.TASK_WX_TONG_JI_ALL || task.getTask_id() == TaskConstant.TASK_WX_COLLECT_FR ||
                 task.getTask_id() == TaskConstant.TASK_WX_READ_FRIEND_CIRCLE || task.getTask_id() == TaskConstant.TASK_WX_LOOK_FR_CIRCLE ||
                 task.getTask_id() == TaskConstant.TASK_WX_SETTING || task.getTask_id() == TaskConstant.TASK_WX_PHONE_SET ||
@@ -270,5 +271,5 @@ public class MyJPushReceiver extends BroadcastReceiver {
                         }
                     }
                 });
-        }
+    }
 }

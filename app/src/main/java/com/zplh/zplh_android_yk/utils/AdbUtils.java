@@ -3,6 +3,7 @@ package com.zplh.zplh_android_yk.utils;
 
 import android.content.Context;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -55,6 +56,38 @@ public class AdbUtils {
         commnandList.add(str);
         ShellUtils.CommandResult result = ShellUtils.execCommand(commnandList, true);
         Log.e("WG ", "adb: " + result.result + "adb" + result.successMsg);
+    }
+
+    public void clickText(String text) {
+        String xmlData = AdbUtils.getAdbUtils().dumpXml2String();
+        Log.e("WG", "requestPermission: " + xmlData);
+        List<String> nodeList = AdbUtils.getAdbUtils().getNodeList(xmlData);
+        for (int i = 0; i < nodeList.size(); i++) {
+            NodeXmlBean.NodeBean node = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(i)).getNode();
+            Log.e("WG", "requestPermission: 2222" + node);
+            if (TextUtils.equals(node.getText(), text)) {
+                List<Integer> xy = AdbUtils.getAdbUtils().getXY(node.getBounds());
+                AdbUtils.getAdbUtils().click4xy(xy.get(0), xy.get(1), xy.get(2), xy.get(3));
+                Log.e("WG", "requestPermission: " + node.getText());
+                break;
+            }
+        }
+    }
+
+    public void clickResourceid(String resourceid) {
+        String xmlData = AdbUtils.getAdbUtils().dumpXml2String();
+        Log.e("WG", "Resourceid: " + xmlData);
+        List<String> nodeList = AdbUtils.getAdbUtils().getNodeList(xmlData);
+        for (int i = 0; i < nodeList.size(); i++) {
+            NodeXmlBean.NodeBean node = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(i)).getNode();
+            Log.e("WG", "Resourceid: 2222" + node);
+            if (TextUtils.equals(node.getResourceid(), resourceid)) {
+                List<Integer> xy = AdbUtils.getAdbUtils().getXY(node.getBounds());
+                AdbUtils.getAdbUtils().click4xy(xy.get(0), xy.get(1), xy.get(2), xy.get(3));
+                Log.e("WG", "Resourceid " + node.getResourceid());
+                break;
+            }
+        }
     }
 
 
@@ -183,6 +216,11 @@ public class AdbUtils {
     public void install(String path) {
 
         ShellUtils.execCommand("pm install -r " + path, true);
+    }
+
+
+    public void getClick(String xml) {
+
     }
 
     //适配的坐标点

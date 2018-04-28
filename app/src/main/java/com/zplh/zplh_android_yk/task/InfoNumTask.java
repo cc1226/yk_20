@@ -2,6 +2,7 @@ package com.zplh.zplh_android_yk.task;
 
 import android.util.Log;
 
+import com.zplh.zplh_android_yk.R;
 import com.zplh.zplh_android_yk.base.MyApplication;
 import com.zplh.zplh_android_yk.bean.TaskErrorBean;
 import com.zplh.zplh_android_yk.bean.TaskMessageBean;
@@ -43,7 +44,7 @@ public class InfoNumTask extends BaseTask {
             flag = true;
         }
         TimeUnit.SECONDS.sleep(3);
-        AdbUtils.getAdbUtils().click(180, 839);
+        AdbUtils.getAdbUtils().click(R.dimen.dimen_180_dip, R.dimen.dimen_180_dip);
         new StatisticsUtils(MyApplication.getContext()).statistics();
         sendAccountType = SPUtils.getInt(MyApplication.getContext(), "is_accType", 0);
         if (sendAccountType == 3) {

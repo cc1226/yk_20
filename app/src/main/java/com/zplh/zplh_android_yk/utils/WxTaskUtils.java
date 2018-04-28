@@ -117,6 +117,7 @@ public class WxTaskUtils {
                     SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "1"); // 没有切换
                     adbUtils.click4xy(0, 36, 90, 108);//点击左上角的返回
 //                    adbUtils.back();
+
                     return;
                 }
                 if (sendAccountType == 2) {
@@ -136,6 +137,8 @@ public class WxTaskUtils {
                     SPUtils.putString(MyApplication.getContext(), "SwitchAccountSuccess", "1"); // 没有切换
                     adbUtils.click4xy(0, 36, 90, 108);//点击左上角的返回
 //                    adbUtils.back();
+
+
                     return;
                 }
                 if (sendAccountType == 1) {
@@ -169,6 +172,7 @@ public class WxTaskUtils {
         }
 
     }
+
 
 
     public void switchWxAccount() throws Exception {

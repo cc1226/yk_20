@@ -48,7 +48,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
         holder.mRenwuName.setText(TaskConstant.getTaskNameForID(taskBean.getTask_id()));
         holder.mRenwuLogId.setText(taskBean.getLog_id());
         holder.mRenwuTime.setText(taskBean.getTodo_time());
-        holder.mRenwuState.setText("任务状态:正在执行");
+        holder.mRenwuState.setText("任务状态:等待执行");
         switch (taskBean.getStates()) {
             case 1:
                 holder.mRenwuState.setText("任务状态:任务完成");
