@@ -195,6 +195,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
         String todoTimes = task.getTodo_time();//执行时间
         TaskManager.getInstance().addTask(task);
         upData_task_status(task.getLog_id());//反馈到服务器
+//        Logger.e("task.getTask_id()--->"+task.getTask_id());
         //网络请求 判断该lod_id任务是否取消 取消则不在往下进行
         if (task.getTask_id() == TaskConstant.TASK_WX_SHOU_FU_KUAN || task.getTask_id() == TASK_WX_GO_XIAO_CHENG_XU ||
                 task.getTask_id() == TaskConstant.Task_WX_ADD_FRIEND ||task.getTask_id()==TaskConstant.TASK_WX_HAVENO||
@@ -205,7 +206,7 @@ public class MyJPushReceiver extends BroadcastReceiver {
                 task.getTask_id() == TaskConstant.TASK_WX_TIME_START || task.getTask_id() == TaskConstant.TASK_WX_CHECK_COLLECT_CONTENT ||
                 task.getTask_id() == TaskConstant.TASK_WX_READ_TENCENT_NEWS || task.getTask_id() == TaskConstant.TASK_WX_TOP_STORIES ||
                 task.getTask_id() == TaskConstant.TASK_WX_USER_SEARCH || task.getTask_id() == TaskConstant.TASK_WX_CHECK_WALLET ||
-                task.getTask_id() == TaskConstant.TASK_WX_FIND_DEV) {//微信统计任务不需要加随机时间
+                task.getTask_id() == TaskConstant.TASK_WX_FIND_DEV ||task.getTask_id()==TaskConstant.Task_WX_REMARK ) {//微信统计任务不需要加随机时间
 
             if (TextUtils.isEmpty(todoTimes)) {//对于没有设置
                 setTaskEvent(task);

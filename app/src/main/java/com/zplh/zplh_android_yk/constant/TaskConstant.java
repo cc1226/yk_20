@@ -40,6 +40,7 @@ public class TaskConstant {
     public static final int TASK_WX_CHECK_WALLET = 60;//    查看零钱明细
     public static final int TASK_WX_FIND_DEV = 37;//微信寻找设备
     public static final int Task_WX_ADD_FRIEND = 5;//通讯录加好友
+    public static final int Task_WX_REMARK = 29;//修改备注
 
 
     public static String getTaskNameForID(int taskId) {
@@ -58,6 +59,8 @@ public class TaskConstant {
                 return "统计好友和群成员";
             case TASK_WX_HAVENO:
                 return "养号互聊";
+                case Task_WX_REMARK:
+                return "修改备注";
         }
         return "未知任务";
     }

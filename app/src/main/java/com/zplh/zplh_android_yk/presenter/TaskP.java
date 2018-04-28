@@ -10,10 +10,12 @@ import com.zplh.zplh_android_yk.bean.TaskErrorBean;
 import com.zplh.zplh_android_yk.bean.TaskMessageBean;
 import com.zplh.zplh_android_yk.callback.TaskPCallback;
 import com.zplh.zplh_android_yk.constant.Priority;
+import com.zplh.zplh_android_yk.constant.TaskConstant;
 import com.zplh.zplh_android_yk.constant.URLS;
 import com.zplh.zplh_android_yk.event.TaskEvent;
 import com.zplh.zplh_android_yk.imp.ITask;
 import com.zplh.zplh_android_yk.module.TaskManager;
+import com.zplh.zplh_android_yk.task.AmendRemarkTask;
 import com.zplh.zplh_android_yk.task.BaseTask;
 import com.zplh.zplh_android_yk.task.HavenoTash;
 import com.zplh.zplh_android_yk.task.InfoNumTask;
@@ -49,15 +51,17 @@ public class TaskP extends BaseP {
         Log.e("WG", "taskEvent: " + event.getTask().getParam().getRecord_time_s());
         ITask task = null;
         switch (event.getTask().getTask_id()) {
-            case 5:
+            case TaskConstant.Task_WX_REMARK:
+                task = new AmendRemarkTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
+                break;
+            case TaskConstant.Task_WX_ADD_FRIEND:
                 task = new NewFriendTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
                 break;
-            case 25:
+            case TaskConstant.TASK_WX_COUNT:
                 task = new InfoNumTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
                 break;
-            case 31:
+            case TaskConstant.TASK_WX_HAVENO:
 //                task = new HavenoTash(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
-
                 break;
 
         }
