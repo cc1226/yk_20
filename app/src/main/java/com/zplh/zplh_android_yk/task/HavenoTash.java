@@ -3,10 +3,13 @@ package com.zplh.zplh_android_yk.task;
 import android.app.Activity;
 import android.os.Environment;
 import android.content.ClipboardManager;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Adapter;
 
+import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 import com.zplh.zplh_android_yk.R;
 import com.zplh.zplh_android_yk.base.MyApplication;
 import com.zplh.zplh_android_yk.bean.NodeXmlBean;
@@ -23,6 +26,8 @@ import com.zplh.zplh_android_yk.utils.StringUtils;
 import com.zplh.zplh_android_yk.utils.WxIsInstallUtils;
 import com.zplh.zplh_android_yk.utils.WxTaskUtils;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -31,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import okhttp3.Call;
 import okhttp3.Response;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
@@ -44,6 +50,9 @@ public class HavenoTash extends BaseTask {
     private String xmlData;
     private NodeXmlBean.NodeBean nodeBean;
     private List<Integer> listXY;
+    private List<String> sendFriendsMessageCultivateDatasList;
+    private ClipboardManager cm;
+    private Handler handler = new Handler();
 
     public HavenoTash(Priority priority, int sequence, TaskMessageBean.ContentBean.DataBean taskBean) {
         super(priority, sequence, taskBean);
@@ -53,12 +62,22 @@ public class HavenoTash extends BaseTask {
     @Override
     public void run(TaskCallback callback) throws Exception {
         String type = getTaskBean().getParam().getType();
+        Log.e("WG", "养号互聊type " + type);
         WxIsInstallUtils.GetIsInstallWx().IsInstall(getTaskBean().getTask_id());
         WxTaskUtils.getWxTaskUtils().switchWxAccount1();
         WxIsInstallUtils.GetIsInstallWx().getIsAccountIsOk();
         WxTaskUtils.getWxTaskUtils().backHome();
-        AdbUtils.getAdbUtils().back();
+
+        if (type.equals("3")) {
+            sendFriendsMessageCultivate(type, new ArrayList<>());
+        } else if (sendFriendsMessageCultivateDatasList != null) {
+            sendFriendsMessageCultivateDatasList = null;
+        }
         sendFriendsMessageCultivateDatas(type);
+        Thread.sleep(1000);
+        if (sendFriendsMessageCultivateDatasList != null && sendFriendsMessageCultivateDatasList.size() > 0) {
+            sendFriendsMessageCultivate(type, sendFriendsMessageCultivateDatasList);
+        }
 
     }
 
@@ -68,25 +87,32 @@ public class HavenoTash extends BaseTask {
     }
 
 
-    List<String> sendFriendsMessageCultivateDatasList;
     /**
      * 养号互撩数据
      * 0图片   1文字
      */
     private void sendFriendsMessageCultivateDatas(final String type) {
-        WxFriendsMessageCultivate wxFriendsMessageCultivate = new WxFriendsMessageCultivate();
-        List<String> sendFriendsMessageCultivateDatasList = new ArrayList<>();
-        try {
-            Response json = OkHttpUtils.post().url(URLS.wechat_list()).addParams("type", type).build().execute();
-            if (json.code() == 200) {
-                for (String s : wxFriendsMessageCultivate.getData()) {
-                    Log.e("WG", "211111 " + s);
+        sendFriendsMessageCultivateDatasList = new ArrayList<>();
+        OkHttpUtils.get().url(URLS.wechat_list()).addParams("type", type).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                Log.e("WG", "onResponse: " + response);
+                WxFriendsMessageCultivate wxFriendsMessageCultivate1 = new Gson().fromJson(response, WxFriendsMessageCultivate.class);
+                Log.e("WG", "onResponse: " + wxFriendsMessageCultivate1.getData());
+                for (String s : wxFriendsMessageCultivate1.getData()) {
                     sendFriendsMessageCultivateDatasList.add(s);
+
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
+
+//        Log.e("WG", "sendFriendsMessageCultivateDatas: " + json);
+
     }
 
     /*
@@ -94,8 +120,15 @@ public class HavenoTash extends BaseTask {
     * 养号互聊操作
     * */
 
-    public void sendFriendsMessageCultivate(int type, List<String> dataBeanList) {
-        ClipboardManager cm = (ClipboardManager) MyApplication.getContext().getSystemService(CLIPBOARD_SERVICE);
+    public void sendFriendsMessageCultivate(String type, List<String> dataBeanList) throws InterruptedException {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                cm = (ClipboardManager) MyApplication.getContext().getSystemService(CLIPBOARD_SERVICE);
+
+            }
+        });
+
         int x = MyApplication.getContext().getResources().getDimensionPixelSize(R.dimen.x136);
         int y = MyApplication.getContext().getResources().getDimensionPixelSize(R.dimen.y383);//EdiText
 
@@ -110,10 +143,10 @@ public class HavenoTash extends BaseTask {
         String text = "";
         String fileUrl = "";
         List<String> imgList = new ArrayList<>();
-        if (!(type == 0 || type == 1 || type == 3)) {
-            return;
-        }
-        if (type == 0 || type == 2) {
+//        if (!(type.equals("0") || type.equals("1") || type.equals("3"))) {
+//            return;
+//        }
+        if (type.equals("0") || type.equals("2")) {
             if (dataBeanList != null && dataBeanList.size() > 0) {//判断请求地址是否为空
                 fileUrl = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/ykimages";
                 for (int a = 0; a < dataBeanList.size(); a++) {
@@ -135,7 +168,6 @@ public class HavenoTash extends BaseTask {
                             Log.e("WG", "下载失败 ");
                             e.printStackTrace();
                         }
-
                         if (f == null) {
 //                            return;
                         } else {
@@ -152,20 +184,19 @@ public class HavenoTash extends BaseTask {
 
             } else {
 //                LogUtils.d("朋友圈图文地址为空");
-                Log.e("WG", "朋友圈图文地址为空" );
+                Log.e("WG", "朋友圈图文地址为空");
                 return;
             }
-
-
         }
-
+        AdbUtils.getAdbUtils().click4xy(153, 822, 207, 847);//点击微信通讯录
+        Thread.sleep(1000);
         AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x296, R.dimen.y346, R.dimen.x320, R.dimen.y346);//点击Z aaa
         xmlData = AdbUtils.getAdbUtils().dumpXml2String();//重新获取页面数据
 //        int s = random.nextInt(max) % (max - min + 1) + min;
         Random random = new Random();
         int randomFriends = random.nextInt(3) % 3 + 1;//随机3-4条
 //        LogUtils.e("好友人数:" + (randomFriends + 1));
-        Log.e("WG", "好友人数 "+(randomFriends+1) );
+        Log.e("WG", "好友人数 " + (randomFriends + 1));
 //        ShowToast.show("好友人数:" + (randomFriends + 1), (Activity) context);
         int messageCount = 0;
         w:
@@ -192,8 +223,8 @@ public class HavenoTash extends BaseTask {
                     listXY = AdbUtils.getAdbUtils().getXY(nodeBean.getBounds());//获取好友坐标
                     AdbUtils.getAdbUtils().click4xy(listXY.get(0), listXY.get(1), listXY.get(2), listXY.get(3));//点击好友
 //                    LogUtils.d("点击进入");
-                    Log.e("WG", "点击进入" );
-                    xmlData =AdbUtils.getAdbUtils().dumpXml2String();//重新获取页面数据
+                    Log.e("WG", "点击进入");
+                    xmlData = AdbUtils.getAdbUtils().dumpXml2String();//重新获取页面数据
                     if (!xmlData.contains("标签")) {
 //                        wxUtils.adb("input keyevent 4");
                         AdbUtils.getAdbUtils().back();
@@ -212,7 +243,7 @@ public class HavenoTash extends BaseTask {
 
                             int randomNum = random.nextInt(3);
 //                            LogUtils.e(randomNum + 1 + "条消息");
-                            Log.e("WG", randomNum+1+"条消息" );
+                            Log.e("WG", randomNum + 1 + "条消息");
 //                            ShowToast.show(randomNum + 1 + "条消息", (Activity) context);
 
                             xmlData = AdbUtils.getAdbUtils().dumpXml2String();
@@ -237,7 +268,8 @@ public class HavenoTash extends BaseTask {
                             }
 
                             switch (type) {
-                                case 1://文字
+
+                                case "1"://文字
                                     xmlData = AdbUtils.getAdbUtils().dumpXml2String();
                                     if (xmlData.contains("切换到键盘")) {
                                         AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x4, R.dimen.y367, R.dimen.x52, R.dimen.y400);//切换到键盘
@@ -317,7 +349,7 @@ public class HavenoTash extends BaseTask {
                                     }
 
                                     break;
-                                case 0://发图片
+                                case "0"://发图片
                                     AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x268, R.dimen.y367, R.dimen.x316, R.dimen.y400);//更多功能
                                     AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x16, R.dimen.y235, R.dimen.x88, R.dimen.y298);//相册
 
@@ -378,7 +410,7 @@ public class HavenoTash extends BaseTask {
                                     }
 
                                     break;
-                                case 3://发送语音
+                                case "3"://发送语音
                                     xmlData = AdbUtils.getAdbUtils().dumpXml2String();
                                     if (xmlData.contains("切换到按住说话")) {
                                         AdbUtils.getAdbUtils().adbDimensClick(MyApplication.getContext(), R.dimen.x4, R.dimen.y367, R.dimen.x52, R.dimen.y400);//切换到键盘
@@ -425,7 +457,7 @@ public class HavenoTash extends BaseTask {
 //                                            LogUtils.e("end=" + end + "__start=" + start + "___语音时间=" + timeSleep1);
 //                                            ShowToast.show("语音录音时间：" + timeSleep1 + "秒", (Activity) context);
 
-//                                            wxUtils.adb("input swipe " + x + " " + y + " " + x + " " + y + " " + timeSleep1 * 1000);  //长按EdiText
+                                            AdbUtils.getAdbUtils().adb("input swipe " + x + " " + y + " " + x + " " + y + " " + timeSleep1 * 1000);  //长按EdiText
                                             break;
                                         case 2:
 
@@ -473,20 +505,17 @@ public class HavenoTash extends BaseTask {
 
 //                    设置间隔时间
                     int start;
-                    if (StringUtils.isEmpty("")) {
-//                        app.getWxGeneralSettingsBean().getMsg_interval_time_s()
+                    if (StringUtils.isEmpty(getTaskBean().getParam().getMsg_interval_time_s())) {
                         start = 10;
                     } else {
-                        start = Integer.valueOf("");
+                        start = Integer.valueOf(getTaskBean().getParam().getMsg_interval_time_e());
 //                        app.getWxGeneralSettingsBean().getMsg_interval_time_s
                     }
                     int end;
-                    if (StringUtils.isEmpty("")) {
+                    if (StringUtils.isEmpty(getTaskBean().getParam().getRandom_time_e())) {
                         end = 20;
-//                        app.getWxGeneralSettingsBean().getMsg_interval_time_e()
                     } else {
-                        end = Integer.valueOf("");
-//                        app.getWxGeneralSettingsBean().getMsg_interval_time_e()
+                        end = Integer.valueOf(getTaskBean().getParam().getMsg_interval_time_e());
                     }
                     int timeSleep = random.nextInt(5) + 1;
 //                    LogUtils.e("end=" + end + "__start=" + start + "___间隔随机数=" + timeSleep);
@@ -522,7 +551,7 @@ public class HavenoTash extends BaseTask {
             }
         }
 //        ShowToast.show("发消息完成", (Activity) context);
-        if (type == 0 || type == 2) {
+        if (type.equals("0") || type.equals("2")) {
 //            wxUtils.addimages(new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/ykimages", fileName), context);
             try {
                 Thread.sleep(10000);

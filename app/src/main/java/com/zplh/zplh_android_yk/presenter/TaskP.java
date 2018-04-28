@@ -56,10 +56,8 @@ public class TaskP extends BaseP {
                 task = new InfoNumTask(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
                 break;
             case 31:
-//                task = new HavenoTash(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
-
+                task = new HavenoTash(Priority.DEFAULT, mAtomicInteger.incrementAndGet(), event.getTask());
                 break;
-
         }
         if (task != null)
             taskQueue.add(task);
