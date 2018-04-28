@@ -42,7 +42,7 @@ public class AmendRemarkTask extends BaseTask {
             callback.onTaskError(this, new TaskErrorBean(TaskErrorBean.EXCEPTION_ERROR).setException(e));
         }
         WxTaskUtils.getWxTaskUtils().switchWxAccount1();
-        AdbUtils.getAdbUtils().click4xy(153, 822, 207, 847);
+        AdbUtils.getAdbUtils().clickNode(new NodeXmlBean.NodeBean().getCustomNode("通讯录", "com.tencent.mm:id/c_z")); //点击通讯录
         callback.onTaskStart(this);
         Logger.d("修改备注开始");
         startAlterName(getTaskBean().getParam().getRemark(), MyApplication.getContext());

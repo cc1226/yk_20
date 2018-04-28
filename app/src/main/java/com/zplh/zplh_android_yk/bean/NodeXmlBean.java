@@ -78,6 +78,12 @@ public class NodeXmlBean {
             return contentdesc;
         }
 
+        public NodeBean getCustomNode(String text, String resourceid) {
+            this.text = text;
+            this.resourceid = resourceid;
+            return this;
+        }
+
         public void setContentdesc(String contentdesc) {
             this.contentdesc = contentdesc;
         }

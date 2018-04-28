@@ -74,6 +74,25 @@ public class AdbUtils {
         }
     }
 
+    /***
+     *  点击某个节点
+     */
+    public void clickNode(NodeXmlBean.NodeBean nodeBean) {
+        String xmlData = AdbUtils.getAdbUtils().dumpXml2String();
+        Log.e("WG", "requestPermission: " + xmlData);
+        List<String> nodeList = AdbUtils.getAdbUtils().getNodeList(xmlData);
+        for (int i = 0; i < nodeList.size(); i++) {
+            NodeXmlBean.NodeBean node = AdbUtils.getAdbUtils().getNodeXmlBean(nodeList.get(i)).getNode();
+            Log.e("WG", "requestPermission: 2222" + node);
+            if (TextUtils.equals(node.getText(), nodeBean.getText()) && TextUtils.equals(node.getResourceid(), nodeBean.getResourceid())) {
+                List<Integer> xy = AdbUtils.getAdbUtils().getXY(node.getBounds());
+                AdbUtils.getAdbUtils().click4xy(xy.get(0), xy.get(1), xy.get(2), xy.get(3));
+                Log.e("WG", "requestPermission: " + node.getText());
+                break;
+            }
+        }
+    }
+
     public void clickResourceid(String resourceid) {
         String xmlData = AdbUtils.getAdbUtils().dumpXml2String();
         Log.e("WG", "Resourceid: " + xmlData);
@@ -198,8 +217,8 @@ public class AdbUtils {
 
     }
     /*
-    * 坐标点
-    * */
+     * 坐标点
+     * */
 
     public void click(int i, int i1) {
         if (commnandList != null) {
