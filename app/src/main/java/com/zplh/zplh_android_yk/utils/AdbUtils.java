@@ -225,6 +225,19 @@ public class AdbUtils {
         Logger.t("adb click").d("长按");
 
     }
+    public static void clickLong(int a, int b,int c,int d,long time) {
+        if (commnandList != null) {
+            commnandList.clear();
+        } else {
+            commnandList = new ArrayList<>();
+        }
+
+        commnandList.add("input swipe " + (a + c) / 2 + " " + (b + d) / 2+" "+(a + c) / 2 + " " + (b + d) / 2+" "+time);
+        ShellUtils.CommandResult result = ShellUtils.execCommand(commnandList, true);
+
+    }
+
+
     /*
      * 坐标点
      * */
